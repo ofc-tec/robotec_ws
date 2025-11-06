@@ -1,1 +1,0 @@
-/home/oscar/robotino_ros2_ws/build/rto_msgs/ament_cmake_core/rto_msgsConfig.cmake

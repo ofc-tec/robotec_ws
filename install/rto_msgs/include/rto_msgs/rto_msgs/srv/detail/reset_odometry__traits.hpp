@@ -1,1 +1,0 @@
-/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_generator_cpp/rto_msgs/srv/detail/reset_odometry__traits.hpp

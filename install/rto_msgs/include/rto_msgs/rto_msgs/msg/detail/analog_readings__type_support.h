@@ -1,1 +1,0 @@
-/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_generator_c/rto_msgs/msg/detail/analog_readings__type_support.h

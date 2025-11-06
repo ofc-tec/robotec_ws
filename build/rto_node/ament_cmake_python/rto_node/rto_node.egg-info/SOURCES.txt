@@ -1,6 +1,0 @@
-setup.py
-rto_node/__init__.py
-rto_node.egg-info/PKG-INFO
-rto_node.egg-info/SOURCES.txt
-rto_node.egg-info/dependency_links.txt
-rto_node.egg-info/top_level.txt

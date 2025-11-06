@@ -1,1 +1,0 @@
-/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs/msg/GripperState.msg

@@ -1,1 +1,0 @@
-/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_typesupport_introspection_cpp/rto_msgs/srv/detail/set_gripper_state__rosidl_typesupport_introspection_cpp.hpp

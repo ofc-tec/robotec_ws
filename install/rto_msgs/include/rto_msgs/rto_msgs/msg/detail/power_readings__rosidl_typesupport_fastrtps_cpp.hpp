@@ -1,1 +1,0 @@
-/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_typesupport_fastrtps_cpp/rto_msgs/msg/detail/power_readings__rosidl_typesupport_fastrtps_cpp.hpp

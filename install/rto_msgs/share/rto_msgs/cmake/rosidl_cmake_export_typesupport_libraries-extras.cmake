@@ -1,1 +1,0 @@
-/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
