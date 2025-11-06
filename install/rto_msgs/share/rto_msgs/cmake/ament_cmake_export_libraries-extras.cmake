@@ -1,0 +1,1 @@
+/home/oscar/robotino_ros2_ws/build/rto_msgs/ament_cmake_export_libraries/ament_cmake_export_libraries-extras.cmake

@@ -1,0 +1,26 @@
+{
+  "type_description_msg": {
+    "type_description": {
+      "type_name": "rto_msgs/srv/SetGripperState_Response",
+      "fields": [
+        {
+          "name": "structure_needs_at_least_one_member",
+          "type": {
+            "type_id": 3,
+            "capacity": 0,
+            "string_capacity": 0,
+            "nested_type_name": ""
+          },
+          "default_value": ""
+        }
+      ]
+    },
+    "referenced_type_descriptions": []
+  },
+  "type_hashes": [
+    {
+      "type_name": "rto_msgs/srv/SetGripperState_Response",
+      "hash_string": "RIHS01_df6a887621821983198abf13c4eeba2200034ab7f301804b744784cece9106bb"
+    }
+  ]
+}

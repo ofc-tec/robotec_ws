@@ -1,0 +1,26 @@
+{
+  "type_description_msg": {
+    "type_description": {
+      "type_name": "rto_msgs/srv/SetOmniDriveEnabled_Request",
+      "fields": [
+        {
+          "name": "enable",
+          "type": {
+            "type_id": 15,
+            "capacity": 0,
+            "string_capacity": 0,
+            "nested_type_name": ""
+          },
+          "default_value": ""
+        }
+      ]
+    },
+    "referenced_type_descriptions": []
+  },
+  "type_hashes": [
+    {
+      "type_name": "rto_msgs/srv/SetOmniDriveEnabled_Request",
+      "hash_string": "RIHS01_7574331c71202cfe082de4bebdeda77e41bcaaab1784c3cd4ab4c7607ea4223e"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+/home/oscar/robotino_ros2_ws/build/rto_description/ament_cmake_environment_hooks/local_setup.sh

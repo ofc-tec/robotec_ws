@@ -1,0 +1,25 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from rto_msgs/msg/EncoderReadings.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module rto_msgs {
+  module msg {
+    struct EncoderReadings {
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        "actual velocity in ticks/s")
+      uint32 velocity;
+
+      @verbatim (language="comment", text=
+        "actual position in ticks")
+      uint32 position;
+
+      @verbatim (language="comment", text=
+        "in A")
+      uint32 current;
+    };
+  };
+};

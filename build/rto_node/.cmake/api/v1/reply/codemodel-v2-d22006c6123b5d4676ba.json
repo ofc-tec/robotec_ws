@@ -1,0 +1,124 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-54c3170a3e3ab40055d2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "rto_node",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_build_rto_node_egg::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_build_rto_node_egg-0691a3285a4734d062b7.json",
+					"name" : "ament_cmake_python_build_rto_node_egg",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_symlink_rto_node::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_symlink_rto_node-4ea6878b6beb3d3555ab.json",
+					"name" : "ament_cmake_python_symlink_rto_node",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rto_camera_node::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rto_camera_node-d9dee15dd15af567c68b.json",
+					"name" : "rto_camera_node",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rto_laserrangefinder_node::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rto_laserrangefinder_node-5bdd774ea0d50cf79764.json",
+					"name" : "rto_laserrangefinder_node",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rto_node::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rto_node-b055c1b5ef501909ab08.json",
+					"name" : "rto_node",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rto_node_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rto_node_uninstall-0e6ec3fa616dd1314d5f.json",
+					"name" : "rto_node_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rto_odometry_node::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rto_odometry_node-0c5f426a983c3a69070b.json",
+					"name" : "rto_odometry_node",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-38ce9f444346894dec19.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/oscar/robotino_ros2_ws/build/rto_node",
+		"source" : "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

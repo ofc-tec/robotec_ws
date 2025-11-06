@@ -1,0 +1,1 @@
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_generator_c/rto_msgs/srv/detail/set_omni_drive_enabled__struct.h

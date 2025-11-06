@@ -1,0 +1,1 @@
+/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_description/launch/robotino_description.launch.py

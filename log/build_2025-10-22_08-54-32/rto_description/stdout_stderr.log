@@ -1,0 +1,72 @@
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Configuring done (1.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/oscar/robotino_ros2_ws/build/rto_description
+-- Install configuration: ""
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/launch
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/launch/robotino_description.launch.py
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino_description.urdf.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino_description.urdf
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino.urdf.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino.urdf
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino_description_plugin.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino_ros2control.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/camera.urdf.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/kinect.urdf.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/Sharp_IR_Sensor.urdf.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/3dsensor_gazebo.urdf.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/hokuyo.urdf.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/asus_xtion_pro.urdf.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/components
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/components/robotino_parts.urdf.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/components/robotino_body.urdf.xacro
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/parts
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/parts/panel.png
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/parts/angle_bracket_usb_hub.dae
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/parts/robotino_wheel.dae
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/parts/front.png
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/parts/robotino_base.dae
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/camera.dae
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/kinect.tga
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/Sharp_IR_Sensor_GP2Y0A41SK0F.dae
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/hokuyo.dae
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/kinect.jpg
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/robotparts.png
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/kinect.dae
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/asus_xtion_pro_live.png
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/asus_xtion_pro_live.dae
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/rviz
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/rviz/robotino_description.rviz
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/ament_index/resource_index/package_run_dependencies/rto_description
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/ament_index/resource_index/parent_prefix_path/rto_description
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/environment/ament_prefix_path.sh
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/environment/ament_prefix_path.dsv
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/environment/path.sh
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/environment/path.dsv
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/local_setup.bash
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/local_setup.sh
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/local_setup.zsh
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/local_setup.dsv
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/package.dsv
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/ament_index/resource_index/packages/rto_description
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/cmake/rto_descriptionConfig.cmake
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/cmake/rto_descriptionConfig-version.cmake
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/package.xml

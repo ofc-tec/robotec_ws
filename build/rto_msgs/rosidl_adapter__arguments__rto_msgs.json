@@ -1,0 +1,17 @@
+{
+  "package_name": "rto_msgs",
+  "non_idl_tuples": [
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:msg/AnalogReadings.msg",
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:msg/DigitalReadings.msg",
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:msg/EncoderReadings.msg",
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:msg/GripperState.msg",
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:msg/MotorReadings.msg",
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:msg/MotorErrorReadings.msg",
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:msg/PowerReadings.msg",
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:srv/ResetOdometry.srv",
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:srv/SetEncoderPosition.srv",
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:srv/SetGripperState.srv",
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:srv/SetOmniDriveEnabled.srv",
+    "/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs:srv/SetVelLimits.srv"
+  ]
+}

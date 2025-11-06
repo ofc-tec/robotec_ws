@@ -1,0 +1,12 @@
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:msg/AnalogReadings.idl
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:msg/DigitalReadings.idl
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:msg/EncoderReadings.idl
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:msg/GripperState.idl
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:msg/MotorReadings.idl
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:msg/MotorErrorReadings.idl
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:msg/PowerReadings.idl
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:srv/ResetOdometry.idl
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:srv/SetEncoderPosition.idl
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:srv/SetGripperState.idl
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:srv/SetOmniDriveEnabled.idl
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_adapter/rto_msgs:srv/SetVelLimits.idl

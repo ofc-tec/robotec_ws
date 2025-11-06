@@ -1,0 +1,1 @@
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_typesupport_introspection_c/rto_msgs/msg/detail/motor_readings__rosidl_typesupport_introspection_c.h

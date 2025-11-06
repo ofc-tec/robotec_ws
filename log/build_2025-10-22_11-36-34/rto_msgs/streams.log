@@ -1,0 +1,26 @@
+[0.033s] Invoking command in '/home/oscar/robotino_ros2_ws/build/rto_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/oscar/robotino_ros2_ws/install/rto_msgs
+[0.087s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.121s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.215s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.234s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[0.249s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.305s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.348s] -- Found rosidl_adapter: 4.6.5 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[0.352s] -- Found std_msgs: 5.3.5 (/opt/ros/jazzy/share/std_msgs/cmake)
+[0.759s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[0.909s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.101s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.103s] -- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+[1.682s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed 
+[1.779s] -- Configuring done (1.7s)
+[2.219s] -- Generating done (0.3s)
+[2.256s] -- Build files have been written to: /home/oscar/robotino_ros2_ws/build/rto_msgs
+[2.265s] Invoked command in '/home/oscar/robotino_ros2_ws/build/rto_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/oscar/robotino_ros2_ws/install/rto_msgs
+[2.266s] Invoking command in '/home/oscar/robotino_ros2_ws/build/rto_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/oscar/robotino_ros2_ws/build/rto_msgs -- -j8 -l8
+[2.339s] failed to create symbolic link '/home/oscar/robotino_ros2_ws/build/rto_msgs/ament_cmake_python/rto_msgs/rto_msgs' because existing path cannot be removed: Is a directory
+[2.340s] gmake[2]: *** [CMakeFiles/ament_cmake_python_symlink_rto_msgs.dir/build.make:70: CMakeFiles/ament_cmake_python_symlink_rto_msgs] Error 1
+[2.340s] gmake[1]: *** [CMakeFiles/Makefile2:452: CMakeFiles/ament_cmake_python_symlink_rto_msgs.dir/all] Error 2
+[2.340s] gmake[1]: *** Waiting for unfinished jobs....
+[2.343s] [  1%] Built target rto_msgs__rosidl_generator_type_description
+[2.345s] gmake: *** [Makefile:146: all] Error 2
+[2.347s] Invoked command in '/home/oscar/robotino_ros2_ws/build/rto_msgs' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/oscar/robotino_ros2_ws/build/rto_msgs -- -j8 -l8

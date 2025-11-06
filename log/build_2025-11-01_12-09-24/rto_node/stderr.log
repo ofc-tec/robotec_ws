@@ -1,0 +1,4 @@
+failed to create symbolic link '/home/oscar/robotino_ros2_ws/build/rto_node/ament_cmake_python/rto_node/rto_node' because existing path cannot be removed: Is a directory
+gmake[2]: *** [CMakeFiles/ament_cmake_python_symlink_rto_node.dir/build.make:70: CMakeFiles/ament_cmake_python_symlink_rto_node] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:146: CMakeFiles/ament_cmake_python_symlink_rto_node.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

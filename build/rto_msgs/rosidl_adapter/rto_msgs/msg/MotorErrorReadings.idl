@@ -1,0 +1,39 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from rto_msgs/msg/MotorErrorReadings.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module rto_msgs {
+  module msg {
+    module MotorErrorReadings_Constants {
+      const uint8 NO_ERROR = 0;
+      const uint8 ENCODER_FAILURE = 1;
+      const uint8 DRIVE_FAILURE = 2;
+      const uint8 LOW_VOLTAGE = 3;
+      const uint8 UNKNOWN_ERROR = 255;
+    };
+    struct MotorErrorReadings {
+      @verbatim (language="comment", text=
+        "MotorError.msg")
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        "Arrays to represent each wheel's state" "\n"
+        "Wheel identifier")
+      sequence<string> name;
+
+      @verbatim (language="comment", text=
+        "True if the corresponding wheel has an error")
+      sequence<boolean> error_status;
+
+      @verbatim (language="comment", text=
+        "Error code for each wheel")
+      sequence<uint8> error_code;
+
+      @verbatim (language="comment", text=
+        "Error message for each wheel")
+      sequence<string> error_msg;
+    };
+  };
+};

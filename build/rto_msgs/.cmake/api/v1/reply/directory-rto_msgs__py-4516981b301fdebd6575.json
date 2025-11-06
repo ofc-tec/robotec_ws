@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "rto_msgs__py",
+		"source" : "/home/oscar/robotino_ros2_ws/build/rto_msgs/rto_msgs__py"
+	}
+}

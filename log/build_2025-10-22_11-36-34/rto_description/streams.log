@@ -1,0 +1,58 @@
+[0.025s] Invoking command in '/home/oscar/robotino_ros2_ws/build/rto_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_description -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/oscar/robotino_ros2_ws/install/rto_description
+[0.071s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.308s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.419s] -- Configuring done (0.4s)
+[0.426s] -- Generating done (0.0s)
+[0.428s] -- Build files have been written to: /home/oscar/robotino_ros2_ws/build/rto_description
+[0.432s] Invoked command in '/home/oscar/robotino_ros2_ws/build/rto_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_description -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/oscar/robotino_ros2_ws/install/rto_description
+[0.432s] Invoking command in '/home/oscar/robotino_ros2_ws/build/rto_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/oscar/robotino_ros2_ws/build/rto_description -- -j8 -l8
+[0.487s] Invoked command in '/home/oscar/robotino_ros2_ws/build/rto_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/oscar/robotino_ros2_ws/build/rto_description -- -j8 -l8
+[0.501s] Invoking command in '/home/oscar/robotino_ros2_ws/build/rto_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/oscar/robotino_ros2_ws/build/rto_description
+[0.512s] -- Install configuration: ""
+[0.512s] -- Execute custom install script
+[0.513s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/launch/robotino_description.launch.py
+[0.526s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/components/robotino_body.urdf.xacro
+[0.539s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/components/robotino_parts.urdf.xacro
+[0.551s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino.urdf
+[0.563s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino.urdf.xacro
+[0.576s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino_description.urdf
+[0.590s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino_description.urdf.xacro
+[0.602s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino_description_plugin.xacro
+[0.615s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/robots/robotino_ros2control.xacro
+[0.628s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/3dsensor_gazebo.urdf.xacro
+[0.640s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/Sharp_IR_Sensor.urdf.xacro
+[0.653s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/asus_xtion_pro.urdf.xacro
+[0.666s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/camera.urdf.xacro
+[0.678s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/hokuyo.urdf.xacro
+[0.691s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/urdf/sensors/kinect.urdf.xacro
+[0.704s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/parts/angle_bracket_usb_hub.dae
+[0.717s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/parts/front.png
+[0.730s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/parts/panel.png
+[0.742s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/parts/robotino_base.dae
+[0.754s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/parts/robotino_wheel.dae
+[0.767s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/Sharp_IR_Sensor_GP2Y0A41SK0F.dae
+[0.779s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/asus_xtion_pro_live.dae
+[0.792s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/asus_xtion_pro_live.png
+[0.805s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/camera.dae
+[0.817s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/hokuyo.dae
+[0.830s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/kinect.dae
+[0.842s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/kinect.jpg
+[0.854s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/kinect.tga
+[0.867s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/meshes/sensors/robotparts.png
+[0.880s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/rviz/robotino_description.rviz
+[0.893s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/ament_index/resource_index/package_run_dependencies/rto_description
+[0.906s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/ament_index/resource_index/parent_prefix_path/rto_description
+[0.918s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/environment/ament_prefix_path.sh
+[0.931s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/environment/ament_prefix_path.dsv
+[0.943s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/environment/path.sh
+[0.956s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/environment/path.dsv
+[0.968s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/local_setup.bash
+[0.981s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/local_setup.sh
+[0.994s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/local_setup.zsh
+[1.007s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/local_setup.dsv
+[1.020s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/package.dsv
+[1.033s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/ament_index/resource_index/packages/rto_description
+[1.046s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/cmake/rto_descriptionConfig.cmake
+[1.058s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/cmake/rto_descriptionConfig-version.cmake
+[1.071s] -- Symlinking: /home/oscar/robotino_ros2_ws/install/rto_description/share/rto_description/package.xml
+[1.086s] Invoked command in '/home/oscar/robotino_ros2_ws/build/rto_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/oscar/robotino_ros2_ws/build/rto_description

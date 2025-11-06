@@ -1,0 +1,4 @@
+source;share/rto_safety/local_setup.bash
+source;share/rto_safety/local_setup.dsv
+source;share/rto_safety/local_setup.sh
+source;share/rto_safety/local_setup.zsh

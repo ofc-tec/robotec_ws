@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from rto_msgs/srv/SetOmniDriveEnabled.srv
+// generated code does not contain a copyright notice
+
+
+module rto_msgs {
+  module srv {
+    struct SetOmniDriveEnabled_Request {
+      boolean enable;
+    };
+    struct SetOmniDriveEnabled_Response {
+      boolean success;
+    };
+  };
+};

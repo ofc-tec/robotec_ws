@@ -1,0 +1,618 @@
+[0.029s] Invoking command in '/home/oscar/robotino_ros2_ws/build/rto_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs -DCMAKE_INSTALL_PREFIX=/home/oscar/robotino_ros2_ws/install/rto_msgs
+[0.199s] -- The C compiler identification is GNU 13.3.0
+[0.365s] -- The CXX compiler identification is GNU 13.3.0
+[0.391s] -- Detecting C compiler ABI info
+[0.515s] -- Detecting C compiler ABI info - done
+[0.533s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.534s] -- Detecting C compile features
+[0.534s] -- Detecting C compile features - done
+[0.548s] -- Detecting CXX compiler ABI info
+[0.680s] -- Detecting CXX compiler ABI info - done
+[0.689s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.690s] -- Detecting CXX compile features
+[0.691s] -- Detecting CXX compile features - done
+[0.707s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.954s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.194s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[1.229s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.398s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.528s] -- Found rosidl_adapter: 4.6.5 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[1.540s] -- Found std_msgs: 5.3.5 (/opt/ros/jazzy/share/std_msgs/cmake)
+[2.380s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[2.929s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[3.619s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[3.630s] -- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+[3.779s] -- Found PythonExtra: /usr/bin/python3  
+[4.458s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed 
+[4.526s] -- Configuring done (4.5s)
+[4.591s] -- Generating done (0.1s)
+[4.606s] -- Build files have been written to: /home/oscar/robotino_ros2_ws/build/rto_msgs
+[4.616s] Invoked command in '/home/oscar/robotino_ros2_ws/build/rto_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_msgs -DCMAKE_INSTALL_PREFIX=/home/oscar/robotino_ros2_ws/install/rto_msgs
+[4.617s] Invoking command in '/home/oscar/robotino_ros2_ws/build/rto_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/oscar/robotino_ros2_ws/build/rto_msgs -- -j8 -l8
+[4.700s] [  1%] [34m[1mGenerating type hashes for ROS interfaces[0m
+[4.712s] [  1%] Built target ament_cmake_python_copy_rto_msgs
+[5.056s] running egg_info
+[5.057s] creating rto_msgs.egg-info
+[5.095s] writing rto_msgs.egg-info/PKG-INFO
+[5.095s] writing dependency_links to rto_msgs.egg-info/dependency_links.txt
+[5.095s] writing top-level names to rto_msgs.egg-info/top_level.txt
+[5.095s] writing manifest file 'rto_msgs.egg-info/SOURCES.txt'
+[5.221s] reading manifest file 'rto_msgs.egg-info/SOURCES.txt'
+[5.221s] writing manifest file 'rto_msgs.egg-info/SOURCES.txt'
+[5.247s] [  1%] Built target rto_msgs__rosidl_generator_type_description
+[5.264s] [  2%] [34m[1mGenerating C code for ROS interfaces[0m
+[5.268s] [  2%] Built target ament_cmake_python_build_rto_msgs_egg
+[5.281s] [  2%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[6.507s] [  2%] Built target rto_msgs__cpp
+[6.884s] [  3%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/digital_readings__functions.c.o[0m
+[6.885s] [  4%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/analog_readings__functions.c.o[0m
+[6.885s] [  4%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/digital_readings__description.c.o[0m
+[6.886s] [  4%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/encoder_readings__description.c.o[0m
+[6.886s] [  4%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/analog_readings__description.c.o[0m
+[6.886s] [  5%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/encoder_readings__functions.c.o[0m
+[6.887s] [  6%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/digital_readings__type_support.c.o[0m
+[6.887s] [  7%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/analog_readings__type_support.c.o[0m
+[7.021s] [  8%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/encoder_readings__type_support.c.o[0m
+[7.036s] [  9%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/gripper_state__description.c.o[0m
+[7.054s] [  9%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/gripper_state__functions.c.o[0m
+[7.058s] [ 10%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/motor_readings__description.c.o[0m
+[7.066s] [ 11%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/gripper_state__type_support.c.o[0m
+[7.085s] [ 11%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/motor_readings__functions.c.o[0m
+[7.091s] [ 12%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/motor_readings__type_support.c.o[0m
+[7.093s] [ 13%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/motor_error_readings__description.c.o[0m
+[7.134s] [ 13%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/motor_error_readings__functions.c.o[0m
+[7.169s] [ 14%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/motor_error_readings__type_support.c.o[0m
+[7.177s] [ 14%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/power_readings__functions.c.o[0m
+[7.181s] [ 15%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/power_readings__type_support.c.o[0m
+[7.184s] [ 16%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/msg/detail/power_readings__description.c.o[0m
+[7.194s] [ 17%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/reset_odometry__description.c.o[0m
+[7.215s] [ 18%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/reset_odometry__functions.c.o[0m
+[7.232s] [ 18%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/reset_odometry__type_support.c.o[0m
+[7.263s] [ 19%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_encoder_position__description.c.o[0m
+[7.263s] [ 20%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_encoder_position__functions.c.o[0m
+[7.275s] [ 20%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_encoder_position__type_support.c.o[0m
+[7.287s] [ 21%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_gripper_state__description.c.o[0m
+[7.312s] [ 22%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_gripper_state__functions.c.o[0m
+[7.333s] [ 22%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_gripper_state__type_support.c.o[0m
+[7.340s] [ 23%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_omni_drive_enabled__description.c.o[0m
+[7.369s] [ 24%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_omni_drive_enabled__functions.c.o[0m
+[7.378s] [ 25%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_omni_drive_enabled__type_support.c.o[0m
+[7.405s] [ 26%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_vel_limits__functions.c.o[0m
+[7.405s] [ 26%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_vel_limits__description.c.o[0m
+[7.428s] [ 27%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_c.dir/rosidl_generator_c/rto_msgs/srv/detail/set_vel_limits__type_support.c.o[0m
+[7.521s] [ 27%] [32m[1mLinking C shared library librto_msgs__rosidl_generator_c.so[0m
+[7.588s] [ 27%] Built target rto_msgs__rosidl_generator_c
+[7.609s] [ 28%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[7.609s] [ 28%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[7.611s] [ 29%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[7.614s] [ 31%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[7.614s] [ 31%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[7.615s] [ 31%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[8.944s] [ 32%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/msg/detail/analog_readings__type_support.cpp.o[0m
+[8.954s] [ 33%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/msg/detail/digital_readings__type_support.cpp.o[0m
+[8.965s] [ 33%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/msg/detail/encoder_readings__type_support.cpp.o[0m
+[9.010s] [ 34%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/msg/analog_readings__type_support.cpp.o[0m
+[9.292s] [ 34%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/msg/analog_readings__type_support.cpp.o[0m
+[9.398s] [ 35%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/msg/digital_readings__type_support.cpp.o[0m
+[9.501s] [ 36%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/msg/encoder_readings__type_support.cpp.o[0m
+[9.602s] [ 36%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/msg/gripper_state__type_support.cpp.o[0m
+[9.605s] [ 36%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/msg/detail/analog_readings__type_support.c.o[0m
+[9.709s] [ 37%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/msg/detail/digital_readings__type_support.c.o[0m
+[9.714s] [ 38%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/msg/motor_readings__type_support.cpp.o[0m
+[9.757s] [ 39%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/msg/detail/gripper_state__type_support.cpp.o[0m
+[9.782s] [ 40%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/msg/digital_readings__type_support.cpp.o[0m
+[9.783s] [ 41%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/msg/motor_error_readings__type_support.cpp.o[0m
+[9.825s] [ 42%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/msg/encoder_readings__type_support.cpp.o[0m
+[9.833s] [ 43%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/msg/detail/encoder_readings__type_support.c.o[0m
+[9.851s] [ 44%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/msg/power_readings__type_support.cpp.o[0m
+[9.897s] [ 44%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/msg/detail/gripper_state__type_support.c.o[0m
+[9.927s] [ 45%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/msg/detail/motor_readings__type_support.cpp.o[0m
+[9.947s] [ 45%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/srv/reset_odometry__type_support.cpp.o[0m
+[9.996s] [ 46%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/msg/detail/motor_readings__type_support.c.o[0m
+[10.068s] [ 47%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/srv/set_encoder_position__type_support.cpp.o[0m
+[10.115s] [ 48%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/msg/detail/motor_error_readings__type_support.c.o[0m
+[10.177s] [ 49%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/srv/set_gripper_state__type_support.cpp.o[0m
+[10.244s] [ 49%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/msg/detail/power_readings__type_support.c.o[0m
+[10.297s] [ 49%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/srv/set_omni_drive_enabled__type_support.cpp.o[0m
+[10.360s] [ 50%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/srv/detail/reset_odometry__type_support.c.o[0m
+[10.428s] [ 51%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rto_msgs/srv/set_vel_limits__type_support.cpp.o[0m
+[10.480s] [ 52%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/srv/detail/set_encoder_position__type_support.c.o[0m
+[10.482s] [ 52%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/msg/gripper_state__type_support.cpp.o[0m
+[10.532s] [ 52%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/msg/detail/motor_error_readings__type_support.cpp.o[0m
+[10.538s] [ 54%] [32m[1mLinking CXX shared library librto_msgs__rosidl_typesupport_c.so[0m
+[10.539s] [ 54%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/msg/detail/power_readings__type_support.cpp.o[0m
+[10.602s] [ 55%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/srv/detail/set_gripper_state__type_support.c.o[0m
+[10.664s] [ 55%] Built target rto_msgs__rosidl_typesupport_c
+[10.696s] [ 56%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/srv/detail/reset_odometry__type_support.cpp.o[0m
+[10.720s] [ 56%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/srv/detail/set_omni_drive_enabled__type_support.c.o[0m
+[10.746s] [ 57%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/msg/detail/dds_fastrtps/analog_readings__type_support.cpp.o[0m
+[10.770s] [ 58%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/msg/motor_readings__type_support.cpp.o[0m
+[10.831s] [ 59%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rto_msgs/srv/detail/set_vel_limits__type_support.c.o[0m
+[10.942s] [ 60%] [32m[1mLinking C shared library librto_msgs__rosidl_typesupport_introspection_c.so[0m
+[11.042s] [ 60%] Built target rto_msgs__rosidl_typesupport_introspection_c
+[11.072s] [ 61%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/msg/motor_error_readings__type_support.cpp.o[0m
+[11.093s] [ 62%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/msg/detail/analog_readings__type_support_c.cpp.o[0m
+[11.177s] [ 62%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/msg/detail/dds_fastrtps/digital_readings__type_support.cpp.o[0m
+[11.254s] [ 63%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/msg/detail/dds_fastrtps/encoder_readings__type_support.cpp.o[0m
+[11.474s] [ 63%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/msg/power_readings__type_support.cpp.o[0m
+[11.533s] [ 64%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/srv/reset_odometry__type_support.cpp.o[0m
+[11.634s] [ 65%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/srv/detail/set_encoder_position__type_support.cpp.o[0m
+[11.769s] [ 65%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/srv/detail/set_gripper_state__type_support.cpp.o[0m
+[12.005s] [ 66%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/msg/detail/digital_readings__type_support_c.cpp.o[0m
+[12.222s] [ 67%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/srv/set_encoder_position__type_support.cpp.o[0m
+[12.226s] [ 67%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/msg/detail/encoder_readings__type_support_c.cpp.o[0m
+[12.259s] [ 68%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/srv/detail/set_omni_drive_enabled__type_support.cpp.o[0m
+[12.293s] [ 69%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/msg/detail/dds_fastrtps/gripper_state__type_support.cpp.o[0m
+[12.360s] [ 70%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rto_msgs/srv/detail/set_vel_limits__type_support.cpp.o[0m
+[12.599s] [ 70%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/msg/detail/dds_fastrtps/motor_readings__type_support.cpp.o[0m
+[12.705s] [ 70%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/srv/set_gripper_state__type_support.cpp.o[0m
+[13.075s] [ 71%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/srv/set_omni_drive_enabled__type_support.cpp.o[0m
+[13.142s] [ 72%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rto_msgs/srv/set_vel_limits__type_support.cpp.o[0m
+[13.152s] [ 73%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/msg/detail/dds_fastrtps/motor_error_readings__type_support.cpp.o[0m
+[13.284s] [ 73%] [32m[1mLinking CXX shared library librto_msgs__rosidl_typesupport_introspection_cpp.so[0m
+[13.330s] [ 74%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/msg/detail/gripper_state__type_support_c.cpp.o[0m
+[13.474s] [ 75%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/msg/detail/motor_readings__type_support_c.cpp.o[0m
+[13.518s] [ 75%] Built target rto_msgs__rosidl_typesupport_introspection_cpp
+[13.544s] [ 76%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/msg/detail/dds_fastrtps/power_readings__type_support.cpp.o[0m
+[13.567s] [ 76%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/srv/detail/dds_fastrtps/reset_odometry__type_support.cpp.o[0m
+[13.839s] [ 76%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/msg/detail/motor_error_readings__type_support_c.cpp.o[0m
+[13.960s] [ 77%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/msg/detail/power_readings__type_support_c.cpp.o[0m
+[13.993s] [ 77%] [32m[1mLinking CXX shared library librto_msgs__rosidl_typesupport_cpp.so[0m
+[14.272s] [ 77%] Built target rto_msgs__rosidl_typesupport_cpp
+[14.315s] [ 78%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/srv/detail/reset_odometry__type_support_c.cpp.o[0m
+[14.491s] [ 78%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/srv/detail/set_encoder_position__type_support_c.cpp.o[0m
+[14.511s] [ 79%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/srv/detail/dds_fastrtps/set_encoder_position__type_support.cpp.o[0m
+[14.548s] [ 80%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/srv/detail/dds_fastrtps/set_gripper_state__type_support.cpp.o[0m
+[14.599s] [ 81%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/srv/detail/dds_fastrtps/set_omni_drive_enabled__type_support.cpp.o[0m
+[14.933s] [ 82%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/srv/detail/set_gripper_state__type_support_c.cpp.o[0m
+[14.967s] [ 83%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/srv/detail/set_omni_drive_enabled__type_support_c.cpp.o[0m
+[15.044s] [ 83%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rto_msgs/srv/detail/dds_fastrtps/set_vel_limits__type_support.cpp.o[0m
+[15.447s] [ 83%] [32mBuilding CXX object CMakeFiles/rto_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rto_msgs/srv/detail/set_vel_limits__type_support_c.cpp.o[0m
+[16.174s] [ 84%] [32m[1mLinking CXX shared library librto_msgs__rosidl_typesupport_fastrtps_cpp.so[0m
+[16.248s] [ 85%] [32m[1mLinking CXX shared library librto_msgs__rosidl_typesupport_fastrtps_c.so[0m
+[16.298s] [ 85%] Built target rto_msgs__rosidl_typesupport_fastrtps_cpp
+[16.354s] [ 85%] Built target rto_msgs__rosidl_typesupport_fastrtps_c
+[16.384s] [ 85%] Built target rto_msgs
+[16.416s] [ 86%] [34m[1mGenerating Python code for ROS interfaces[0m
+[18.346s] [ 86%] Built target rto_msgs__py
+[18.385s] [ 89%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/msg/_motor_readings_s.c.o[0m
+[18.385s] [ 89%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/msg/_gripper_state_s.c.o[0m
+[18.385s] [ 89%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/msg/_digital_readings_s.c.o[0m
+[18.385s] [ 89%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/msg/_motor_error_readings_s.c.o[0m
+[18.386s] [ 89%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/msg/_encoder_readings_s.c.o[0m
+[18.386s] [ 90%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/msg/_analog_readings_s.c.o[0m
+[18.387s] [ 91%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/msg/_power_readings_s.c.o[0m
+[18.389s] [ 92%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/srv/_reset_odometry_s.c.o[0m
+[18.676s] [ 93%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/srv/_set_gripper_state_s.c.o[0m
+[18.676s] [ 93%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/srv/_set_encoder_position_s.c.o[0m
+[18.681s] [ 94%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/srv/_set_omni_drive_enabled_s.c.o[0m
+[18.707s] [ 95%] [32mBuilding C object CMakeFiles/rto_msgs__rosidl_generator_py.dir/rosidl_generator_py/rto_msgs/srv/_set_vel_limits_s.c.o[0m
+[18.900s] [ 95%] [32m[1mLinking C shared library librto_msgs__rosidl_generator_py.so[0m
+[18.963s] [ 95%] Built target rto_msgs__rosidl_generator_py
+[18.994s] [ 97%] [32mBuilding C object CMakeFiles/rto_msgs_s__rosidl_typesupport_introspection_c.dir/rosidl_generator_py/rto_msgs/_rto_msgs_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[18.994s] [ 97%] [32mBuilding C object CMakeFiles/rto_msgs_s__rosidl_typesupport_c.dir/rosidl_generator_py/rto_msgs/_rto_msgs_s.ep.rosidl_typesupport_c.c.o[0m
+[18.994s] [ 97%] [32mBuilding C object CMakeFiles/rto_msgs_s__rosidl_typesupport_fastrtps_c.dir/rosidl_generator_py/rto_msgs/_rto_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[19.190s] [ 98%] [32m[1mLinking C shared module rosidl_generator_py/rto_msgs/rto_msgs_s__rosidl_typesupport_c.so[0m
+[19.192s] [ 99%] [32m[1mLinking C shared module rosidl_generator_py/rto_msgs/rto_msgs_s__rosidl_typesupport_introspection_c.so[0m
+[19.193s] [100%] [32m[1mLinking C shared module rosidl_generator_py/rto_msgs/rto_msgs_s__rosidl_typesupport_fastrtps_c.so[0m
+[19.240s] [100%] Built target rto_msgs_s__rosidl_typesupport_fastrtps_c
+[19.241s] [100%] Built target rto_msgs_s__rosidl_typesupport_c
+[19.241s] [100%] Built target rto_msgs_s__rosidl_typesupport_introspection_c
+[19.258s] Invoked command in '/home/oscar/robotino_ros2_ws/build/rto_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/oscar/robotino_ros2_ws/build/rto_msgs -- -j8 -l8
+[19.259s] Invoking command in '/home/oscar/robotino_ros2_ws/build/rto_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/oscar/robotino_ros2_ws/build/rto_msgs
+[19.272s] -- Install configuration: ""
+[19.272s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/ament_index/resource_index/rosidl_interfaces/rto_msgs
+[19.272s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/AnalogReadings.json
+[19.273s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/DigitalReadings.json
+[19.273s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/EncoderReadings.json
+[19.273s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/GripperState.json
+[19.273s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/MotorReadings.json
+[19.273s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/MotorErrorReadings.json
+[19.273s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/PowerReadings.json
+[19.273s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/ResetOdometry.json
+[19.274s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetEncoderPosition.json
+[19.274s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetGripperState.json
+[19.274s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetOmniDriveEnabled.json
+[19.274s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetVelLimits.json
+[19.274s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs
+[19.274s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv
+[19.275s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail
+[19.275s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__type_support.c
+[19.275s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__type_support.c
+[19.275s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__struct.h
+[19.275s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__struct.h
+[19.275s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__type_support.h
+[19.275s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__functions.c
+[19.276s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__description.c
+[19.276s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__type_support.c
+[19.276s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__type_support.c
+[19.276s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__description.c
+[19.276s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__struct.h
+[19.276s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__struct.h
+[19.276s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__type_support.h
+[19.276s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__functions.h
+[19.277s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__type_support.h
+[19.277s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__description.c
+[19.277s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__struct.h
+[19.277s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__functions.c
+[19.277s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__description.c
+[19.277s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__type_support.h
+[19.277s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__functions.c
+[19.277s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__functions.h
+[19.278s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__description.c
+[19.278s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__functions.h
+[19.278s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__functions.c
+[19.278s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__type_support.c
+[19.278s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__type_support.h
+[19.278s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__functions.c
+[19.279s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__functions.h
+[19.279s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__functions.h
+[19.279s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/set_gripper_state.h
+[19.279s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/reset_odometry.h
+[19.279s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/set_vel_limits.h
+[19.279s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/set_encoder_position.h
+[19.279s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/set_omni_drive_enabled.h
+[19.280s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg
+[19.280s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/digital_readings.h
+[19.280s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/analog_readings.h
+[19.280s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail
+[19.280s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__description.c
+[19.280s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__description.c
+[19.280s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__type_support.h
+[19.281s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__type_support.c
+[19.281s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__type_support.h
+[19.281s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__description.c
+[19.281s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__functions.h
+[19.281s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__struct.h
+[19.281s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__type_support.h
+[19.281s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__struct.h
+[19.282s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__struct.h
+[19.282s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__type_support.h
+[19.282s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__type_support.c
+[19.282s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__struct.h
+[19.282s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__functions.h
+[19.282s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__type_support.c
+[19.282s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__struct.h
+[19.282s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__type_support.h
+[19.283s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__functions.c
+[19.283s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__type_support.c
+[19.283s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__functions.c
+[19.283s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__functions.h
+[19.283s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__description.c
+[19.283s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__description.c
+[19.283s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__type_support.c
+[19.284s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__functions.c
+[19.284s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__type_support.h
+[19.284s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__type_support.c
+[19.284s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__struct.h
+[19.284s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__functions.h
+[19.284s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__functions.h
+[19.284s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__functions.c
+[19.284s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__functions.h
+[19.284s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__description.c
+[19.285s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__functions.c
+[19.285s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__struct.h
+[19.285s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__description.c
+[19.285s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__type_support.c
+[19.285s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__functions.c
+[19.285s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__type_support.h
+[19.285s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__functions.h
+[19.285s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__functions.c
+[19.286s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/gripper_state.h
+[19.286s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/encoder_readings.h
+[19.286s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/rosidl_generator_c__visibility_control.h
+[19.286s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/motor_error_readings.h
+[19.286s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/power_readings.h
+[19.286s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/motor_readings.h
+[19.286s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/environment/library_path.sh
+[19.286s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/environment/library_path.dsv
+[19.286s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_generator_c.so
+[19.287s] -- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_generator_c.so" to ""
+[19.287s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs
+[19.287s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv
+[19.287s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail
+[19.287s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__rosidl_typesupport_fastrtps_c.h
+[19.287s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__rosidl_typesupport_fastrtps_c.h
+[19.287s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__rosidl_typesupport_fastrtps_c.h
+[19.287s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__rosidl_typesupport_fastrtps_c.h
+[19.287s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__rosidl_typesupport_fastrtps_c.h
+[19.288s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg
+[19.288s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail
+[19.288s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__rosidl_typesupport_fastrtps_c.h
+[19.288s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__rosidl_typesupport_fastrtps_c.h
+[19.288s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__rosidl_typesupport_fastrtps_c.h
+[19.288s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__rosidl_typesupport_fastrtps_c.h
+[19.288s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__rosidl_typesupport_fastrtps_c.h
+[19.289s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__rosidl_typesupport_fastrtps_c.h
+[19.289s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__rosidl_typesupport_fastrtps_c.h
+[19.289s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[19.289s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_fastrtps_c.so
+[19.289s] -- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_fastrtps_c.so" to ""
+[19.289s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs
+[19.289s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv
+[19.290s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail
+[19.290s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__rosidl_typesupport_introspection_c.h
+[19.290s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__type_support.c
+[19.290s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__type_support.c
+[19.290s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__rosidl_typesupport_introspection_c.h
+[19.290s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__type_support.c
+[19.290s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__type_support.c
+[19.290s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__rosidl_typesupport_introspection_c.h
+[19.291s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__rosidl_typesupport_introspection_c.h
+[19.291s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__type_support.c
+[19.291s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__rosidl_typesupport_introspection_c.h
+[19.291s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg
+[19.291s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[19.291s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail
+[19.291s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__type_support.c
+[19.291s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__rosidl_typesupport_introspection_c.h
+[19.292s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__rosidl_typesupport_introspection_c.h
+[19.292s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__type_support.c
+[19.292s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__rosidl_typesupport_introspection_c.h
+[19.292s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__type_support.c
+[19.292s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__type_support.c
+[19.292s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__rosidl_typesupport_introspection_c.h
+[19.292s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__rosidl_typesupport_introspection_c.h
+[19.293s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__type_support.c
+[19.293s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__type_support.c
+[19.293s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__rosidl_typesupport_introspection_c.h
+[19.293s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__type_support.c
+[19.293s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__rosidl_typesupport_introspection_c.h
+[19.293s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_introspection_c.so
+[19.293s] -- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_introspection_c.so" to ""
+[19.294s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_c.so
+[19.294s] -- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_c.so" to ""
+[19.294s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs
+[19.294s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv
+[19.294s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail
+[19.294s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__type_support.hpp
+[19.294s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__builder.hpp
+[19.294s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__builder.hpp
+[19.295s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__traits.hpp
+[19.295s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__struct.hpp
+[19.295s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__traits.hpp
+[19.295s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__struct.hpp
+[19.295s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__struct.hpp
+[19.295s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__builder.hpp
+[19.295s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__builder.hpp
+[19.295s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__traits.hpp
+[19.296s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__traits.hpp
+[19.296s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__type_support.hpp
+[19.296s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__struct.hpp
+[19.296s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__builder.hpp
+[19.296s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__type_support.hpp
+[19.296s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__type_support.hpp
+[19.297s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__struct.hpp
+[19.297s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__traits.hpp
+[19.297s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__type_support.hpp
+[19.297s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/set_omni_drive_enabled.hpp
+[19.297s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/reset_odometry.hpp
+[19.297s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/set_gripper_state.hpp
+[19.297s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/set_encoder_position.hpp
+[19.298s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/set_vel_limits.hpp
+[19.298s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg
+[19.298s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/motor_error_readings.hpp
+[19.298s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/digital_readings.hpp
+[19.298s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/power_readings.hpp
+[19.298s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/gripper_state.hpp
+[19.298s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail
+[19.299s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__type_support.hpp
+[19.299s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__builder.hpp
+[19.299s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__struct.hpp
+[19.300s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__builder.hpp
+[19.300s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__builder.hpp
+[19.300s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__traits.hpp
+[19.300s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__struct.hpp
+[19.300s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__type_support.hpp
+[19.300s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__struct.hpp
+[19.300s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__struct.hpp
+[19.300s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__traits.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__struct.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__struct.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__struct.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__type_support.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__builder.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__traits.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__traits.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__builder.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__builder.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__type_support.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__type_support.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__type_support.hpp
+[19.301s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__builder.hpp
+[19.302s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__traits.hpp
+[19.302s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__type_support.hpp
+[19.302s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__traits.hpp
+[19.302s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__traits.hpp
+[19.302s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/analog_readings.hpp
+[19.302s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+[19.302s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/motor_readings.hpp
+[19.302s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/encoder_readings.hpp
+[19.302s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs
+[19.302s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv
+[19.302s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail
+[19.302s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__rosidl_typesupport_fastrtps_cpp.hpp
+[19.302s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__rosidl_typesupport_fastrtps_cpp.hpp
+[19.302s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/dds_fastrtps
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__rosidl_typesupport_fastrtps_cpp.hpp
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__rosidl_typesupport_fastrtps_cpp.hpp
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__rosidl_typesupport_fastrtps_cpp.hpp
+[19.303s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg
+[19.303s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__rosidl_typesupport_fastrtps_cpp.hpp
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__rosidl_typesupport_fastrtps_cpp.hpp
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__rosidl_typesupport_fastrtps_cpp.hpp
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__rosidl_typesupport_fastrtps_cpp.hpp
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/dds_fastrtps
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__rosidl_typesupport_fastrtps_cpp.hpp
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__rosidl_typesupport_fastrtps_cpp.hpp
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__rosidl_typesupport_fastrtps_cpp.hpp
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[19.303s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_fastrtps_cpp.so
+[19.304s] -- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""
+[19.304s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs
+[19.304s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv
+[19.304s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail
+[19.304s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__type_support.cpp
+[19.304s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__rosidl_typesupport_introspection_cpp.hpp
+[19.304s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__type_support.cpp
+[19.304s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__type_support.cpp
+[19.305s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__type_support.cpp
+[19.305s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_vel_limits__rosidl_typesupport_introspection_cpp.hpp
+[19.305s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_encoder_position__rosidl_typesupport_introspection_cpp.hpp
+[19.305s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_omni_drive_enabled__rosidl_typesupport_introspection_cpp.hpp
+[19.305s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/set_gripper_state__type_support.cpp
+[19.305s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/srv/detail/reset_odometry__rosidl_typesupport_introspection_cpp.hpp
+[19.305s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg
+[19.305s] -- Up-to-date: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail
+[19.306s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__type_support.cpp
+[19.306s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__type_support.cpp
+[19.306s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__rosidl_typesupport_introspection_cpp.hpp
+[19.306s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__type_support.cpp
+[19.306s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/digital_readings__type_support.cpp
+[19.306s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_readings__rosidl_typesupport_introspection_cpp.hpp
+[19.306s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__type_support.cpp
+[19.306s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/motor_error_readings__rosidl_typesupport_introspection_cpp.hpp
+[19.307s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/gripper_state__rosidl_typesupport_introspection_cpp.hpp
+[19.307s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__rosidl_typesupport_introspection_cpp.hpp
+[19.307s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/analog_readings__rosidl_typesupport_introspection_cpp.hpp
+[19.307s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__rosidl_typesupport_introspection_cpp.hpp
+[19.307s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/encoder_readings__type_support.cpp
+[19.307s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/include/rto_msgs/rto_msgs/msg/detail/power_readings__type_support.cpp
+[19.307s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_introspection_cpp.so
+[19.308s] -- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_introspection_cpp.so" to ""
+[19.308s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_cpp.so
+[19.308s] -- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_typesupport_cpp.so" to ""
+[19.308s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/environment/pythonpath.sh
+[19.308s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/environment/pythonpath.dsv
+[19.308s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs-0.0.0-py3.12.egg-info
+[19.308s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs-0.0.0-py3.12.egg-info/SOURCES.txt
+[19.309s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs-0.0.0-py3.12.egg-info/dependency_links.txt
+[19.309s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs-0.0.0-py3.12.egg-info/top_level.txt
+[19.309s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs-0.0.0-py3.12.egg-info/PKG-INFO
+[19.309s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs
+[19.309s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/_rto_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+[19.309s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv
+[19.309s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_gripper_state_s.c
+[19.309s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_reset_odometry.py
+[19.310s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_omni_drive_enabled_s.c
+[19.310s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_omni_drive_enabled.py
+[19.310s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_gripper_state.py
+[19.310s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/__init__.py
+[19.310s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_vel_limits.py
+[19.310s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_encoder_position_s.c
+[19.310s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_vel_limits_s.c
+[19.311s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_reset_odometry_s.c
+[19.311s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_encoder_position.py
+[19.311s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/rto_msgs_s__rosidl_typesupport_introspection_c.so
+[19.311s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/rto_msgs_s__rosidl_typesupport_fastrtps_c.so
+[19.311s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/rto_msgs_s__rosidl_typesupport_c.so
+[19.311s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/__init__.py
+[19.311s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/_rto_msgs_s.ep.rosidl_typesupport_c.c
+[19.311s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/_rto_msgs_s.ep.rosidl_typesupport_introspection_c.c
+[19.311s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg
+[19.312s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_analog_readings_s.c
+[19.312s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_encoder_readings_s.c
+[19.312s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_gripper_state_s.c
+[19.312s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_motor_readings_s.c
+[19.312s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_analog_readings.py
+[19.312s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/__init__.py
+[19.312s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_motor_error_readings_s.c
+[19.312s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_motor_readings.py
+[19.313s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_gripper_state.py
+[19.313s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_power_readings_s.c
+[19.313s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_digital_readings.py
+[19.313s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_encoder_readings.py
+[19.313s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_digital_readings_s.c
+[19.313s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_motor_error_readings.py
+[19.313s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_power_readings.py
+[19.378s] Listing '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs'...
+[19.378s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/__init__.py'...
+[19.378s] Listing '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg'...
+[19.378s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/__init__.py'...
+[19.378s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_analog_readings.py'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_digital_readings.py'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_encoder_readings.py'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_gripper_state.py'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_motor_error_readings.py'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_motor_readings.py'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/msg/_power_readings.py'...
+[19.379s] Listing '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/__init__.py'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_reset_odometry.py'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_encoder_position.py'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_gripper_state.py'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_omni_drive_enabled.py'...
+[19.379s] Compiling '/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/srv/_set_vel_limits.py'...
+[19.384s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/rto_msgs_s__rosidl_typesupport_fastrtps_c.so
+[19.385s] -- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/rto_msgs_s__rosidl_typesupport_fastrtps_c.so" to ""
+[19.385s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/rto_msgs_s__rosidl_typesupport_introspection_c.so
+[19.386s] -- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/rto_msgs_s__rosidl_typesupport_introspection_c.so" to ""
+[19.386s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/rto_msgs_s__rosidl_typesupport_c.so
+[19.386s] -- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/python3.12/site-packages/rto_msgs/rto_msgs_s__rosidl_typesupport_c.so" to ""
+[19.387s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_generator_py.so
+[19.387s] -- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_msgs/lib/librto_msgs__rosidl_generator_py.so" to ""
+[19.387s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/AnalogReadings.idl
+[19.388s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/DigitalReadings.idl
+[19.388s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/EncoderReadings.idl
+[19.388s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/GripperState.idl
+[19.388s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/MotorReadings.idl
+[19.388s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/MotorErrorReadings.idl
+[19.388s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/PowerReadings.idl
+[19.388s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/ResetOdometry.idl
+[19.388s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetEncoderPosition.idl
+[19.389s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetGripperState.idl
+[19.389s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetOmniDriveEnabled.idl
+[19.389s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetVelLimits.idl
+[19.389s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/AnalogReadings.msg
+[19.389s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/DigitalReadings.msg
+[19.389s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/EncoderReadings.msg
+[19.390s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/GripperState.msg
+[19.390s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/MotorReadings.msg
+[19.390s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/MotorErrorReadings.msg
+[19.390s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/msg/PowerReadings.msg
+[19.390s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/ResetOdometry.srv
+[19.390s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetEncoderPosition.srv
+[19.391s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetGripperState.srv
+[19.391s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetOmniDriveEnabled.srv
+[19.391s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/srv/SetVelLimits.srv
+[19.391s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/ament_index/resource_index/package_run_dependencies/rto_msgs
+[19.391s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/ament_index/resource_index/parent_prefix_path/rto_msgs
+[19.392s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/environment/ament_prefix_path.sh
+[19.392s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/environment/ament_prefix_path.dsv
+[19.392s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/environment/path.sh
+[19.392s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/environment/path.dsv
+[19.392s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/local_setup.bash
+[19.392s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/local_setup.sh
+[19.392s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/local_setup.zsh
+[19.393s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/local_setup.dsv
+[19.393s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/package.dsv
+[19.393s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/ament_index/resource_index/packages/rto_msgs
+[19.393s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/export_rto_msgs__rosidl_generator_cExport.cmake
+[19.393s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/export_rto_msgs__rosidl_generator_cExport-noconfig.cmake
+[19.394s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/export_rto_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+[19.394s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/export_rto_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[19.394s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rto_msgs__rosidl_typesupport_introspection_cExport.cmake
+[19.394s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rto_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[19.394s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rto_msgs__rosidl_typesupport_cExport.cmake
+[19.394s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rto_msgs__rosidl_typesupport_cExport-noconfig.cmake
+[19.395s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/export_rto_msgs__rosidl_generator_cppExport.cmake
+[19.395s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/export_rto_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+[19.395s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/export_rto_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[19.395s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rto_msgs__rosidl_typesupport_introspection_cppExport.cmake
+[19.395s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rto_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[19.396s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rto_msgs__rosidl_typesupport_cppExport.cmake
+[19.396s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rto_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+[19.396s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/export_rto_msgs__rosidl_generator_pyExport.cmake
+[19.396s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/export_rto_msgs__rosidl_generator_pyExport-noconfig.cmake
+[19.396s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rosidl_cmake-extras.cmake
+[19.396s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+[19.397s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+[19.397s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+[19.397s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/ament_cmake_export_targets-extras.cmake
+[19.397s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[19.397s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[19.398s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rto_msgsConfig.cmake
+[19.398s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake/rto_msgsConfig-version.cmake
+[19.398s] -- Installing: /home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/package.xml
+[19.403s] Invoked command in '/home/oscar/robotino_ros2_ws/build/rto_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/oscar/control_ws/install/pose_controller:/home/oscar/ws_moveit2/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/oscar/robotino_ros2_ws/build/rto_msgs

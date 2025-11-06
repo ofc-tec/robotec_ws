@@ -1,0 +1,1 @@
+/home/oscar/robotino_ros2_ws/build/rto_msgs/rosidl_cmake/rosidl_cmake-extras.cmake

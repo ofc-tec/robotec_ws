@@ -1,0 +1,156 @@
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Found rclpy: 7.1.3 (/opt/ros/jazzy/share/rclpy/cmake)
+-- Found rclcpp: 28.1.6 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_cyclonedds_cpp: 2.2.2 (/opt/ros/jazzy/share/rmw_cyclonedds_cpp/cmake)
+-- Using RMW implementation 'rmw_cyclonedds_cpp' as default
+-- Found tf2: 0.36.8 (/opt/ros/jazzy/share/tf2/cmake)
+-- Found tf2_ros: 0.36.8 (/opt/ros/jazzy/share/tf2_ros/cmake)
+-- Found sensor_msgs: 5.3.5 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+-- Found nav_msgs: 5.3.5 (/opt/ros/jazzy/share/nav_msgs/cmake)
+-- Found rto_msgs: 0.0.0 (/home/oscar/robotino_ros2_ws/install/rto_msgs/share/rto_msgs/cmake)
+-- Found ament_lint_auto: 0.17.1 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+-- Added test 'cppcheck' to perform static code analysis on C / C++ code
+-- Configured cppcheck include dirs: /home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/include
+-- Configured cppcheck exclude dirs and/or files: 
+-- Added test 'flake8' to check Python code syntax and style conventions
+-- Configured 'flake8' exclude dirs and/or files: 
+-- Added test 'lint_cmake' to check CMake code style
+-- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+-- Added test 'uncrustify' to check C / C++ code style
+-- Configured uncrustify additional arguments: 
+-- Added test 'xmllint' to check XML markup files
+-- Configuring done (2.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/oscar/robotino_ros2_ws/build/rto_node
+[ 10%] [32mBuilding CXX object CMakeFiles/rto_laserrangefinder_node.dir/src/rto_laserrangefinder_node.cpp.o[0m
+[ 10%] [32mBuilding CXX object CMakeFiles/rto_camera_node.dir/src/RTOCameraNode.cpp.o[0m
+[ 10%] [32mBuilding CXX object CMakeFiles/rto_odometry_node.dir/src/RTOOdometryNode.cpp.o[0m
+[ 13%] [32mBuilding CXX object CMakeFiles/rto_odometry_node.dir/src/rto_odometry_node.cpp.o[0m
+[ 16%] [32mBuilding CXX object CMakeFiles/rto_laserrangefinder_node.dir/src/ComROS.cpp.o[0m
+[ 20%] [32mBuilding CXX object CMakeFiles/rto_camera_node.dir/src/rto_camera_node.cpp.o[0m
+[ 23%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/rto_node.cpp.o[0m
+[ 23%] Built target ament_cmake_python_copy_rto_node
+[ 26%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/RTONode.cpp.o[0m
+[ 30%] [32mBuilding CXX object CMakeFiles/rto_odometry_node.dir/src/ComROS.cpp.o[0m
+In file included from [01m[K/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/include/rto_node/PowerManagementROS.hpp:4[m[K,
+                 from [01m[K/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/include/rto_node/RTONode.hpp:8[m[K,
+                 from [01m[K/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/src/RTONode.cpp:1[m[K:
+[01m[K/opt/robotino/include/rec/robotino/api2/PowerManagement.h:110:46:[m[K [01;35m[Kwarning: [m[K‘[01m[Kvirtual void rec::robotino::api2::PowerManagement::[01;32m[KreadingsEvent[m[K(float, float, bool, int, const char*, bool, int)[m[K’ was hidden [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Woverloaded-virtual=-Woverloaded-virtual=]8;;[m[K]
+  110 |                                 virtual void [01;35m[KreadingsEvent[m[K( float battery_voltage, float system_current, bool ext_power, int num_chargers, const char* batteryType, bool batteryLow, int batteryLowShutdownCounter );
+      |                                              [01;35m[K^~~~~~~~~~~~~[m[K
+[01m[K/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/include/rto_node/PowerManagementROS.hpp:20:14:[m[K [01;36m[Knote: [m[K  by ‘[01m[Kvoid PowerManagementROS::[01;32m[KreadingsEvent[m[K(float, float)[m[K’
+   20 |         void [01;36m[KreadingsEvent[m[K(float current, float voltage);
+      |              [01;36m[K^~~~~~~~~~~~~[m[K
+In file included from [01m[K/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/include/rto_node/PowerManagementROS.hpp:4[m[K,
+                 from [01m[K/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/include/rto_node/RTONode.hpp:8[m[K,
+                 from [01m[K/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/src/rto_node.cpp:3[m[K:
+[01m[K/opt/robotino/include/rec/robotino/api2/PowerManagement.h:110:46:[m[K [01;35m[Kwarning: [m[K‘[01m[Kvirtual void rec::robotino::api2::PowerManagement::[01;32m[KreadingsEvent[m[K(float, float, bool, int, const char*, bool, int)[m[K’ was hidden [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Woverloaded-virtual=-Woverloaded-virtual=]8;;[m[K]
+  110 |                                 virtual void [01;35m[KreadingsEvent[m[K( float battery_voltage, float system_current, bool ext_power, int num_chargers, const char* batteryType, bool batteryLow, int batteryLowShutdownCounter );
+      |                                              [01;35m[K^~~~~~~~~~~~~[m[K
+[01m[K/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/include/rto_node/PowerManagementROS.hpp:20:14:[m[K [01;36m[Knote: [m[K  by ‘[01m[Kvoid PowerManagementROS::[01;32m[KreadingsEvent[m[K(float, float)[m[K’
+   20 |         void [01;36m[KreadingsEvent[m[K(float current, float voltage);
+      |              [01;36m[K^~~~~~~~~~~~~[m[K
+[ 33%] [32mBuilding CXX object CMakeFiles/rto_camera_node.dir/src/ComROS.cpp.o[0m
+[ 36%] [32mBuilding CXX object CMakeFiles/rto_laserrangefinder_node.dir/src/LaserRangeFinderROS.cpp.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/ComROS.cpp.o[0m
+[ 43%] [32mBuilding CXX object CMakeFiles/rto_laserrangefinder_node.dir/src/RTOLaserRangeFinderNode.cpp.o[0m
+running egg_info
+creating rto_node.egg-info
+writing rto_node.egg-info/PKG-INFO
+writing dependency_links to rto_node.egg-info/dependency_links.txt
+writing top-level names to rto_node.egg-info/top_level.txt
+writing manifest file 'rto_node.egg-info/SOURCES.txt'
+reading manifest file 'rto_node.egg-info/SOURCES.txt'
+writing manifest file 'rto_node.egg-info/SOURCES.txt'
+[ 43%] Built target ament_cmake_python_build_rto_node_egg
+[ 46%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/PowerManagementROS.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/OmniDriveROS.cpp.o[0m
+[ 53%] [32mBuilding CXX object CMakeFiles/rto_odometry_node.dir/src/OdometryROS.cpp.o[0m
+[ 56%] [32mBuilding CXX object CMakeFiles/rto_camera_node.dir/src/CameraROS.cpp.o[0m
+[ 60%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/GyroscopeROS.cpp.o[0m
+[ 63%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/MotorArrayROS.cpp.o[0m
+In file included from [01m[K/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/include/rto_node/PowerManagementROS.hpp:4[m[K,
+                 from [01m[K/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/src/PowerManagementROS.cpp:1[m[K:
+[01m[K/opt/robotino/include/rec/robotino/api2/PowerManagement.h:110:46:[m[K [01;35m[Kwarning: [m[K‘[01m[Kvirtual void rec::robotino::api2::PowerManagement::[01;32m[KreadingsEvent[m[K(float, float, bool, int, const char*, bool, int)[m[K’ was hidden [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Woverloaded-virtual=-Woverloaded-virtual=]8;;[m[K]
+  110 |                                 virtual void [01;35m[KreadingsEvent[m[K( float battery_voltage, float system_current, bool ext_power, int num_chargers, const char* batteryType, bool batteryLow, int batteryLowShutdownCounter );
+      |                                              [01;35m[K^~~~~~~~~~~~~[m[K
+[01m[K/home/oscar/robotino_ros2_ws/src/ros2-robotino/rto_node/include/rto_node/PowerManagementROS.hpp:20:14:[m[K [01;36m[Knote: [m[K  by ‘[01m[Kvoid PowerManagementROS::[01;32m[KreadingsEvent[m[K(float, float)[m[K’
+   20 |         void [01;36m[KreadingsEvent[m[K(float current, float voltage);
+      |              [01;36m[K^~~~~~~~~~~~~[m[K
+[ 66%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/BumperROS.cpp.o[0m
+[ 70%] [32m[1mLinking CXX executable rto_laserrangefinder_node[0m
+[ 70%] Built target rto_laserrangefinder_node
+[ 73%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/AnalogInputArrayROS.cpp.o[0m
+[ 76%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/DigitalInputArrayROS.cpp.o[0m
+[ 80%] [32m[1mLinking CXX executable rto_odometry_node[0m
+[ 83%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/DigitalOutputArrayROS.cpp.o[0m
+[ 83%] Built target rto_odometry_node
+[ 86%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/DistanceSensorArrayROS.cpp.o[0m
+[ 90%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/ElectricalGripperROS.cpp.o[0m
+[ 93%] [32mBuilding CXX object CMakeFiles/rto_node.dir/src/EncoderInputROS.cpp.o[0m
+[ 96%] [32m[1mLinking CXX executable rto_camera_node[0m
+[ 96%] Built target rto_camera_node
+[100%] [32m[1mLinking CXX executable rto_node[0m
+[100%] Built target rto_node
+-- Install configuration: ""
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/environment/pythonpath.sh
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/environment/pythonpath.dsv
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/python3.12/site-packages/rto_node-0.0.0-py3.12.egg-info
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/python3.12/site-packages/rto_node-0.0.0-py3.12.egg-info/SOURCES.txt
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/python3.12/site-packages/rto_node-0.0.0-py3.12.egg-info/dependency_links.txt
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/python3.12/site-packages/rto_node-0.0.0-py3.12.egg-info/top_level.txt
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/python3.12/site-packages/rto_node-0.0.0-py3.12.egg-info/PKG-INFO
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/python3.12/site-packages/rto_node
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/python3.12/site-packages/rto_node/__init__.py
+Listing '/home/oscar/robotino_ros2_ws/install/rto_node/lib/python3.12/site-packages/rto_node'...
+Compiling '/home/oscar/robotino_ros2_ws/install/rto_node/lib/python3.12/site-packages/rto_node/__init__.py'...
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/rto_node/robotino_teleop.py
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/rto_node/rto_node
+-- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_node/lib/rto_node/rto_node" to ""
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/rto_node/rto_odometry_node
+-- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_node/lib/rto_node/rto_odometry_node" to ""
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/rto_node/rto_camera_node
+-- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_node/lib/rto_node/rto_camera_node" to ""
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/lib/rto_node/rto_laserrangefinder_node
+-- Set non-toolchain portion of runtime path of "/home/oscar/robotino_ros2_ws/install/rto_node/lib/rto_node/rto_laserrangefinder_node" to ""
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/launch
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/launch/robotino_driverbringup.launch.py
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/launch/robotino_tfbroadcaster.launch.py
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/launch/__pycache__
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/launch/__pycache__/robotino_simple_node.cpython-310.pyc
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/launch/robotino_driver.launch.py
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/rviz
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/rviz/robotino_description.rviz
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/ament_index/resource_index/package_run_dependencies/rto_node
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/ament_index/resource_index/parent_prefix_path/rto_node
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/environment/ament_prefix_path.sh
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/environment/ament_prefix_path.dsv
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/environment/path.sh
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/environment/path.dsv
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/local_setup.bash
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/local_setup.sh
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/local_setup.zsh
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/local_setup.dsv
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/package.dsv
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/ament_index/resource_index/packages/rto_node
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/cmake/rto_nodeConfig.cmake
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/cmake/rto_nodeConfig-version.cmake
+-- Installing: /home/oscar/robotino_ros2_ws/install/rto_node/share/rto_node/package.xml
