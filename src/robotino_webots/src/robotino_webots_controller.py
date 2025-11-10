@@ -3,7 +3,9 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
+from sensor_msgs.msg import LaserScan
 import math
+import numpy as np
 from controller import Robot
 
 class RobotinoWebotsController(Node):
@@ -31,13 +33,34 @@ class RobotinoWebotsController(Node):
             wheel = self.robot.getDevice(f'wheel{i}_joint')
             wheel.setPosition(float('inf'))
             self.wheels.append(wheel)
-        # Add this line after self.wheels setup (around line 30)
+            
         # Webots constants (from base.c)
         self.WHEEL_RADIUS = 0.063
         self.DISTANCE_WHEEL_TO_ROBOT_CENTRE = 0.1826
         
-        self.base_apply_speeds(0.0, 0.0, 0.0)  # Start with zero setVelocity
-        self.get_logger().info('Robotino Webots ROS2 Controller Started!')
+        # Start with zero velocity
+        self.base_apply_speeds(0.0, 0.0, 0.0)
+        
+        # Get lidar device with the correct name
+        self.lidar = self.robot.getDevice('Hokuyo URG-04LX-UG01')
+        self.lidar.enable(self.timestep)
+        self.lidar.enablePointCloud()
+        
+        # Create laser scan publisher
+        self.laser_publisher = self.create_publisher(LaserScan, 'scan', 10)
+        
+        # Laser scan parameters
+        self.laser_scan = LaserScan()
+        self.laser_scan.header.frame_id = 'laser_frame'
+        self.laser_scan.angle_min = -np.pi
+        self.laser_scan.angle_max = np.pi
+        self.laser_scan.angle_increment = 2 * np.pi / 682
+        self.laser_scan.range_min = 0.05
+        self.laser_scan.range_max = 4.0
+        self.laser_scan.time_increment = 0.0
+        self.laser_scan.scan_time = 0.1
+        
+        self.get_logger().info('Robotino Webots ROS2 Controller Started with Lidar!')
     
     def base_apply_speeds(self, vx, vy, omega):
         """EXACT SAME FUNCTION WE PROVED WORKS - now with ROS2!"""
@@ -60,7 +83,13 @@ class RobotinoWebotsController(Node):
         """Main control loop"""
         while rclpy.ok() and self.robot.step(self.timestep) != -1:
             rclpy.spin_once(self, timeout_sec=0)
-            # TODO: Add odometry calculation and publishing
+            
+            # Publish laser scan
+            ranges = self.lidar.getRangeImage()
+            if ranges:
+                self.laser_scan.ranges = ranges
+                self.laser_scan.header.stamp = self.get_clock().now().to_msg()
+                self.laser_publisher.publish(self.laser_scan)
 
 def main(args=None):
     rclpy.init(args=args)
