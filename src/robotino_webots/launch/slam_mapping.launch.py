@@ -9,9 +9,20 @@ import os
 def generate_launch_description():
     # Get package share directories
     slam_toolbox_share = get_package_share_directory('slam_toolbox')
+    robotino_webots_share = get_package_share_directory('robotino_webots')
     
     # Launch arguments
     world_file = LaunchConfiguration('world_file')
+    
+    # Load the Webots URDF - FIXED PATH
+    urdf_path = os.path.join(
+        robotino_webots_share,
+        'urdf',
+        'Robotino3.urdf'  # Using the actual file name
+    )
+    
+    with open(urdf_path, 'r') as f:
+        robot_description = f.read()
     
     return LaunchDescription([
         # Launch argument for world file
@@ -27,17 +38,31 @@ def generate_launch_description():
             output='screen'
         ),
         
-        # Robot controller - wait 10 seconds for Webots to load
+        # Robot controller
         Node(
             package='robotino_webots',
             executable='robotino_webots_controller.py',
             name='robotino_controller',
             output='screen',
             parameters=[{'use_sim_time': True}],
-            # Add delay via execute process if needed, or rely on controller's retry logic
         ),
         
-        # SLAM toolbox - USE THE WORKING LAUNCH FILE
+        # ROBOT STATE PUBLISHER - WITH CORRECT URDF PATH
+        Node(
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            name='robot_state_publisher',
+            output='screen',
+            parameters=[{
+                'robot_description': robot_description,
+                'use_sim_time': True,
+                'publish_frequency': 30.0
+            }]
+        ),
+        
+        
+        
+        # SLAM toolbox
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
                 slam_toolbox_share,

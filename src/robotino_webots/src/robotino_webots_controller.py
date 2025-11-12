@@ -3,7 +3,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import LaserScan
+from sensor_msgs.msg import LaserScan, JointState
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 from builtin_interfaces.msg import Time
@@ -18,6 +18,7 @@ class RobotinoWebotsController(Node):
         self.subscription = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
         self.odom_publisher = self.create_publisher(Odometry, 'odom', 10)
         self.laser_publisher = self.create_publisher(LaserScan, 'scan', 10)
+        self.joint_publisher = self.create_publisher(JointState, 'joint_states', 10)  # ADDED
         self.tf_broadcaster = TransformBroadcaster(self)
         
         self.robot = Robot()
@@ -118,13 +119,14 @@ class RobotinoWebotsController(Node):
     def cmd_vel_callback(self, msg):
         self.base_apply_speeds(msg.linear.x, msg.linear.y, msg.angular.z)
     
-    def webots_time_to_ros_time(self, webots_time):
-        """Convert Webots simulation time to proper ROS 2 Time message"""
+    def get_sim_time(self):
+        """Get current Webots time as ROS Time message"""
+        webots_time = float(self.robot.getTime())
         stamp = Time()
         stamp.sec = int(webots_time)
         stamp.nanosec = int((webots_time - stamp.sec) * 1e9)
         return stamp
-    
+
     def run(self):
         self.last_wheel_positions = [encoder.getValue() for encoder in self.wheel_encoders]
         self.wheel_encoders_initialized = True
@@ -137,28 +139,27 @@ class RobotinoWebotsController(Node):
         while rclpy.ok() and self.robot.step(self.timestep) != -1:
             rclpy.spin_once(self, timeout_sec=0)
             
-            current_time = self.robot.getTime()
+            # Use Webots simulation time for all messages
+            current_sim_time = self.get_sim_time()
+            current_webots_time_float = float(self.robot.getTime())
             
             # Update odometry from wheel encoders
-            self.update_odometry(current_time)
+            self.update_odometry(current_webots_time_float)
             
-            # Laser scan at 10Hz - PROPER SIMULATION TIME
-            if current_time - self.last_scan_time > self.publish_rate:
+            # Laser scan at 10Hz - Use simulation time
+            if current_webots_time_float - self.last_scan_time > self.publish_rate:
                 ranges = self.lidar.getRangeImage()
                 if ranges:
                     self.laser_scan.ranges = ranges
-                    # FIXED: Use proper simulation time
-                    self.laser_scan.header.stamp = self.webots_time_to_ros_time(current_time)
+                    self.laser_scan.header.stamp = current_sim_time  # Use simulation time
                     self.laser_publisher.publish(self.laser_scan)
-                    self.last_scan_time = current_time
+                    self.last_scan_time = current_webots_time_float
             
-            # TF and ODOMETRY at 10Hz - PROPER SIMULATION TIME
-            if current_time - self.last_tf_time > self.publish_rate:
-                current_ros_time = self.webots_time_to_ros_time(current_time)
-                
-                # ODOMETRY PUBLISHING
+            # TF and ODOMETRY at 10Hz - Use simulation time
+            if current_webots_time_float - self.last_tf_time > self.publish_rate:
+                # ODOMETRY PUBLISHING - Use simulation time
                 odom_msg = Odometry()
-                odom_msg.header.stamp = current_ros_time
+                odom_msg.header.stamp = current_sim_time  # Use simulation time
                 odom_msg.header.frame_id = 'odom'
                 odom_msg.child_frame_id = 'base_footprint'
                 
@@ -173,9 +174,9 @@ class RobotinoWebotsController(Node):
                 
                 self.odom_publisher.publish(odom_msg)
                 
-                # TF transforms
+                # TF transforms - Use simulation time
                 t1 = TransformStamped()
-                t1.header.stamp = current_ros_time
+                t1.header.stamp = current_sim_time  # Use simulation time
                 t1.header.frame_id = 'odom'
                 t1.child_frame_id = 'base_footprint'
                 t1.transform.translation.x = self.x
@@ -188,14 +189,22 @@ class RobotinoWebotsController(Node):
                 self.tf_broadcaster.sendTransform(t1)
                 
                 t2 = TransformStamped()
-                t2.header.stamp = current_ros_time
+                t2.header.stamp = current_sim_time  # Use simulation time
                 t2.header.frame_id = 'base_footprint'
                 t2.child_frame_id = 'laser_frame'
                 t2.transform.translation.z = 0.2
                 t2.transform.rotation.w = 1.0
                 self.tf_broadcaster.sendTransform(t2)
                 
-                self.last_tf_time = current_time
+                # PUBLISH JOINT STATES - ADDED THIS
+                joint_msg = JointState()
+                joint_msg.header.stamp = current_sim_time
+                joint_msg.name = ['wheel0_joint', 'wheel1_joint', 'wheel2_joint']
+                wheel_positions = [encoder.getValue() for encoder in self.wheel_encoders]
+                joint_msg.position = wheel_positions
+                self.joint_publisher.publish(joint_msg)
+                
+                self.last_tf_time = current_webots_time_float
 
 def main(args=None):
     rclpy.init(args=args)
