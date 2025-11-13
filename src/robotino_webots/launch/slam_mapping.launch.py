@@ -28,7 +28,11 @@ def generate_launch_description():
         # Launch argument for world file
         DeclareLaunchArgument(
             'world_file',
-            default_value='/home/oscar/simple_slam_world.wbt',
+            #default_value='/home/oscar/simple_slam_world.wbt',
+            default_value=get_package_share_directory('robotino_webots') + '/worlds/robotino_apartment.wbt',
+            # default_value=get_package_share_directory('robotino_webots') + '/worlds/robotino_apartment.wbt',
+            
+            
             description='Path to Webots world file'
         ),
         

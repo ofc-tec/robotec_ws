@@ -36,5 +36,7 @@ install(PROGRAMS
   src/robotino_webots_controller.py
   DESTINATION lib/${PROJECT_NAME}
 )
-
+install(DIRECTORY worlds/
+  DESTINATION share/${PROJECT_NAME}/worlds
+)
 ament_package()
