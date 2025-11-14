@@ -544,6 +544,7 @@ Robotino3 {
     Robotino3HokuyoMountingSupport {
       extensionSlot [
         HokuyoUrg04lxug01 {
+           maxRange 8.0
         }
       ]
     }

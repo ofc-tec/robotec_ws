@@ -18,7 +18,7 @@ class RobotinoWebotsController(Node):
         self.subscription = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
         self.odom_publisher = self.create_publisher(Odometry, 'odom', 10)
         self.laser_publisher = self.create_publisher(LaserScan, 'scan', 10)
-        self.joint_publisher = self.create_publisher(JointState, 'joint_states', 10)  # ADDED
+        self.joint_publisher = self.create_publisher(JointState, 'joint_states', 10)
         self.tf_broadcaster = TransformBroadcaster(self)
         
         self.robot = Robot()
@@ -38,7 +38,8 @@ class RobotinoWebotsController(Node):
             encoder.enable(self.timestep)
             self.wheel_encoders.append(encoder)
             
-        self.WHEEL_RADIUS = 0.063
+        #self.WHEEL_RADIUS = 0.063
+        self.WHEEL_RADIUS = 0.0315  # Half the value
         self.DISTANCE_WHEEL_TO_ROBOT_CENTRE = 0.1826
         self.base_apply_speeds(0.0, 0.0, 0.0)
         
@@ -46,17 +47,16 @@ class RobotinoWebotsController(Node):
         self.lidar = self.robot.getDevice('Hokuyo URG-04LX-UG01')
         self.lidar.enable(self.timestep)
         
-        # Laser scan - use 'laser_frame' to match what SLAM sees
+        # Laser scan
         self.laser_scan = LaserScan()
         self.laser_scan.header.frame_id = 'laser_frame'
-        
-        # Hokuyo URG-04LX: 240 degrees field of view
-        scan_angle = 240.0 * np.pi / 180.0  # Correct 240° FOV
+                
+        scan_angle = 240.0 * np.pi / 180.0
         self.laser_scan.angle_min = -scan_angle / 2
         self.laser_scan.angle_max = scan_angle / 2
-        self.laser_scan.angle_increment = scan_angle / 666  # 667 points = 666 increments
+        self.laser_scan.angle_increment = scan_angle / 666
         self.laser_scan.range_min = 0.05
-        self.laser_scan.range_max = 4.0
+        self.laser_scan.range_max = 10.0
         self.laser_scan.scan_time = 0.1
         
         # Odometry state
@@ -64,11 +64,6 @@ class RobotinoWebotsController(Node):
         self.y = 0.0
         self.th = 0.0
         self.last_time = float(self.robot.getTime())
-        
-        # Throttling
-        self.last_scan_time = 0
-        self.last_tf_time = 0
-        self.publish_rate = 0.1
         
         self.get_logger().info('SLAM READY - ODOMETRY ACTIVE')
     
@@ -100,9 +95,11 @@ class RobotinoWebotsController(Node):
             
             self.last_wheel_positions = wheel_positions
             
-            delta_x = self.WHEEL_RADIUS * (0.0000 * delta_wheel0 - 0.8660 * delta_wheel1 + 0.8660 * delta_wheel2)
-            delta_y = self.WHEEL_RADIUS * (1.0000 * delta_wheel0 - 0.5000 * delta_wheel1 - 0.5000 * delta_wheel2)
-            delta_th = self.WHEEL_RADIUS * (-0.3849 * delta_wheel0 - 0.3849 * delta_wheel1 - 0.3849 * delta_wheel2) / self.DISTANCE_WHEEL_TO_ROBOT_CENTRE
+            delta_x = self.WHEEL_RADIUS * 0.83 * (0.0000 * delta_wheel0 - 0.8660 * delta_wheel1 + 0.8660 * delta_wheel2)
+            delta_y = self.WHEEL_RADIUS * 0.83 * (1.0000 * delta_wheel0 - 0.5000 * delta_wheel1 - 0.5000 * delta_wheel2)
+            #delta_th = self.WHEEL_RADIUS * (-0.3849 * delta_wheel0 - 0.3849 * delta_wheel1 - 0.3849 * delta_wheel2) / self.DISTANCE_WHEEL_TO_ROBOT_CENTRE
+            delta_th = self.WHEEL_RADIUS * -2 * (delta_wheel0 + delta_wheel1 + delta_wheel2) / (3.0 * self.DISTANCE_WHEEL_TO_ROBOT_CENTRE)
+            print(f"Resulting motion: dx={delta_x:.6f}, dy={delta_y:.6f}, dth={delta_th:.6f}")
             
             dt = current_time - self.last_time
             if dt > 0:
@@ -120,7 +117,6 @@ class RobotinoWebotsController(Node):
         self.base_apply_speeds(msg.linear.x, msg.linear.y, msg.angular.z)
     
     def get_sim_time(self):
-        """Get current Webots time as ROS Time message"""
         webots_time = float(self.robot.getTime())
         stamp = Time()
         stamp.sec = int(webots_time)
@@ -139,72 +135,79 @@ class RobotinoWebotsController(Node):
         while rclpy.ok() and self.robot.step(self.timestep) != -1:
             rclpy.spin_once(self, timeout_sec=0)
             
-            # Use Webots simulation time for all messages
             current_sim_time = self.get_sim_time()
             current_webots_time_float = float(self.robot.getTime())
             
             # Update odometry from wheel encoders
             self.update_odometry(current_webots_time_float)
             
-            # Laser scan at 10Hz - Use simulation time
-            if current_webots_time_float - self.last_scan_time > self.publish_rate:
-                ranges = self.lidar.getRangeImage()
-                if ranges:
-                    self.laser_scan.ranges = ranges
-                    self.laser_scan.header.stamp = current_sim_time  # Use simulation time
-                    self.laser_publisher.publish(self.laser_scan)
-                    self.last_scan_time = current_webots_time_float
+            # PUBLISH LASER SCAN EVERY TIMESTEP (removed throttling)
+            ranges = self.lidar.getRangeImage()
             
-            # TF and ODOMETRY at 10Hz - Use simulation time
-            if current_webots_time_float - self.last_tf_time > self.publish_rate:
-                # ODOMETRY PUBLISHING - Use simulation time
-                odom_msg = Odometry()
-                odom_msg.header.stamp = current_sim_time  # Use simulation time
-                odom_msg.header.frame_id = 'odom'
-                odom_msg.child_frame_id = 'base_footprint'
-                
-                odom_msg.pose.pose.position.x = self.x
-                odom_msg.pose.pose.position.y = self.y
-                odom_msg.pose.pose.position.z = 0.0
-                
-                odom_msg.pose.pose.orientation.x = 0.0
-                odom_msg.pose.pose.orientation.y = 0.0
-                odom_msg.pose.pose.orientation.z = math.sin(self.th / 2.0)
-                odom_msg.pose.pose.orientation.w = math.cos(self.th / 2.0)
-                
-                self.odom_publisher.publish(odom_msg)
-                
-                # TF transforms - Use simulation time
-                t1 = TransformStamped()
-                t1.header.stamp = current_sim_time  # Use simulation time
-                t1.header.frame_id = 'odom'
-                t1.child_frame_id = 'base_footprint'
-                t1.transform.translation.x = self.x
-                t1.transform.translation.y = self.y
-                t1.transform.translation.z = 0.0
-                t1.transform.rotation.x = 0.0
-                t1.transform.rotation.y = 0.0
-                t1.transform.rotation.z = math.sin(self.th / 2.0)
-                t1.transform.rotation.w = math.cos(self.th / 2.0)
-                self.tf_broadcaster.sendTransform(t1)
-                
-                t2 = TransformStamped()
-                t2.header.stamp = current_sim_time  # Use simulation time
-                t2.header.frame_id = 'base_footprint'
-                t2.child_frame_id = 'laser_frame'
-                t2.transform.translation.z = 0.2
-                t2.transform.rotation.w = 1.0
-                self.tf_broadcaster.sendTransform(t2)
-                
-                # PUBLISH JOINT STATES - ADDED THIS
-                joint_msg = JointState()
-                joint_msg.header.stamp = current_sim_time
-                joint_msg.name = ['wheel0_joint', 'wheel1_joint', 'wheel2_joint']
-                wheel_positions = [encoder.getValue() for encoder in self.wheel_encoders]
-                joint_msg.position = wheel_positions
-                self.joint_publisher.publish(joint_msg)
-                
-                self.last_tf_time = current_webots_time_float
+
+            #ranges = self.lidar.getRangeImage()
+            if ranges:
+                # ADD DEBUG HERE:
+                if len(ranges) > 10:
+                    left_wall_dist = ranges[0]    # Should be left side
+                    right_wall_dist = ranges[-1]  # Should be right side  
+                    front_wall_dist = ranges[len(ranges)//2]  # Should be front
+                    print(f"ANGLE RANGE: {self.laser_scan.angle_min:.3f} to {self.laser_scan.angle_max:.3f} rad")
+                    print(f"ANGLE RANGE: {np.degrees(self.laser_scan.angle_min):.1f} to {np.degrees(self.laser_scan.angle_max):.1f} deg")
+                    print(f"Webots Laser: Left={left_wall_dist:.2f}, Front={front_wall_dist:.2f}, Right={right_wall_dist:.2f}")
+            
+                #self.laser_scan.ranges = ranges
+                self.laser_scan.ranges = list(reversed(ranges))
+                self.laser_scan.header.stamp = current_sim_time
+                self.laser_publisher.publish(self.laser_scan)
+            
+            # PUBLISH ODOMETRY, TF, AND JOINT STATES EVERY TIMESTEP (removed throttling)
+            # ODOMETRY
+            odom_msg = Odometry()
+            odom_msg.header.stamp = current_sim_time
+            odom_msg.header.frame_id = 'odom'
+            odom_msg.child_frame_id = 'base_footprint'
+            
+            odom_msg.pose.pose.position.x = self.x
+            odom_msg.pose.pose.position.y = self.y
+            odom_msg.pose.pose.position.z = 0.0
+            
+            odom_msg.pose.pose.orientation.x = 0.0
+            odom_msg.pose.pose.orientation.y = 0.0
+            odom_msg.pose.pose.orientation.z = math.sin(self.th / 2.0)
+            odom_msg.pose.pose.orientation.w = math.cos(self.th / 2.0)
+            
+            self.odom_publisher.publish(odom_msg)
+            
+            # TF TRANSFORMS
+            t1 = TransformStamped()
+            t1.header.stamp = current_sim_time
+            t1.header.frame_id = 'odom'
+            t1.child_frame_id = 'base_footprint'
+            t1.transform.translation.x = self.x
+            t1.transform.translation.y = self.y
+            t1.transform.translation.z = 0.0
+            t1.transform.rotation.x = 0.0
+            t1.transform.rotation.y = 0.0
+            t1.transform.rotation.z = math.sin(self.th / 2.0)
+            t1.transform.rotation.w = math.cos(self.th / 2.0)
+            self.tf_broadcaster.sendTransform(t1)
+            
+            t2 = TransformStamped()
+            t2.header.stamp = current_sim_time
+            t2.header.frame_id = 'base_footprint'
+            t2.child_frame_id = 'laser_frame'
+            t2.transform.translation.z = 0.2
+            t2.transform.rotation.w = 1.0
+            self.tf_broadcaster.sendTransform(t2)
+            
+            # JOINT STATES
+            joint_msg = JointState()
+            joint_msg.header.stamp = current_sim_time
+            joint_msg.name = ['wheel0_joint', 'wheel1_joint', 'wheel2_joint']
+            wheel_positions = [encoder.getValue() for encoder in self.wheel_encoders]
+            joint_msg.position = wheel_positions
+            self.joint_publisher.publish(joint_msg)
 
 def main(args=None):
     rclpy.init(args=args)

@@ -66,17 +66,21 @@ def generate_launch_description():
         
         
         
-        # SLAM toolbox
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([
-                slam_toolbox_share,
-                '/launch/online_async_launch.py'
-            ]),
-            launch_arguments={
-                'use_sim_time': 'true'
-            }.items()
+        PythonLaunchDescriptionSource([
+            get_package_share_directory('slam_toolbox'),
+            '/launch/online_async_launch.py'
+        ]),
+        launch_arguments={
+            'params_file': os.path.join(
+                get_package_share_directory('robotino_webots'),
+                'config',
+                'slam_toolbox.yaml'
+            ),
+            'use_sim_time': 'true'
+        }.items()
         ),
-        
+       
         # RViz2
         Node(
             package='rviz2',
