@@ -38,8 +38,7 @@ class RobotinoWebotsController(Node):
             encoder.enable(self.timestep)
             self.wheel_encoders.append(encoder)
             
-        #self.WHEEL_RADIUS = 0.063
-        self.WHEEL_RADIUS = 0.0315  # Half the value
+        self.WHEEL_RADIUS = 0.038
         self.DISTANCE_WHEEL_TO_ROBOT_CENTRE = 0.1826
         self.base_apply_speeds(0.0, 0.0, 0.0)
         
@@ -98,8 +97,8 @@ class RobotinoWebotsController(Node):
             delta_x = self.WHEEL_RADIUS * 0.83 * (0.0000 * delta_wheel0 - 0.8660 * delta_wheel1 + 0.8660 * delta_wheel2)
             delta_y = self.WHEEL_RADIUS * 0.83 * (1.0000 * delta_wheel0 - 0.5000 * delta_wheel1 - 0.5000 * delta_wheel2)
             #delta_th = self.WHEEL_RADIUS * (-0.3849 * delta_wheel0 - 0.3849 * delta_wheel1 - 0.3849 * delta_wheel2) / self.DISTANCE_WHEEL_TO_ROBOT_CENTRE
-            delta_th = self.WHEEL_RADIUS * -2 * (delta_wheel0 + delta_wheel1 + delta_wheel2) / (3.0 * self.DISTANCE_WHEEL_TO_ROBOT_CENTRE)
-            print(f"Resulting motion: dx={delta_x:.6f}, dy={delta_y:.6f}, dth={delta_th:.6f}")
+            delta_th = self.WHEEL_RADIUS * -1.617*  (delta_wheel0 + delta_wheel1 + delta_wheel2) / (3.0 * self.DISTANCE_WHEEL_TO_ROBOT_CENTRE)
+            #print(f"Resulting motion: dx={delta_x:.6f}, dy={delta_y:.6f}, dth={delta_th:.6f}")
             
             dt = current_time - self.last_time
             if dt > 0:
@@ -152,9 +151,7 @@ class RobotinoWebotsController(Node):
                     left_wall_dist = ranges[0]    # Should be left side
                     right_wall_dist = ranges[-1]  # Should be right side  
                     front_wall_dist = ranges[len(ranges)//2]  # Should be front
-                    print(f"ANGLE RANGE: {self.laser_scan.angle_min:.3f} to {self.laser_scan.angle_max:.3f} rad")
-                    print(f"ANGLE RANGE: {np.degrees(self.laser_scan.angle_min):.1f} to {np.degrees(self.laser_scan.angle_max):.1f} deg")
-                    print(f"Webots Laser: Left={left_wall_dist:.2f}, Front={front_wall_dist:.2f}, Right={right_wall_dist:.2f}")
+                    #print(f"Webots Laser: Left={left_wall_dist:.2f}, Front={front_wall_dist:.2f}, Right={right_wall_dist:.2f}")
             
                 #self.laser_scan.ranges = ranges
                 self.laser_scan.ranges = list(reversed(ranges))
