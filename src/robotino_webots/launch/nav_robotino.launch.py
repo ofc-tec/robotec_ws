@@ -24,6 +24,8 @@ def generate_launch_description():
     nav2_params_path = os.path.join(nav2_bringup_share, 'params', 'nav2_params.yaml')
     
     return LaunchDescription([
+
+        
         # Launch arguments
         DeclareLaunchArgument(
             'world_file',
@@ -114,25 +116,52 @@ def generate_launch_description():
         TimerAction(
             period=10.0,
             actions=[
-                Node(
-                    package='nav2_amcl',
-                    executable='amcl',
-                    name='amcl',
-                    output='screen',
-                    parameters=[{
-                        'use_sim_time': use_sim_time,
-                        # Basic AMCL tuning for Robotino
-                        'min_particles': 500,
-                        'max_particles': 2000,
-                        'transform_tolerance': 1.0,
-                        'laser_min_range': 0.05,
-                        'laser_max_range': 4.0,
-                        'laser_max_beams': 30
-                    }]
-                )
+              Node(
+            package='nav2_amcl',
+            executable='amcl',
+            name='amcl',
+            output='screen',
+            parameters=[{
+                'use_sim_time': use_sim_time,
+                
+                # Particle settings
+                'min_particles': 500,
+                'max_particles': 2000,
+                
+                # 🚀 CRITICAL: REDUCE UPDATE FREQUENCY
+                'transform_tolerance': 2.0,      # Increased tolerance
+                'update_min_d': 0.05,            # UPDATE AFTER 5cm (not 1cm)
+                'update_min_a': 0.15,            # UPDATE AFTER 8.6° (not 1.7°)
+                
+                # Laser settings  
+                'laser_min_range': 0.05,
+                'laser_max_range': 10.0,
+                'laser_max_beams': 30,
+                
+                # Odometry smoothing
+                'odom_alpha1': 0.5,
+                'odom_alpha2': 0.5, 
+                'odom_alpha3': 0.5,
+                'odom_alpha4': 0.5,
+                
+                # Recovery behavior
+                'recovery_alpha_slow': 0.001,
+                'recovery_alpha_fast': 0.1,
+                
+                # Laser model
+                'laser_model_type': 'likelihood_field',
+                'laser_likelihood_max_dist': 2.0,
+                
+                # Initial pose
+                'set_initial_pose': True,
+                'initial_pose.x': 0.0,
+                'initial_pose.y': 0.0,
+                'initial_pose.theta': 0.0
+            }]
+        )                            
             ]
         ),
-        
+        #
         # 7. Controller server
         TimerAction(
             period=12.0,
@@ -156,7 +185,7 @@ def generate_launch_description():
                     executable='planner_server',
                     name='planner_server',
                     output='screen',
-                    parameters=[nav2_params_path, {'use_sim_time': use_sim_time}]
+                    parameters=[nav2_params_path, {'use_sim_time': use_sim_time,                'local_costmap.obstacle_layer.observation_persistence': 0.0}]
                 )
             ]
         ),

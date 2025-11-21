@@ -16,13 +16,13 @@ class RobotinoWebotsController(Node):
         super().__init__('robotino_webots_controller')
         
         self.subscription = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
-        self.odom_publisher = self.create_publisher(Odometry, 'odom', 10)
-        self.laser_publisher = self.create_publisher(LaserScan, 'scan', 10)
+        self.odom_publisher = self.create_publisher(Odometry, 'odom', 50)
+        self.laser_publisher = self.create_publisher(LaserScan, 'scan', 50)
         self.joint_publisher = self.create_publisher(JointState, 'joint_states', 10)
         self.tf_broadcaster = TransformBroadcaster(self)
         
         self.robot = Robot()
-        self.timestep = int(self.robot.getBasicTimeStep())
+        self.timestep = 25
         
         # Wheels and encoders
         self.wheels = []
@@ -46,17 +46,9 @@ class RobotinoWebotsController(Node):
         self.lidar = self.robot.getDevice('Hokuyo URG-04LX-UG01')
         self.lidar.enable(self.timestep)
         
-        # Laser scan
-        self.laser_scan = LaserScan()
-        self.laser_scan.header.frame_id = 'laser_frame'
-                
-        scan_angle = 240.0 * np.pi / 180.0
-        self.laser_scan.angle_min = -scan_angle / 2
-        self.laser_scan.angle_max = scan_angle / 2
-        self.laser_scan.angle_increment = scan_angle / 666
-        self.laser_scan.range_min = 0.05
-        self.laser_scan.range_max = 10.0
-        self.laser_scan.scan_time = 0.1
+        # Laser scan constants
+        self.scan_angle = 240.0 * np.pi / 180.0
+        self.angle_increment = self.scan_angle / 666
         
         # Odometry state
         self.x = 0.0
@@ -64,7 +56,7 @@ class RobotinoWebotsController(Node):
         self.th = 0.0
         self.last_time = float(self.robot.getTime())
         
-        self.get_logger().info('SLAM READY - ODOMETRY ACTIVE')
+        self.get_logger().info(f'Controller initialized: {self.timestep}ms timestep = {1000/self.timestep}Hz')
     
     def base_apply_speeds(self, vx, vy, omega):
         vx /= self.WHEEL_RADIUS
@@ -96,9 +88,7 @@ class RobotinoWebotsController(Node):
             
             delta_x = self.WHEEL_RADIUS * 0.83 * (0.0000 * delta_wheel0 - 0.8660 * delta_wheel1 + 0.8660 * delta_wheel2)
             delta_y = self.WHEEL_RADIUS * 0.83 * (1.0000 * delta_wheel0 - 0.5000 * delta_wheel1 - 0.5000 * delta_wheel2)
-            #delta_th = self.WHEEL_RADIUS * (-0.3849 * delta_wheel0 - 0.3849 * delta_wheel1 - 0.3849 * delta_wheel2) / self.DISTANCE_WHEEL_TO_ROBOT_CENTRE
-            delta_th = self.WHEEL_RADIUS * -1.617*  (delta_wheel0 + delta_wheel1 + delta_wheel2) / (3.0 * self.DISTANCE_WHEEL_TO_ROBOT_CENTRE)
-            #print(f"Resulting motion: dx={delta_x:.6f}, dy={delta_y:.6f}, dth={delta_th:.6f}")
+            delta_th = self.WHEEL_RADIUS * -1.617 * (delta_wheel0 + delta_wheel1 + delta_wheel2) / (3.0 * self.DISTANCE_WHEEL_TO_ROBOT_CENTRE)
             
             dt = current_time - self.last_time
             if dt > 0:
@@ -110,13 +100,13 @@ class RobotinoWebotsController(Node):
             self.last_time = current_time
             
         except Exception as e:
-            pass
+            self.get_logger().warn(f'Odometry update error: {e}')
 
     def cmd_vel_callback(self, msg):
         self.base_apply_speeds(msg.linear.x, msg.linear.y, msg.angular.z)
     
     def get_sim_time(self):
-        webots_time = float(self.robot.getTime())
+        webots_time = self.robot.getTime()
         stamp = Time()
         stamp.sec = int(webots_time)
         stamp.nanosec = int((webots_time - stamp.sec) * 1e9)
@@ -131,6 +121,8 @@ class RobotinoWebotsController(Node):
         self.th = 0.0
         self.last_time = float(self.robot.getTime())
         
+        publish_count = 0
+        
         while rclpy.ok() and self.robot.step(self.timestep) != -1:
             rclpy.spin_once(self, timeout_sec=0)
             
@@ -140,26 +132,27 @@ class RobotinoWebotsController(Node):
             # Update odometry from wheel encoders
             self.update_odometry(current_webots_time_float)
             
-            # PUBLISH LASER SCAN EVERY TIMESTEP (removed throttling)
+            # PUBLISH LASER SCAN - FRESH MESSAGE EVERY TIME
             ranges = self.lidar.getRangeImage()
-            
-
-            #ranges = self.lidar.getRangeImage()
             if ranges:
-                # ADD DEBUG HERE:
-                if len(ranges) > 10:
-                    left_wall_dist = ranges[0]    # Should be left side
-                    right_wall_dist = ranges[-1]  # Should be right side  
-                    front_wall_dist = ranges[len(ranges)//2]  # Should be front
-                    #print(f"Webots Laser: Left={left_wall_dist:.2f}, Front={front_wall_dist:.2f}, Right={right_wall_dist:.2f}")
+                laser_scan = LaserScan()
+                laser_scan.header.stamp = current_sim_time
+                laser_scan.header.frame_id = 'laser_frame'
+                laser_scan.angle_min = -self.scan_angle / 2
+                laser_scan.angle_max = self.scan_angle / 2
+                laser_scan.angle_increment = self.angle_increment
+                laser_scan.range_min = 0.05
+                laser_scan.range_max = 10.0
+                laser_scan.scan_time = self.timestep / 1000.0
+                laser_scan.time_increment = 0.0
+                laser_scan.ranges = list(reversed(ranges))
+                self.laser_publisher.publish(laser_scan)
+                
+                if publish_count < 3:
+                    self.get_logger().info(f'Laser published: {len(ranges)} ranges')
+                    publish_count += 1
             
-                #self.laser_scan.ranges = ranges
-                self.laser_scan.ranges = list(reversed(ranges))
-                self.laser_scan.header.stamp = current_sim_time
-                self.laser_publisher.publish(self.laser_scan)
-            
-            # PUBLISH ODOMETRY, TF, AND JOINT STATES EVERY TIMESTEP (removed throttling)
-            # ODOMETRY
+            # PUBLISH ODOMETRY
             odom_msg = Odometry()
             odom_msg.header.stamp = current_sim_time
             odom_msg.header.frame_id = 'odom'
