@@ -29,4 +29,10 @@ Robotino3 {
       ]
     }
   ]
-}
+  cameraSlot [
+    Robotino3Webcam {
+    }
+  ]
+    }
+  
+

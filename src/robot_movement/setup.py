@@ -21,6 +21,7 @@ setup(
     entry_points={
     'console_scripts': [
         'line_detector = robot_movement.line_detector:main',
+        'data_odom_collector = robot_movement.data_odom_collector:main',
     ],
     },
 )

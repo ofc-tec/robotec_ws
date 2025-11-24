@@ -41,7 +41,14 @@ WorldInfo {
   info [
     "Apartment world with Robotino for SLAM"
   ]
+
+  
   basicTimeStep 16
+}
+ContactProperties {
+  material1 "wheel_material"
+  material2 "floor_material" 
+  coulombFriction [0.01, 0.8, 0.8]  # [lateral, spinning, rolling]
 }
 Viewpoint {
   orientation -0.4060317414729578 0.40603290835639455 0.8187035496735586 1.7695128936691449
