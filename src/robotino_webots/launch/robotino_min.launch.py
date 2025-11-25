@@ -28,6 +28,8 @@ def generate_launch_description():
             'world_file',
             default_value=get_package_share_directory('robotino_webots') + '/worlds/robotino_apartment.wbt',
             #default_value=get_package_share_directory('robotino_webots') + '/worlds/robotino_ros2_lidar.wbt',
+            #default_value=get_package_share_directory('robotino_webots') + '/worlds/robotino3.wbt',
+
             description='Path to Webots world file'
         ),
         
@@ -47,17 +49,17 @@ def generate_launch_description():
         ),
         
         # ROBOT STATE PUBLISHER - WITH CORRECT URDF PATH
-        #Node(
-        #    package='robot_state_publisher',
-        #    executable='robot_state_publisher',
-        #    name='robot_state_publisher',
-        #    output='screen',
-        #    parameters=[{
-        #        'robot_description': robot_description,
-        #        'use_sim_time': True,
-        #        'publish_frequency': 30.0
-        #    }]
-        #),
+        Node(
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            name='robot_state_publisher',
+            output='screen',
+            parameters=[{
+                'robot_description': robot_description,
+                'use_sim_time': True,
+                'publish_frequency': 30.0
+            }]
+        ),
 
         
     ])

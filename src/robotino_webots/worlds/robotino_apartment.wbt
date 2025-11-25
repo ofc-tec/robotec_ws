@@ -37,18 +37,30 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/festo/robotino3/protos/Robotino3HokuyoMountingSupport.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/hokuyo/protos/HokuyoUrg04lxug01.proto"
 
+DEF wheel_material Material {
+  diffuseColor 0.1 0.1 0.1
+}
+
+DEF floor_material Material {
+  diffuseColor 0.8 0.8 0.8
+}
+
+DEF WheelMat Material {
+  diffuseColor 0.1 0.1 0.1
+}
+
 WorldInfo {
   info [
     "Apartment world with Robotino for SLAM"
   ]
-
-  
   basicTimeStep 16
-}
-ContactProperties {
-  material1 "wheel_material"
-  material2 "floor_material" 
-  coulombFriction [0.01, 0.8, 0.8]  # [lateral, spinning, rolling]
+  contactProperties [
+    ContactProperties {
+      material1 "WheelMat"
+      coulombFriction [0, 2, 0]
+      bounce 0
+    }
+  ]
 }
 Viewpoint {
   orientation -0.4060317414729578 0.40603290835639455 0.8187035496735586 1.7695128936691449
@@ -62,23 +74,14 @@ TexturedBackground {
     0.2 0.2 0.2
   ]
 }
-DEF FLOOR Solid {
+RectangleArena {
   translation -4.95 -3.3 0
-  children [
-    Shape {
-      appearance Parquetry {
-        textureTransform TextureTransform {
-          scale 6 9
-        }
-      }
-      geometry DEF FLOOR_PLANE Plane {
-        size 9.9 6.6
-      }
+  floorSize 9.9 6.6
+  floorAppearance Parquetry {
+    textureTransform TextureTransform {
+      scale 6 9
     }
-  ]
-  name "floor"
-  boundingObject USE FLOOR_PLANE
-  locked TRUE
+  }
 }
 DEF ROOF Solid {
   translation -4.95 -3.3 2.3999

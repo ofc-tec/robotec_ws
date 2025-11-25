@@ -7,8 +7,7 @@ from sensor_msgs.msg import LaserScan
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 import math
-from controller import Robot
-
+from controller import Robot, GPS, Compass
 
 class RobotinoWebotsController(Node):
     def __init__(self):
@@ -21,7 +20,7 @@ class RobotinoWebotsController(Node):
 
         self.robot = Robot()
         self.dt = int(self.robot.getBasicTimeStep())
-
+        
         # Wheels
         self.wheels = [self.robot.getDevice(f'wheel{i}_joint') for i in range(3)]
         for w in self.wheels:
@@ -37,101 +36,106 @@ class RobotinoWebotsController(Node):
         self.lidar = self.robot.getDevice('Hokuyo URG-04LX-UG01')
         self.lidar.enable(self.dt)
 
+        # === GROUND TRUTH SENSORS INITIALIZATION ===
+        self.gps = self.robot.getDevice('gps') if self.robot.getDevice('gps') else None
+        self.compass = self.robot.getDevice('compass') if self.robot.getDevice('compass') else None
+        if self.gps and self.compass:
+            self.gps.enable(self.dt)
+            self.compass.enable(self.dt)
+            self.get_logger().info("GPS and compass enabled for ground truth data.")
+        else:
+            self.get_logger().warning("Ground truth sensors (GPS/Compass) not found!")
+        # =============================================================
+
         # Kinematics
         self.R = 0.063
         self.L = 0.1826
 
-        # State
-        self.x = self.y = self.th = 0.0
+        # State (Odom variables are now just placeholders, actual Odom logic is commented out)
+        self.x = self.y = self.th = 0.0 
         self.last_wheel_pos = [0.0]*3
         self.first = True
 
-        # Command — THIS WAS THE ONLY MISSING LINE
+        # Command
         self.vx = self.vy = self.w = 0.0
 
         # Logging
         self.log_cnt = 0
 
-        self.get_logger().info("Robotino controller — back to the version that actually worked")
+        self.get_logger().info("Robotino controller ready. Only ground truth logs active.")
 
     def cmd_vel_callback(self, msg):
         self.vx = msg.linear.x
         self.vy = msg.linear.y
         self.w  = msg.angular.z
-
+        self.get_logger().info(f"RECEIVED CMD_VEL: vx={self.vx:.3f}, vy={self.vy:.3f}, w={self.w:.3f}")
+    
+    
     def step(self):
         while rclpy.ok() and self.robot.step(self.dt) != -1:
             stamp = self.get_clock().now().to_msg()
 
-            # === Perfect kinematics ===
-            w0 =  self.vy / self.R                              - self.w * self.L / self.R
-            w1 = -math.sin(math.pi/3) * self.vx / self.R - 0.5 * self.vy / self.R - self.w * self.L / self.R
-            w2 =  math.sin(math.pi/3) * self.vx / self.R - 0.5 * self.vy / self.R - self.w * self.L / self.R
+            # === GET WEBOTS GROUND TRUTH FROM GPS/COMPASS (Corrected Indexing) ===
+            if self.gps and self.compass:
+                position = self.gps.getValues()
+                webots_x = position[0] 
+                webots_y = position[2] # Corrected: using Z as Y ground plane
+                compass_values = self.compass.getValues()
+                webots_yaw_webots_frame = math.atan2(compass_values[0], compass_values[1])
+                webots_yaw = math.pi/2 - webots_yaw_webots_frame
+                webots_yaw = math.atan2(math.sin(webots_yaw), math.cos(webots_yaw))
+            else:
+                webots_x, webots_y, webots_yaw = 0.0, 0.0, 0.0
+                
+            WHEEL_RADIUS = self.R
+            DISTANCE_WHEEL_TO_ROBOT_CENTRE = self.L
+            
+            vx_cmd = self.vx
+            vy_cmd = self.vy
+            omega_cmd = self.w
 
-            self.wheels[0].setVelocity(w0)
-            self.wheels[1].setVelocity(w1)
-            self.wheels[2].setVelocity(w2)
+            # Correct formula derivation ensures pure vx results in straight line
+            w0_target = (-vx_cmd * math.sin(0)      + vy_cmd * math.cos(0)      - DISTANCE_WHEEL_TO_ROBOT_CENTRE * omega_cmd) / WHEEL_RADIUS
+            w1_target = (-vx_cmd * math.sin(2.094)  + vy_cmd * math.cos(2.094)  - DISTANCE_WHEEL_TO_ROBOT_CENTRE * omega_cmd) / WHEEL_RADIUS
+            w2_target = (-vx_cmd * math.sin(4.188)  + vy_cmd * math.cos(4.188)  - DISTANCE_WHEEL_TO_ROBOT_CENTRE * omega_cmd) / WHEEL_RADIUS
+            
+            # Note: 2.094 rad is 120 degrees; 4.188 rad is 240 degrees.
 
-            # === Your logs with orientation ===
-            if any(abs(v) > 0.05 for v in (w0, w1, w2)):
+            # --- CORRECTED LINES: Use indexing for each wheel ---
+            self.wheels[0].setVelocity(w0_target)
+            self.wheels[1].setVelocity(w1_target)
+            self.wheels[2].setVelocity(w2_target)
+
+            # === FOCUSED LOGS: Only Ground Truth Pose is displayed ===
+            if any(abs(v) > 0.05 for v in (w0_target, w1_target, w2_target)):
                 self.log_cnt += 1
                 if self.log_cnt >= 15:
                     self.log_cnt = 0
                     self.get_logger().info(
-                        f"WHEEL: [{w0:+.2f}, {w1:+.2f}, {w2:+.2f}] | CMD: [{self.vx:+.3f}, {self.vy:+.3f}, {self.w:+.3f}] | θ={math.degrees(self.th):+6.1f}°"
+                        f"WHEEL TARGETS: [{w0_target:+.2f}, {w1_target:+.2f}, {w2_target:+.2f}] | "
+                        f"GROUND TRUTH POSE: ({webots_x:+.2f}m, {webots_y:+.2f}m, {math.degrees(webots_yaw):+6.1f}°)"
                     )
-
-            # === Perfect wheel encoder odometry ===
-            curr = [e.getValue() for e in self.encoders]
-            if self.first:
-                self.last_wheel_pos = curr
-                self.first = False
-                continue
-
-            dpos = [c - l for c, l in zip(curr, self.last_wheel_pos)]
-            self.last_wheel_pos = curr
-
-            d0 = dpos[0] * self.R
-            d1 = dpos[1] * self.R
-            d2 = dpos[2] * self.R
-
-            dx = ( -math.sqrt(3)/2 * d1 + math.sqrt(3)/2 * d2 ) / 3.0
-            dy = (  d0 - 0.5 * d1 - 0.5 * d2 ) / 3.0
-            dth = (d0 + d1 + d2) / (3.0 * self.L)
-
-            self.th += dth
-            self.th = math.atan2(math.sin(self.th), math.cos(self.th))
-            self.x += dx * math.cos(self.th) - dy * math.sin(self.th)
-            self.y += dx * math.sin(self.th) + dy * math.cos(self.th)
-
-            # === Publish everything ===
+            
+            # === Publish Ground Truth as Odom ===
             odom = Odometry()
             odom.header.stamp = stamp
             odom.header.frame_id = 'odom'
             odom.child_frame_id = 'base_footprint'
-            odom.pose.pose.position.x = self.x
-            odom.pose.pose.position.y = self.y
-            odom.pose.pose.orientation.z = math.sin(self.th/2)
-            odom.pose.pose.orientation.w = math.cos(self.th/2)
+            odom.pose.pose.position.x = webots_x
+            odom.pose.pose.position.y = webots_y
+            odom.pose.pose.orientation.z = math.sin(webots_yaw/2)
+            odom.pose.pose.orientation.w = math.cos(webots_yaw/2)
             self.odom_pub.publish(odom)
 
             tf = TransformStamped()
             tf.header.stamp = stamp
             tf.header.frame_id = 'odom'
             tf.child_frame_id = 'base_footprint'
-            tf.transform.translation.x = self.x
-            tf.transform.translation.y = self.y
-            tf.transform.rotation.z = math.sin(self.th/2)
-            tf.transform.rotation.w = math.cos(self.th/2)
+            tf.transform.translation.x = webots_x
+            tf.transform.translation.y = webots_y
+            tf.transform.rotation.z = math.sin(webots_yaw/2)
+            tf.transform.rotation.w = math.cos(webots_yaw/2)
             self.tf.sendTransform(tf)
-
-            tf_laser = TransformStamped()
-            tf_laser.header.stamp = stamp
-            tf_laser.header.frame_id = 'base_footprint'
-            tf_laser.child_frame_id = 'laser_frame'
-            tf_laser.transform.translation.z = 0.3728
-            tf_laser.transform.rotation.w = 1.0
-            self.tf.sendTransform(tf_laser)
 
             ranges = self.lidar.getRangeImage()
             if ranges:
@@ -148,12 +152,10 @@ class RobotinoWebotsController(Node):
 
             rclpy.spin_once(self, timeout_sec=0)
 
-
 def main():
     rclpy.init()
     node = RobotinoWebotsController()
     node.step()
-
 
 if __name__ == '__main__':
     main()
