@@ -73,8 +73,15 @@ class RobotinoWebotsController(Node):
     
     def step(self):
         while rclpy.ok() and self.robot.step(self.dt) != -1:
-            stamp = self.get_clock().now().to_msg()
-
+            # Get Webots simulation time and convert to ROS 2 Time
+            sim_time_sec = self.robot.getTime()
+            #stamp = self.get_clock().now().to_msg()  # This still might not work
+            
+            # Better approach: construct timestamp manually from Webots time
+            from builtin_interfaces.msg import Time
+            stamp = Time()
+            stamp.sec = int(sim_time_sec)
+            stamp.nanosec = int((sim_time_sec - stamp.sec) * 1e9)
             # === GET WEBOTS GROUND TRUTH FROM GPS/COMPASS (Corrected Indexing) ===
             if self.gps and self.compass:
                 position = self.gps.getValues()
@@ -136,6 +143,17 @@ class RobotinoWebotsController(Node):
             tf.transform.rotation.z = math.sin(webots_yaw/2)
             tf.transform.rotation.w = math.cos(webots_yaw/2)
             self.tf.sendTransform(tf)
+            
+            tf_laser = TransformStamped()
+            tf_laser.header.stamp = stamp
+            tf_laser.header.frame_id = 'base_footprint'
+            tf_laser.child_frame_id = 'laser_frame'
+            tf_laser.transform.translation.x = 0.0
+            tf_laser.transform.translation.y = 0.0
+            tf_laser.transform.translation.z = 0.2
+            tf_laser.transform.rotation.w = 1.0
+            self.tf.sendTransform(tf_laser)
+
 
             ranges = self.lidar.getRangeImage()
             if ranges:

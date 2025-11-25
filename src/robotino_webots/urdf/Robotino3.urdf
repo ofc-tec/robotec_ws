@@ -2,9 +2,9 @@
 <robot name="/home/oscar/Robotino3.urdf" xmlns:xacro="http://ros.org/wiki/xacro">
   <link name="base_link">
     <visual>
-      <origin xyz="0.01 0 0" rpy="0 0 1.5708"/>
+      <origin xyz="0 0 0.153" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://rto_description/meshes/parts/robotino_base.dae" scale="0.01 0.01 0.01"/>
+        <cylinder radius="0.2266" length="0.276"/>
       </geometry>
     </visual>
     <collision>
@@ -711,19 +711,19 @@
     <origin xyz="0.0913 0.158136 0.05915" rpy="0 0 -0.523599"/>
   </joint>
   <link name="wheel2_link">
-  <visual>
-    <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
-    <geometry>
-      <mesh filename="package://webots/projects/robots/festo/robotino3/protos/meshes/omni_wheel.dae"/>
-    </geometry>
-  </visual>
-  <collision>
-    <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
-    <geometry>
-      <mesh filename="package://webots/projects/robots/festo/robotino3/protos/meshes/omni_wheel.dae"/>
-    </geometry>
-  </collision>
-</link>
+    <visual>
+      <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
+      <geometry>
+        <cylinder radius="0.063" length="0.01"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
+      <geometry>
+        <cylinder radius="0.063" length="0.01"/>
+      </geometry>
+    </collision>
+  </link>
   <joint name="wheel1_joint" type="continuous">
     <parent link="base_link"/>
     <child link="wheel1_link"/>
@@ -732,19 +732,19 @@
     <origin xyz="0.0913 -0.158136 0.05915" rpy="0 0 -2.617994"/>
   </joint>
   <link name="wheel1_link">
-  <visual>
-    <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
-    <geometry>
-      <mesh filename="package://webots/projects/robots/festo/robotino3/protos/meshes/omni_wheel.dae"/>
-    </geometry>
-  </visual>
-  <collision>
-    <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
-    <geometry>
-      <mesh filename="package://webots/projects/robots/festo/robotino3/protos/meshes/omni_wheel.dae"/>
-    </geometry>
-  </collision>
-</link>
+    <visual>
+      <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
+      <geometry>
+        <cylinder radius="0.063" length="0.01"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
+      <geometry>
+        <cylinder radius="0.063" length="0.01"/>
+      </geometry>
+    </collision>
+  </link>
   <joint name="wheel0_joint" type="continuous">
     <parent link="base_link"/>
     <child link="wheel0_link"/>
@@ -752,20 +752,20 @@
     <limit effort="10" velocity="137.46"/>
     <origin xyz="-0.1826 0 0.05915" rpy="0 0 1.570796"/>
   </joint>
-<link name="wheel0_link">
-  <visual>
-    <origin xyz="0 0 0" rpy="-1.570796 0 0"/>  <!-- KEEP THIS ROTATION! -->
-    <geometry>
-      <mesh filename="package://webots/projects/robets/festo/robotino3/protos/meshes/omni_wheel.dae"/>
-    </geometry>
-  </visual>
-  <collision>
-    <origin xyz="0 0 0" rpy="-1.570796 0 0"/>  <!-- KEEP THIS ROTATION! -->
-    <geometry>
-      <mesh filename="package://webots/projects/robots/festo/robotino3/protos/meshes/omni_wheel.dae"/>
-    </geometry>
-  </collision>
-</link>
+  <link name="wheel0_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
+      <geometry>
+        <cylinder radius="0.063" length="0.01"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
+      <geometry>
+        <cylinder radius="0.063" length="0.01"/>
+      </geometry>
+    </collision>
+  </link>
 
 <!-- Connect base_footprint to base_link -->
 <link name="base_footprint"/>
@@ -775,5 +775,6 @@
   <child link="base_link"/>
   <origin xyz="0 0 0" rpy="0 0 0"/>
 </joint>
+
 
 </robot>
