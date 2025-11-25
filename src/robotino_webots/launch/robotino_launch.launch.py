@@ -21,27 +21,27 @@ def generate_launch_description():
             name='map_server',
             output='screen',
             parameters=[{
-                'use_sim_time': True,  # CHANGED TO TRUE
+                'use_sim_time': False,
                 'yaml_filename': map_path,
                 'frame_id': 'map'
             }]
         ),
         
-        # AMCL                   
+        # AMCL 
         Node(
             package='nav2_amcl',
             executable='amcl',
             name='amcl',
             output='screen',
             parameters=[{
-                # Basic setup
-                'use_sim_time': True,  # CHANGED TO TRUE
+                'use_sim_time': False,
+                'publish_particle_cloud': True,
+                'min_particles': 500,
+                'max_particles': 2000,
                 'set_initial_pose': True,
                 'initial_pose.x': 0.0,
                 'initial_pose.y': 0.0,
-                'initial_pose.yaw': 0.0,
-                
-                # ... rest of your AMCL parameters remain the same
+                'initial_pose.yaw': 0.0
             }]
         ),
         
@@ -52,7 +52,7 @@ def generate_launch_description():
             name='lifecycle_manager',
             output='screen',
             parameters=[{
-                'use_sim_time': True,  # CHANGED TO TRUE
+                'use_sim_time': False,
                 'autostart': True,
                 'node_names': ['map_server', 'amcl']
             }]
@@ -63,7 +63,7 @@ def generate_launch_description():
             package='rviz2',
             executable='rviz2',
             name='rviz2',
-            parameters=[{'use_sim_time': True}],  # CHANGED TO TRUE
+            parameters=[{'use_sim_time': False}],
             arguments=['-d', rviz_config_path]
         )
     ])

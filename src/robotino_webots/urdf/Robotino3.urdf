@@ -2,9 +2,9 @@
 <robot name="/home/oscar/Robotino3.urdf" xmlns:xacro="http://ros.org/wiki/xacro">
   <link name="base_link">
     <visual>
-      <origin xyz="0 0 0.153" rpy="0 0 0"/>
+      <origin xyz="0.01 0 0" rpy="0 0 1.5708"/>
       <geometry>
-        <cylinder radius="0.2266" length="0.276"/>
+        <mesh filename="package://rto_description/meshes/parts/robotino_base.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
     <collision>
@@ -714,7 +714,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
       <geometry>
-        <cylinder radius="0.063" length="0.01"/>
+        <mesh filename="package://rto_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
     <collision>
@@ -735,7 +735,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
       <geometry>
-        <cylinder radius="0.063" length="0.01"/>
+        <mesh filename="package://rto_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
     <collision>
@@ -756,7 +756,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="-1.570796 0 0"/>
       <geometry>
-        <cylinder radius="0.063" length="0.01"/>
+        <mesh filename="package://rto_description/meshes/parts/robotino_wheel.dae" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
     <collision>
@@ -775,6 +775,5 @@
   <child link="base_link"/>
   <origin xyz="0 0 0" rpy="0 0 0"/>
 </joint>
-
 
 </robot>

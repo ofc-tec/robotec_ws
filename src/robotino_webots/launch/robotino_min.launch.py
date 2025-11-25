@@ -27,9 +27,6 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'world_file',
             default_value=get_package_share_directory('robotino_webots') + '/worlds/robotino_apartment.wbt',
-            #default_value=get_package_share_directory('robotino_webots') + '/worlds/robotino_ros2_lidar.wbt',
-            #default_value=get_package_share_directory('robotino_webots') + '/worlds/robotino3.wbt',
-
             description='Path to Webots world file'
         ),
         

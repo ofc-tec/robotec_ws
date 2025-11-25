@@ -3,177 +3,214 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import LaserScan
+from sensor_msgs.msg import LaserScan, JointState
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
+from builtin_interfaces.msg import Time
 import math
-from controller import Robot, GPS, Compass
+import numpy as np
+from controller import Robot
 
 class RobotinoWebotsController(Node):
     def __init__(self):
-        super().__init__('robotino_controller')
-
-        self.sub = self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
-        self.odom_pub = self.create_publisher(Odometry, '/odom', 50)
-        self.scan_pub = self.create_publisher(LaserScan, '/scan', 50)
-        self.tf = TransformBroadcaster(self)
-
-        self.robot = Robot()
-        self.dt = int(self.robot.getBasicTimeStep())
+        super().__init__('robotino_webots_controller')
         
-        # Wheels
-        self.wheels = [self.robot.getDevice(f'wheel{i}_joint') for i in range(3)]
-        for w in self.wheels:
-            w.setPosition(float('inf'))
-            w.setVelocity(0.0)
-
-        # Encoders
-        self.encoders = [self.robot.getDevice(f'wheel{i}_joint_sensor') for i in range(3)]
-        for e in self.encoders:
-            e.enable(self.dt)
-
+        self.subscription = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
+        self.odom_publisher = self.create_publisher(Odometry, 'odom', 50)
+        self.laser_publisher = self.create_publisher(LaserScan, 'scan', 50)
+        self.joint_publisher = self.create_publisher(JointState, 'joint_states', 10)
+        self.tf_broadcaster = TransformBroadcaster(self)
+        
+        self.robot = Robot()
+        self.timestep = 25
+        
+        # Wheels and encoders
+        self.wheels = []
+        self.wheel_encoders = []
+        self.last_wheel_positions = [0.0, 0.0, 0.0]
+        
+        for i in range(3):
+            wheel = self.robot.getDevice(f'wheel{i}_joint')
+            wheel.setPosition(float('inf'))
+            self.wheels.append(wheel)
+            
+            encoder = self.robot.getDevice(f'wheel{i}_joint_sensor')
+            encoder.enable(self.timestep)
+            self.wheel_encoders.append(encoder)
+            
+        self.WHEEL_RADIUS = 0.038
+        self.DISTANCE_WHEEL_TO_ROBOT_CENTRE = 0.1826
+        self.base_apply_speeds(0.0, 0.0, 0.0)
+        
         # Lidar
         self.lidar = self.robot.getDevice('Hokuyo URG-04LX-UG01')
-        self.lidar.enable(self.dt)
-
-        # === GROUND TRUTH SENSORS INITIALIZATION ===
-        self.gps = self.robot.getDevice('gps') if self.robot.getDevice('gps') else None
-        self.compass = self.robot.getDevice('compass') if self.robot.getDevice('compass') else None
-        if self.gps and self.compass:
-            self.gps.enable(self.dt)
-            self.compass.enable(self.dt)
-            self.get_logger().info("GPS and compass enabled for ground truth data.")
-        else:
-            self.get_logger().warning("Ground truth sensors (GPS/Compass) not found!")
-        # =============================================================
-
-        # Kinematics
-        self.R = 0.063
-        self.L = 0.1826
-
-        # State (Odom variables are now just placeholders, actual Odom logic is commented out)
-        self.x = self.y = self.th = 0.0 
-        self.last_wheel_pos = [0.0]*3
-        self.first = True
-
-        # Command
-        self.vx = self.vy = self.w = 0.0
-
-        # Logging
-        self.log_cnt = 0
-
-        self.get_logger().info("Robotino controller ready. Only ground truth logs active.")
+        self.lidar.enable(self.timestep)
+        
+        # Laser scan constants
+        self.scan_angle = 240.0 * np.pi / 180.0
+        self.angle_increment = self.scan_angle / 666
+        
+        # Odometry state
+        self.x = 0.0
+        self.y = 0.0
+        self.th = 0.0
+        self.last_time = float(self.robot.getTime())
+        
+        self.get_logger().info(f'Controller initialized: {self.timestep}ms timestep = {1000/self.timestep}Hz')
+    
+    def base_apply_speeds(self, vx, vy, omega):
+        vx /= self.WHEEL_RADIUS
+        vy /= self.WHEEL_RADIUS  
+        omega *= self.DISTANCE_WHEEL_TO_ROBOT_CENTRE / self.WHEEL_RADIUS
+        self.wheels[0].setVelocity(vy - omega)
+        self.wheels[1].setVelocity(-math.sqrt(0.75) * vx - 0.5 * vy - omega)
+        self.wheels[2].setVelocity(math.sqrt(0.75) * vx - 0.5 * vy - omega)
+    
+    def update_odometry(self, current_time):
+        if math.isnan(self.x) or math.isnan(self.y) or math.isnan(self.th):
+            self.x = 0.0
+            self.y = 0.0
+            self.th = 0.0
+        
+        try:
+            wheel_positions = [encoder.getValue() for encoder in self.wheel_encoders]
+            
+            if not hasattr(self, 'wheel_encoders_initialized'):
+                self.last_wheel_positions = wheel_positions
+                self.wheel_encoders_initialized = True
+                return
+            
+            delta_wheel0 = wheel_positions[0] - self.last_wheel_positions[0]
+            delta_wheel1 = wheel_positions[1] - self.last_wheel_positions[1]
+            delta_wheel2 = wheel_positions[2] - self.last_wheel_positions[2]
+            
+            self.last_wheel_positions = wheel_positions
+            
+            delta_x = self.WHEEL_RADIUS * 0.83 * (0.0000 * delta_wheel0 - 0.8660 * delta_wheel1 + 0.8660 * delta_wheel2)
+            delta_y = self.WHEEL_RADIUS * 0.83 * (1.0000 * delta_wheel0 - 0.5000 * delta_wheel1 - 0.5000 * delta_wheel2)
+            delta_th = self.WHEEL_RADIUS * -1.617 * (delta_wheel0 + delta_wheel1 + delta_wheel2) / (3.0 * self.DISTANCE_WHEEL_TO_ROBOT_CENTRE)
+            
+            dt = current_time - self.last_time
+            if dt > 0:
+                self.x += delta_x * math.cos(self.th) - delta_y * math.sin(self.th)
+                self.y += delta_x * math.sin(self.th) + delta_y * math.cos(self.th)
+                self.th += delta_th
+                self.th = math.atan2(math.sin(self.th), math.cos(self.th))
+            
+            self.last_time = current_time
+            
+        except Exception as e:
+            self.get_logger().warn(f'Odometry update error: {e}')
 
     def cmd_vel_callback(self, msg):
-        self.vx = msg.linear.x
-        self.vy = msg.linear.y
-        self.w  = msg.angular.z
-        self.get_logger().info(f"RECEIVED CMD_VEL: vx={self.vx:.3f}, vy={self.vy:.3f}, w={self.w:.3f}")
+        self.base_apply_speeds(msg.linear.x, msg.linear.y, msg.angular.z)
     
-    
-    def step(self):
-        while rclpy.ok() and self.robot.step(self.dt) != -1:
-            # Get Webots simulation time and convert to ROS 2 Time
-            sim_time_sec = self.robot.getTime()
-            #stamp = self.get_clock().now().to_msg()  # This still might not work
+    def get_sim_time(self):
+        webots_time = self.robot.getTime()
+        stamp = Time()
+        stamp.sec = int(webots_time)
+        stamp.nanosec = int((webots_time - stamp.sec) * 1e9)
+        return stamp
+
+    def run(self):
+        self.last_wheel_positions = [encoder.getValue() for encoder in self.wheel_encoders]
+        self.wheel_encoders_initialized = True
+        
+        self.x = 0.0
+        self.y = 0.0
+        self.th = 0.0
+        self.last_time = float(self.robot.getTime())
+        
+        publish_count = 0
+        
+        while rclpy.ok() and self.robot.step(self.timestep) != -1:
+            rclpy.spin_once(self, timeout_sec=0)
             
-            # Better approach: construct timestamp manually from Webots time
-            from builtin_interfaces.msg import Time
-            stamp = Time()
-            stamp.sec = int(sim_time_sec)
-            stamp.nanosec = int((sim_time_sec - stamp.sec) * 1e9)
-            # === GET WEBOTS GROUND TRUTH FROM GPS/COMPASS (Corrected Indexing) ===
-            if self.gps and self.compass:
-                position = self.gps.getValues()
-                webots_x = position[0] 
-                webots_y = position[2] # Corrected: using Z as Y ground plane
-                compass_values = self.compass.getValues()
-                webots_yaw_webots_frame = math.atan2(compass_values[0], compass_values[1])
-                webots_yaw = math.pi/2 - webots_yaw_webots_frame
-                webots_yaw = math.atan2(math.sin(webots_yaw), math.cos(webots_yaw))
-            else:
-                webots_x, webots_y, webots_yaw = 0.0, 0.0, 0.0
-                
-            WHEEL_RADIUS = self.R
-            DISTANCE_WHEEL_TO_ROBOT_CENTRE = self.L
+            current_sim_time = self.get_sim_time()
+            current_webots_time_float = float(self.robot.getTime())
             
-            vx_cmd = self.vx
-            vy_cmd = self.vy
-            omega_cmd = self.w
-
-            # Correct formula derivation ensures pure vx results in straight line
-            w0_target = (-vx_cmd * math.sin(0)      + vy_cmd * math.cos(0)      - DISTANCE_WHEEL_TO_ROBOT_CENTRE * omega_cmd) / WHEEL_RADIUS
-            w1_target = (-vx_cmd * math.sin(2.094)  + vy_cmd * math.cos(2.094)  - DISTANCE_WHEEL_TO_ROBOT_CENTRE * omega_cmd) / WHEEL_RADIUS
-            w2_target = (-vx_cmd * math.sin(4.188)  + vy_cmd * math.cos(4.188)  - DISTANCE_WHEEL_TO_ROBOT_CENTRE * omega_cmd) / WHEEL_RADIUS
+            # Update odometry from wheel encoders
+            self.update_odometry(current_webots_time_float)
             
-            # Note: 2.094 rad is 120 degrees; 4.188 rad is 240 degrees.
-
-            # --- CORRECTED LINES: Use indexing for each wheel ---
-            self.wheels[0].setVelocity(w0_target)
-            self.wheels[1].setVelocity(w1_target)
-            self.wheels[2].setVelocity(w2_target)
-
-            # === FOCUSED LOGS: Only Ground Truth Pose is displayed ===
-            if any(abs(v) > 0.05 for v in (w0_target, w1_target, w2_target)):
-                self.log_cnt += 1
-                if self.log_cnt >= 15:
-                    self.log_cnt = 0
-                    self.get_logger().info(
-                        f"WHEEL TARGETS: [{w0_target:+.2f}, {w1_target:+.2f}, {w2_target:+.2f}] | "
-                        f"GROUND TRUTH POSE: ({webots_x:+.2f}m, {webots_y:+.2f}m, {math.degrees(webots_yaw):+6.1f}°)"
-                    )
-            
-            # === Publish Ground Truth as Odom ===
-            odom = Odometry()
-            odom.header.stamp = stamp
-            odom.header.frame_id = 'odom'
-            odom.child_frame_id = 'base_footprint'
-            odom.pose.pose.position.x = webots_x
-            odom.pose.pose.position.y = webots_y
-            odom.pose.pose.orientation.z = math.sin(webots_yaw/2)
-            odom.pose.pose.orientation.w = math.cos(webots_yaw/2)
-            self.odom_pub.publish(odom)
-
-            tf = TransformStamped()
-            tf.header.stamp = stamp
-            tf.header.frame_id = 'odom'
-            tf.child_frame_id = 'base_footprint'
-            tf.transform.translation.x = webots_x
-            tf.transform.translation.y = webots_y
-            tf.transform.rotation.z = math.sin(webots_yaw/2)
-            tf.transform.rotation.w = math.cos(webots_yaw/2)
-            self.tf.sendTransform(tf)
-            
-            tf_laser = TransformStamped()
-            tf_laser.header.stamp = stamp
-            tf_laser.header.frame_id = 'base_footprint'
-            tf_laser.child_frame_id = 'laser_frame'
-            tf_laser.transform.translation.x = 0.0
-            tf_laser.transform.translation.y = 0.0
-            tf_laser.transform.translation.z = 0.2
-            tf_laser.transform.rotation.w = 1.0
-            self.tf.sendTransform(tf_laser)
-
-
+            # PUBLISH LASER SCAN - FRESH MESSAGE EVERY TIME
             ranges = self.lidar.getRangeImage()
             if ranges:
-                scan = LaserScan()
-                scan.header.stamp = stamp
-                scan.header.frame_id = 'laser_frame'
-                scan.angle_min = -2.094
-                scan.angle_max = 2.094
-                scan.angle_increment = 4.188 / 666
-                scan.range_min = 0.02
-                scan.range_max = 5.6
-                scan.ranges = list(reversed(ranges[:666]))
-                self.scan_pub.publish(scan)
+                laser_scan = LaserScan()
+                webots_time = self.robot.getTime()
+                laser_stamp = Time()
+                laser_stamp.sec = int(webots_time)
+                laser_stamp.nanosec = int((webots_time - laser_stamp.sec) * 1e9)
+                laser_scan.header.stamp = laser_stamp
+                laser_scan.header.frame_id = 'laser_frame'
+                laser_scan.angle_min = -self.scan_angle / 2
+                laser_scan.angle_max = self.scan_angle / 2
+                laser_scan.angle_increment = self.angle_increment
+                laser_scan.range_min = 0.05
+                laser_scan.range_max = 10.0
+                laser_scan.scan_time = self.timestep / 1000.0
+                laser_scan.time_increment = 0.0
+                laser_scan.ranges = list(reversed(ranges))
+                self.laser_publisher.publish(laser_scan)
+                
+                if publish_count < 3:
+                    self.get_logger().info(f'Laser published: {len(ranges)} ranges')
+                    publish_count += 1
+            
+            # PUBLISH ODOMETRY
+            odom_msg = Odometry()
+            odom_msg.header.stamp = current_sim_time
+            odom_msg.header.frame_id = 'odom'
+            odom_msg.child_frame_id = 'base_footprint'
+            
+            odom_msg.pose.pose.position.x = self.x
+            odom_msg.pose.pose.position.y = self.y
+            odom_msg.pose.pose.position.z = 0.0
+            
+            odom_msg.pose.pose.orientation.x = 0.0
+            odom_msg.pose.pose.orientation.y = 0.0
+            odom_msg.pose.pose.orientation.z = math.sin(self.th / 2.0)
+            odom_msg.pose.pose.orientation.w = math.cos(self.th / 2.0)
+            
+            self.odom_publisher.publish(odom_msg)
+            
+            # TF TRANSFORMS
+            t1 = TransformStamped()
+            t1.header.stamp = current_sim_time
+            t1.header.frame_id = 'odom'
+            t1.child_frame_id = 'base_footprint'
+            t1.transform.translation.x = self.x
+            t1.transform.translation.y = self.y
+            t1.transform.translation.z = 0.0
+            t1.transform.rotation.x = 0.0
+            t1.transform.rotation.y = 0.0
+            t1.transform.rotation.z = math.sin(self.th / 2.0)
+            t1.transform.rotation.w = math.cos(self.th / 2.0)
+            self.tf_broadcaster.sendTransform(t1)
+            
+            t2 = TransformStamped()
+            t2.header.stamp = current_sim_time
+            t2.header.frame_id = 'base_footprint'
+            t2.child_frame_id = 'laser_frame'
+            t2.transform.translation.z = 0.2
+            t2.transform.rotation.w = 1.0
+            self.tf_broadcaster.sendTransform(t2)
+            
+            # JOINT STATES
+            joint_msg = JointState()
+            joint_msg.header.stamp = current_sim_time
+            joint_msg.name = ['wheel0_joint', 'wheel1_joint', 'wheel2_joint']
+            wheel_positions = [encoder.getValue() for encoder in self.wheel_encoders]
+            joint_msg.position = wheel_positions
+            self.joint_publisher.publish(joint_msg)
 
-            rclpy.spin_once(self, timeout_sec=0)
-
-def main():
-    rclpy.init()
-    node = RobotinoWebotsController()
-    node.step()
+def main(args=None):
+    rclpy.init(args=args)
+    controller = RobotinoWebotsController()
+    try:
+        controller.run()
+    finally:
+        controller.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
