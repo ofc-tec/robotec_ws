@@ -9,11 +9,11 @@ import os
 def generate_launch_description():
     
     # Launch arguments
-    hostname = LaunchConfiguration('hostname', default='192.168.0.102:12080')
+    hostname = LaunchConfiguration('hostname', default='192.168.0.1:12080')
     
     return LaunchDescription([
         # Declare launch arguments
-        DeclareLaunchArgument('hostname', default_value='192.168.0.102:12080'),
+        DeclareLaunchArgument('hostname', default_value='192.168.0.1:12080'),
         
         # Launch Robotino driver
         IncludeLaunchDescription(
@@ -51,10 +51,27 @@ def generate_launch_description():
                 '/launch/online_async_launch.py'
             ]),
             launch_arguments={
-                'use_sim_time': 'false',
-                'odom_frame': 'odom',
-                'base_frame': 'base_link',  # Using base_link since we have it
-                'scan_topic': 'scan'
+            'use_sim_time': 'false',
+            'odom_frame': 'odom',
+            'base_frame': 'base_link', 
+            'scan_topic': 'scan',
+            
+            # MAXIMUM UPDATE FREQUENCY
+            'slam_toolbox.map_update_interval': '0.1',  # Update every 0.1 seconds
+            'slam_toolbox.transform_timeout': '0.02',   # Ultra-fast TF lookups
+            'slam_toolbox.processing_queue_size': '1',   # No queuing, process immediately
+            
+            # Minimal movement thresholds
+            'slam_toolbox.minimum_travel_distance': '0.01',  # Update after tiny moves
+            'slam_toolbox.minimum_travel_heading': '0.01',
+            
+            # Reduce processing load
+            'slam_toolbox.resolution': '0.075',  # Even coarser map for speed
+            'slam_toolbox.max_iterations': '25',  # Fewer iterations per scan
+            
+            # Trust sensors more
+            'slam_toolbox.position_covariance_scale': '0.1',
+            'slam_toolbox.observation_covariance_scale': '0.05',
             }.items()
         ),
         
