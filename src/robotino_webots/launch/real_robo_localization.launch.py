@@ -77,40 +77,54 @@ def generate_launch_description():
         # -----------------------------
         # 5) AMCL Localization
         # -----------------------------
-        Node(
-            package='nav2_amcl',
-            executable='amcl',
-            name='amcl',
-            output='screen',
-            parameters=[{
-                'use_sim_time': False,
-                'global_frame_id': 'map',
-                'odom_frame_id': 'odom',
-                'base_frame_id': 'base_link',
-                'scan_topic': 'scan',
+     Node(
+    package='nav2_amcl',
+    executable='amcl',
+    name='amcl',
+    output='screen',
+    parameters=[{
+        'use_sim_time': False,
+        'global_frame_id': 'map',
+        'odom_frame_id': 'odom',
+        'base_frame_id': 'base_link',
+        'scan_topic': 'scan',
 
-                # Particle filter settings
-                'min_particles': 500,
-                'max_particles': 2000,
+        # --- Pocas partículas ---
+        'min_particles': 200,
+        'max_particles': 1000,
 
-                # Sensor model
-                'laser_model_type': 'likelihood_field',
-                'laser_likelihood_max_dist': 2.0,
-                'laser_max_beams': 60,
+        # --- Modelo de láser: confía MUCHO en él ---
+        'laser_model_type': 'likelihood_field',
+        'laser_likelihood_max_dist': 2.0,
+        'laser_max_beams': 90,      # más beams = más info de láser
+        'z_hit': 0.95,              # casi todo el peso a mediciones buenas
+        'z_rand': 0.02,             # pocas lecturas aleatorias
+        'z_short': 0.03,
+        'sigma_hit': 0.15,          # campo de prob más “afilado”
+        'lambda_short': 0.1,
 
-                # Motion model tuning
-                'odom_alpha1': 0.5,
-                'odom_alpha2': 0.5,
-                'odom_alpha3': 0.5,
-                'odom_alpha4': 0.5,
+        # --- Motion model: confiamos POCO en odom ---
+        # Más grandes que antes, pero no tan exagerados como 0.5
+        'odom_alpha1': 0.30,   # ruido rotación por rotación
+        'odom_alpha2': 0.10,   # ruido traslación por rotación
+        'odom_alpha3': 0.30,   # ruido traslación por traslación
+        'odom_alpha4': 0.10,   # ruido rotación por traslación
 
-                # Initial pose
-                'set_initial_pose': True,
-                'initial_pose.x': 0.0,
-                'initial_pose.y': 0.0,
-                'initial_pose.theta': 0.0
-            }]
+        # Actualización / resample
+        'update_min_d': 0.05,  # 5 cm → corrige más seguido con láser
+        'update_min_a': 0.10,  # unos 6°
+        'resample_interval': 1,
+
+        'transform_tolerance': 0.5,
+
+        # Mejor inicializar desde RViz
+        'set_initial_pose': False,
+        'initial_pose.x': 0.0,
+        'initial_pose.y': 0.0,
+        'initial_pose.theta': 0.0,
+    }]          
         ),
+
 
         # -----------------------------
         # 6) Lifecycle Manager (localization)
