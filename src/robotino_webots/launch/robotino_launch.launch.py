@@ -45,9 +45,6 @@ def generate_launch_description():
                 # Then override / add the same inline params you had before:
                 {
                     'use_sim_time': False,
-                    'publish_particle_cloud': True,
-                    'min_particles': 500,
-                    'max_particles': 2000,
                     'set_initial_pose': True,
                     'initial_pose.x': 0.0,
                     'initial_pose.y': 0.0,

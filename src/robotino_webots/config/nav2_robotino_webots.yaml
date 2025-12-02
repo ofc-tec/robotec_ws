@@ -1,56 +1,68 @@
+
 amcl:
- 
   ros__parameters:
-    alpha1: 0.2
-    alpha2: 0.2
-    alpha3: 0.2
-    alpha4: 0.2
-    alpha5: 0.2
+    use_map_topic: false
+    scan_topic: scan
 
-    base_frame_id: "base_footprint"
-    beam_skip_distance: 0.5
-    beam_skip_error_threshold: 0.9
-    beam_skip_threshold: 0.3
-    do_beamskip: false
+    # Particle filter size
+    min_particles: 500          # keep higher min for stability
+    max_particles: 2000
+    kld_err: 0.05
+    kld_z: 0.99
 
-    global_frame_id: "map"
-    lambda_short: 0.1
+    # How often to update (aggressive)
+    update_min_d: 0.005
+    update_min_a: 0.005
+
+
+    # Odom noise (less trust in rotation)
+    odom_alpha1: 0.8       # was 0.4
+    odom_alpha2: 0.10
+    odom_alpha3: 0.10
+    odom_alpha4: 0.4       # was 0.2
+
+
+    # Laser model
+    laser_model_type: "likelihood_field"
+    laser_max_beams: 60
     laser_likelihood_max_dist: 2.0
     laser_max_range: 100.0
     laser_min_range: -1.0
-    laser_model_type: "likelihood_field"
-    max_beams: 60
 
-    max_particles: 2000
-    min_particles: 500
-
-    odom_frame_id: "odom"
-    pf_err: 0.05
-    pf_z: 0.99
-    recovery_alpha_fast: 0.0
-    recovery_alpha_slow: 0.0
-    resample_interval: 1
-
-    # Holonomic model
-    robot_model_type: "nav2_amcl::OmnidirectionalMotionModel"
-
-    save_pose_rate: 0.5
-    sigma_hit: 0.2
-    tf_broadcast: true
-    transform_tolerance: 1.0
-
-    # --- MORE AGGRESSIVE LASER TRUST ---
-    # update more frequently from laser
-    update_min_a: 0.1      # was 0.2
-    update_min_d: 0.05     # was 0.25
-
-    # rely more on good matches, less on random
-    z_hit: 0.9             # was 0.5
-    z_rand: 0.1            # was 0.5
+    z_hit: 0.9
+    z_rand: 0.1
     z_short: 0.05
     z_max: 0.05
+    sigma_hit: 0.2
+    lambda_short: 0.1
 
-    scan_topic: scan
+    # Frames
+    base_frame_id: "base_footprint"
+    odom_frame_id: "odom"
+    global_frame_id: "map"
+
+    # Motion model (holonomic)
+    robot_model_type: "nav2_amcl::OmnidirectionalMotionModel"
+
+    # Beam skipping (disabled for now)
+    do_beamskip: false
+    beam_skip_distance: 0.5
+    beam_skip_error_threshold: 0.9
+    beam_skip_threshold: 0.3
+
+    # PF + resampling
+    pf_err: 0.05
+    pf_z: 0.99
+    resample_interval: 1
+    recovery_alpha_fast: 0.1
+    recovery_alpha_slow: 0.0
+
+
+    # TF / misc
+    tf_broadcast: true
+    transform_tolerance: 1.0
+    save_pose_rate: 0.5
+
 
 
 bt_navigator:

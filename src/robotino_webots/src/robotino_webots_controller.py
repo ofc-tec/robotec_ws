@@ -3,13 +3,21 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import LaserScan, JointState
+from sensor_msgs.msg import LaserScan, JointState, Image
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 from builtin_interfaces.msg import Time
 import math
 import numpy as np
 from controller import Robot
+
+# === CAMERA / CV BRIDGE SUPPORT ===
+try:
+    from cv_bridge import CvBridge
+    HAS_CV_BRIDGE = True
+except ImportError:
+    HAS_CV_BRIDGE = False
+
 
 class RobotinoWebotsController(Node):
     def __init__(self):
@@ -46,6 +54,28 @@ class RobotinoWebotsController(Node):
         self.lidar = self.robot.getDevice('Hokuyo URG-04LX-UG01')
         self.lidar.enable(self.timestep)
         
+        # === CAMERA ===
+        self.camera = None
+        self.camera_publisher = None
+        self.bridge = None
+
+        if HAS_CV_BRIDGE:
+            try:
+                self.camera = self.robot.getDevice('camera')
+            except Exception as e:
+                self.get_logger().warn(f'Camera device not found: {e}')
+                self.camera = None
+
+            if self.camera is not None:
+                self.camera.enable(self.timestep)
+                self.bridge = CvBridge()
+                self.camera_publisher = self.create_publisher(Image, 'camera/image_raw', 10)
+                self.get_logger().info('Camera initialized, publishing on camera/image_raw')
+            else:
+                self.get_logger().warn('Camera device "camera" not available in Webots PROTO.')
+        else:
+            self.get_logger().warn('cv_bridge not available, camera/image_raw will NOT be published.')
+
         # Laser scan constants
         self.scan_angle = 240.0 * np.pi / 180.0
         self.angle_increment = self.scan_angle / 666
@@ -155,6 +185,21 @@ class RobotinoWebotsController(Node):
                 if publish_count < 3:
                     self.get_logger().info(f'Laser published: {len(ranges)} ranges')
                     publish_count += 1
+
+            # === CAMERA PUBLISHING ===
+            if self.camera is not None and self.camera_publisher is not None and self.bridge is not None:
+                img = self.camera.getImage()
+                if img:
+                    width = self.camera.getWidth()
+                    height = self.camera.getHeight()
+                    # Webots gives BGRA; we keep BGR (OpenCV default)
+                    array = np.frombuffer(img, dtype=np.uint8).reshape((height, width, 4))
+                    bgr = array[:, :, :3]
+
+                    image_msg = self.bridge.cv2_to_imgmsg(bgr, encoding='bgr8')
+                    image_msg.header.stamp = current_sim_time
+                    image_msg.header.frame_id = 'camera_link'
+                    self.camera_publisher.publish(image_msg)
             
             # PUBLISH ODOMETRY
             odom_msg = Odometry()
@@ -194,6 +239,21 @@ class RobotinoWebotsController(Node):
             t2.transform.translation.z = 0.2
             t2.transform.rotation.w = 1.0
             self.tf_broadcaster.sendTransform(t2)
+
+            # === CAMERA TF (rough pose, can be tuned later) ===
+            if self.camera is not None:
+                t3 = TransformStamped()
+                t3.header.stamp = current_sim_time
+                t3.header.frame_id = 'base_footprint'
+                t3.child_frame_id = 'camera_link'
+                t3.transform.translation.x = 0.1   # approx in front of robot
+                t3.transform.translation.y = 0.0
+                t3.transform.translation.z = 0.25  # approx height
+                t3.transform.rotation.x = 0.0
+                t3.transform.rotation.y = 0.0
+                t3.transform.rotation.z = 0.0
+                t3.transform.rotation.w = 1.0
+                self.tf_broadcaster.sendTransform(t3)
             
             # JOINT STATES
             joint_msg = JointState()
@@ -202,6 +262,7 @@ class RobotinoWebotsController(Node):
             wheel_positions = [encoder.getValue() for encoder in self.wheel_encoders]
             joint_msg.position = wheel_positions
             self.joint_publisher.publish(joint_msg)
+
 
 def main(args=None):
     rclpy.init(args=args)

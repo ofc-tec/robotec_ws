@@ -1,19 +1,22 @@
 slam_toolbox:
   ros__parameters:
-    # MUCH MORE CONSERVATIVE DURING MOTION
-    minimum_travel_heading: 0.8        # Only process after large rotations
-    minimum_travel_distance: 0.25      # Only process after significant movement
-    throttle_scans: 4                   # Process every 5th scan
-    
-    # STRICTER MATCHING
-    link_match_minimum_response_fine: 0.7
-    loop_match_minimum_response_fine: 0.85
-    
-    # SMALLER SEARCH WINDOWS
-    correlation_search_space_dimension: 0.2
-    loop_search_maximum_distance: 2.0
-    
-    # BETTER ROTATION HANDLING
+    use_sim_time: true
+    mode: "mapping"
+
+    # High-quality map for Webots
+    resolution: 0.02                 # finer cells -> straight, thin walls
+    map_update_interval: 0.5         # don’t spam, but update regularly
+
+    # Update even on small motions
+    minimum_travel_distance: 0.05    # 5 cm
+    minimum_travel_heading: 0.05     # ~3°
+    throttle_scans: 1                # use every scan
+
+    # Reasonable defaults
+    transform_timeout: 0.5
+    max_laser_range: 10.0
+    minimum_time_between_scans: 0.0
+
     use_scan_matching: true
-    use_scan_barycenter: true
     do_loop_closing: true
+    
