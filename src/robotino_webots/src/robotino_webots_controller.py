@@ -10,6 +10,7 @@ from builtin_interfaces.msg import Time
 import math
 import numpy as np
 from controller import Robot
+from rclpy.parameter import Parameter
 
 # === CAMERA / CV BRIDGE SUPPORT ===
 try:
@@ -22,7 +23,9 @@ except ImportError:
 class RobotinoWebotsController(Node):
     def __init__(self):
         super().__init__('robotino_webots_controller')
-        
+        self.set_parameters([
+            Parameter('use_sim_time', Parameter.Type.BOOL, False)
+            ])
         self.subscription = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
         self.odom_publisher = self.create_publisher(Odometry, 'odom', 50)
         self.laser_publisher = self.create_publisher(LaserScan, 'scan', 50)
@@ -84,6 +87,7 @@ class RobotinoWebotsController(Node):
         self.x = 0.0
         self.y = 0.0
         self.th = 0.0
+        # last_time in *Webots* time (float seconds)
         self.last_time = float(self.robot.getTime())
         
         self.get_logger().info(f'Controller initialized: {self.timestep}ms timestep = {1000/self.timestep}Hz')
@@ -96,7 +100,8 @@ class RobotinoWebotsController(Node):
         self.wheels[1].setVelocity(-math.sqrt(0.75) * vx - 0.5 * vy - omega)
         self.wheels[2].setVelocity(math.sqrt(0.75) * vx - 0.5 * vy - omega)
     
-    def update_odometry(self, current_time):
+    def update_odometry(self, current_webots_time):
+        """Integrate odom using Webots time, but DO NOT use it for ROS headers."""
         if math.isnan(self.x) or math.isnan(self.y) or math.isnan(self.th):
             self.x = 0.0
             self.y = 0.0
@@ -116,18 +121,18 @@ class RobotinoWebotsController(Node):
             
             self.last_wheel_positions = wheel_positions
             
-            delta_x = self.WHEEL_RADIUS * 0.83 * (0.0000 * delta_wheel0 - 0.8660 * delta_wheel1 + 0.8660 * delta_wheel2)
-            delta_y = self.WHEEL_RADIUS * 0.83 * (1.0000 * delta_wheel0 - 0.5000 * delta_wheel1 - 0.5000 * delta_wheel2)
+            delta_x = self.WHEEL_RADIUS * 1.099 * (0.0000 * delta_wheel0 - 0.8660 * delta_wheel1 + 0.8660 * delta_wheel2)
+            delta_y = self.WHEEL_RADIUS * 1.099 * (1.0000 * delta_wheel0 - 0.5000 * delta_wheel1 - 0.5000 * delta_wheel2)
             delta_th = self.WHEEL_RADIUS * -1.617 * (delta_wheel0 + delta_wheel1 + delta_wheel2) / (3.0 * self.DISTANCE_WHEEL_TO_ROBOT_CENTRE)
             
-            dt = current_time - self.last_time
+            dt = current_webots_time - self.last_time
             if dt > 0:
                 self.x += delta_x * math.cos(self.th) - delta_y * math.sin(self.th)
                 self.y += delta_x * math.sin(self.th) + delta_y * math.cos(self.th)
                 self.th += delta_th
                 self.th = math.atan2(math.sin(self.th), math.cos(self.th))
             
-            self.last_time = current_time
+            self.last_time = current_webots_time
             
         except Exception as e:
             self.get_logger().warn(f'Odometry update error: {e}')
@@ -135,6 +140,7 @@ class RobotinoWebotsController(Node):
     def cmd_vel_callback(self, msg):
         self.base_apply_speeds(msg.linear.x, msg.linear.y, msg.angular.z)
     
+    # get_sim_time is now unused; you can delete it if you want.
     def get_sim_time(self):
         webots_time = self.robot.getTime()
         stamp = Time()
@@ -155,22 +161,21 @@ class RobotinoWebotsController(Node):
         
         while rclpy.ok() and self.robot.step(self.timestep) != -1:
             rclpy.spin_once(self, timeout_sec=0)
-            
-            current_sim_time = self.get_sim_time()
+
+            # ✅ Wall-clock ROS time for ALL message headers
+            current_ros_time = self.get_clock().now().to_msg()
+
+            # Webots time ONLY for odom integration
             current_webots_time_float = float(self.robot.getTime())
             
-            # Update odometry from wheel encoders
+            # Update odometry from wheel encoders (in Webots time)
             self.update_odometry(current_webots_time_float)
             
-            # PUBLISH LASER SCAN - FRESH MESSAGE EVERY TIME
+            # PUBLISH LASER SCAN with ROS time
             ranges = self.lidar.getRangeImage()
             if ranges:
                 laser_scan = LaserScan()
-                webots_time = self.robot.getTime()
-                laser_stamp = Time()
-                laser_stamp.sec = int(webots_time)
-                laser_stamp.nanosec = int((webots_time - laser_stamp.sec) * 1e9)
-                laser_scan.header.stamp = laser_stamp
+                laser_scan.header.stamp = current_ros_time          # ✅ FIXED
                 laser_scan.header.frame_id = 'laser_frame'
                 laser_scan.angle_min = -self.scan_angle / 2
                 laser_scan.angle_max = self.scan_angle / 2
@@ -197,13 +202,13 @@ class RobotinoWebotsController(Node):
                     bgr = array[:, :, :3]
 
                     image_msg = self.bridge.cv2_to_imgmsg(bgr, encoding='bgr8')
-                    image_msg.header.stamp = current_sim_time
+                    image_msg.header.stamp = current_ros_time       # ✅ FIXED
                     image_msg.header.frame_id = 'camera_link'
                     self.camera_publisher.publish(image_msg)
             
-            # PUBLISH ODOMETRY
+            # PUBLISH ODOMETRY with ROS time
             odom_msg = Odometry()
-            odom_msg.header.stamp = current_sim_time
+            odom_msg.header.stamp = current_ros_time               # ✅ FIXED
             odom_msg.header.frame_id = 'odom'
             odom_msg.child_frame_id = 'base_footprint'
             
@@ -219,8 +224,9 @@ class RobotinoWebotsController(Node):
             self.odom_publisher.publish(odom_msg)
             
             # TF TRANSFORMS
+            # odom -> base_footprint
             t1 = TransformStamped()
-            t1.header.stamp = current_sim_time
+            t1.header.stamp = current_ros_time                     # ✅ FIXED
             t1.header.frame_id = 'odom'
             t1.child_frame_id = 'base_footprint'
             t1.transform.translation.x = self.x
@@ -232,18 +238,24 @@ class RobotinoWebotsController(Node):
             t1.transform.rotation.w = math.cos(self.th / 2.0)
             self.tf_broadcaster.sendTransform(t1)
             
+            # base_footprint -> laser_frame
             t2 = TransformStamped()
-            t2.header.stamp = current_sim_time
+            t2.header.stamp = current_ros_time                     # ✅ FIXED
             t2.header.frame_id = 'base_footprint'
             t2.child_frame_id = 'laser_frame'
+            t2.transform.translation.x = 0.0
+            t2.transform.translation.y = 0.0
             t2.transform.translation.z = 0.2
+            t2.transform.rotation.x = 0.0
+            t2.transform.rotation.y = 0.0
+            t2.transform.rotation.z = 0.0
             t2.transform.rotation.w = 1.0
             self.tf_broadcaster.sendTransform(t2)
 
             # === CAMERA TF (rough pose, can be tuned later) ===
             if self.camera is not None:
                 t3 = TransformStamped()
-                t3.header.stamp = current_sim_time
+                t3.header.stamp = current_ros_time                 # ✅ FIXED
                 t3.header.frame_id = 'base_footprint'
                 t3.child_frame_id = 'camera_link'
                 t3.transform.translation.x = 0.1   # approx in front of robot
@@ -255,9 +267,9 @@ class RobotinoWebotsController(Node):
                 t3.transform.rotation.w = 1.0
                 self.tf_broadcaster.sendTransform(t3)
             
-            # JOINT STATES
+            # JOINT STATES (for RViz wheels)
             joint_msg = JointState()
-            joint_msg.header.stamp = current_sim_time
+            joint_msg.header.stamp = current_ros_time              # ✅ FIXED
             joint_msg.name = ['wheel0_joint', 'wheel1_joint', 'wheel2_joint']
             wheel_positions = [encoder.getValue() for encoder in self.wheel_encoders]
             joint_msg.position = wheel_positions

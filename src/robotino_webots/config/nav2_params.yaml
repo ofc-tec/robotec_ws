@@ -1,66 +1,42 @@
 amcl:
   ros__parameters:
-    use_map_topic: false
-    scan_topic: scan
-
-    # Particle filter parameters
-    min_particles: 500
-    max_particles: 2000
-    kld_err: 0.05
-    kld_z: 0.99
-
-    # Update thresholds (reasonable)
-    update_min_d: 0.10      # 10 cm
-    update_min_a: 0.10      # 6 degrees
-
-    # --- ODOMETRY NOISE MODEL ---
-    # These assume odom is pretty good but not perfect.
-    odom_alpha1: 0.05       # Rotational noise from rotation
-    odom_alpha2: 0.05       # Rotational noise from translation
-    odom_alpha3: 0.05       # Translational noise from translation
-    odom_alpha4: 0.05       # Translational noise from rotation
-
-    # For holonomic robots you *can* use alpha5, but we leave it off for now.
-    # odom_alpha5: 0.0
-
-    # Laser model
-    laser_model_type: "likelihood_field"
-    laser_max_beams: 60
-    laser_likelihood_max_dist: 2.0
-    laser_max_range: 10.0
-    laser_min_range: -1.0
-
-    z_hit: 0.9
-    z_rand: 0.05
-    z_short: 0.05
-    z_max: 0.05
-    sigma_hit: 0.2
-    lambda_short: 0.1
-
-    # Frames
-    base_frame_id: "base_link"
-    odom_frame_id: "odom"
-    global_frame_id: "map"
-
-    # Motion model (holonomic)
-    robot_model_type: "nav2_amcl::OmniMotionModel"
-
-    # Beam skipping (keep off for tuning)
+    alpha1: 0.2
+    alpha2: 0.2
+    alpha3: 0.2
+    alpha4: 0.2
+    alpha5: 0.2
+    base_frame_id: "base_footprint"
+    beam_skip_distance: 0.5
+    beam_skip_error_threshold: 0.9
+    beam_skip_threshold: 0.3
     do_beamskip: false
-
-    # PF / resampling
+    global_frame_id: "map"
+    lambda_short: 0.1
+    laser_likelihood_max_dist: 2.0
+    laser_max_range: 100.0
+    laser_min_range: -1.0
+    laser_model_type: "likelihood_field"
+    max_beams: 60
+    max_particles: 2000
+    min_particles: 500
+    odom_frame_id: "odom"
     pf_err: 0.05
     pf_z: 0.99
-    resample_interval: 2
-    recovery_alpha_fast: 0.1
+    recovery_alpha_fast: 0.0
     recovery_alpha_slow: 0.0
-
-    # TF
-    tf_broadcast: true
-    transform_tolerance: 0.1   # Reduced from 0.2 for crisper updates
+    resample_interval: 1
+    robot_model_type: "nav2_amcl::DifferentialMotionModel"
     save_pose_rate: 0.5
-
-
+    sigma_hit: 0.2
+    tf_broadcast: true
+    transform_tolerance: 1.0
+    update_min_a: 0.2
+    update_min_d: 0.25
+    z_hit: 0.5
+    z_max: 0.05
+    z_rand: 0.5
+    z_short: 0.05
+    scan_topic: scan
 
 bt_navigator:
   ros__parameters:
@@ -140,10 +116,7 @@ controller_server:
       transform_tolerance: 0.1
       temperature: 0.3
       gamma: 0.015
-      #motion_model: "DiffDrive"
-      motion_model: "Omni"          # or "Omnidirectional" depending on the template
-    
-
+      motion_model: "DiffDrive"
       visualize: true
       regenerate_noises: true
       TrajectoryVisualizer:
@@ -228,7 +201,7 @@ local_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.15
+        inflation_radius: 0.70
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
@@ -285,7 +258,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.35
+        inflation_radius: 0.7
       always_send_full_costmap: True
 
 # The yaml_filename does not need to be specified since it going to be set by defaults in launch.
@@ -399,7 +372,7 @@ velocity_smoother:
 
 collision_monitor:
   ros__parameters:
-    base_frame_id: "base_link"
+    base_frame_id: "base_footprint"
     odom_frame_id: "odom"
     cmd_vel_in_topic: "cmd_vel_smoothed"
     cmd_vel_out_topic: "cmd_vel"
@@ -481,16 +454,16 @@ docking_server:
       simulation_step: 0.1
       dock_collision_threshold: 0.3
 
-#loopback_simulator:
-#  ros__parameters:
-#    base_frame_id: "base_footprint"
-#    odom_frame_id: "odom"
-#    map_frame_id: "map"
-#    scan_frame_id: "base_scan"  # tb4_loopback_simulator.launch.py remaps to 'rplidar_link'
-#    update_duration: 0.02
-#    scan_range_min: 0.05
-#    scan_range_max: 30.0
-#    scan_angle_min: -3.1415
-#    scan_angle_max: 3.1415
-#    scan_angle_increment: 0.02617
-#    scan_use_inf: true
+loopback_simulator:
+  ros__parameters:
+    base_frame_id: "base_footprint"
+    odom_frame_id: "odom"
+    map_frame_id: "map"
+    scan_frame_id: "base_scan"  # tb4_loopback_simulator.launch.py remaps to 'rplidar_link'
+    update_duration: 0.02
+    scan_range_min: 0.05
+    scan_range_max: 30.0
+    scan_angle_min: -3.1415
+    scan_angle_max: 3.1415
+    scan_angle_increment: 0.02617
+    scan_use_inf: true

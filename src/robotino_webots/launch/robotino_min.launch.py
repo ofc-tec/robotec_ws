@@ -42,7 +42,7 @@ def generate_launch_description():
             executable='robotino_webots_controller.py',
             name='robotino_controller',
             output='screen',
-            parameters=[{'use_sim_time': True}],
+            parameters=[{'use_sim_time': False}],
         ),
         
         # ROBOT STATE PUBLISHER - WITH CORRECT URDF PATH
@@ -53,7 +53,7 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'robot_description': robot_description,
-                'use_sim_time': True,
+                'use_sim_time': False,
                 'publish_frequency': 30.0
             }]
         ),
