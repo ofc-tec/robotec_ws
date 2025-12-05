@@ -7,15 +7,15 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image, PointCloud2
 from cv_bridge import CvBridge, CvBridgeError
 
+import cv2
+
 
 class VisionNode(Node):
     def __init__(self) -> None:
         super().__init__('vision_node')
 
         # --- Parameters ---
-        # Topic for incoming RGB image
         self.declare_parameter('image_topic', '/camera/image_raw')
-        # Optional topic for future point cloud subscriber
         self.declare_parameter('pointcloud_topic', '')
 
         image_topic = self.get_parameter('image_topic').get_parameter_value().string_value
@@ -23,15 +23,18 @@ class VisionNode(Node):
 
         self.get_logger().info(f'[vision] Using image_topic: {image_topic}')
         if pointcloud_topic:
-            self.get_logger().info(f'[vision] PointCloud placeholder topic: {pointcloud_topic}')
+            self.get_logger().info(f'[vision] PointCloud subscriber is enabled on: {pointcloud_topic}')
         else:
             self.get_logger().info('[vision] PointCloud subscriber is disabled (empty topic).')
 
-        # --- CvBridge for image conversions ---
+        # CvBridge
         self.bridge = CvBridge()
 
-        # --- Subscriptions ---
-        # Image subscriber
+        # OpenCV window (same spirit as your ROS1 code)
+        self.window_name = 'class rgbd'
+        cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
+
+        # Subscriptions
         self.image_sub = self.create_subscription(
             Image,
             image_topic,
@@ -39,7 +42,6 @@ class VisionNode(Node):
             10
         )
 
-        # Placeholder for PointCloud2 subscriber (no processing yet)
         self.pointcloud_sub = None
         if pointcloud_topic:
             self.pointcloud_sub = self.create_subscription(
@@ -51,23 +53,41 @@ class VisionNode(Node):
 
     # --------------- Callbacks ----------------
     def image_callback(self, msg: Image) -> None:
-        """Main hook to plug in all your old vision code."""
+        """Main hook to plug in all your old vision code (segmentation, CLIP, YOLO, etc.)."""
         try:
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
         except CvBridgeError as e:
             self.get_logger().error(f'CvBridge error: {e}')
             return
 
-        # TODO: here is where we’ll start adding all the segmentation / CLIP / YOLO / DINO magic
-        h, w = cv_image.shape[:2]
-        self.get_logger().debug(f'[vision] Received image {w}x{h}')
+        # HERE is where we’ll later add:
+        # - segmentation trackbars
+        # - CLIP / YOLO / DINO calls
+        # - plane finding, etc.
 
-        # For now, do nothing else – no imshow, no waitKey, just spin.
+        # For now: just display the image in the 'class rgbd' window
+        cv2.imshow(self.window_name, cv_image)
+
+        # Handle keyboard input (like your ROS1 node):
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q'):
+            self.get_logger().info("Key 'q' pressed – closing window and shutting down node.")
+            cv2.destroyAllWindows()
+            # This will cause rclpy.spin() to return
+            rclpy.shutdown()
 
     def pointcloud_callback(self, msg: PointCloud2) -> None:
         """Placeholder for future point cloud processing."""
-        # TODO: point cloud handling (ros_numpy / open3d / etc.)
+        # TODO: When you have a PC2 topic, we can port the RGBD/point cloud logic here.
         self.get_logger().debug('[vision] Received PointCloud2 message (placeholder).')
+
+    def destroy_node(self):
+        """Ensure OpenCV windows are closed on shutdown."""
+        try:
+            cv2.destroyAllWindows()
+        except Exception:
+            pass
+        super().destroy_node()
 
 
 def main(args=None) -> None:
@@ -79,7 +99,9 @@ def main(args=None) -> None:
         node.get_logger().info('Shutting down vision_node (Ctrl+C).')
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        # If shutdown was already called from the callback, this is a no-op.
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
