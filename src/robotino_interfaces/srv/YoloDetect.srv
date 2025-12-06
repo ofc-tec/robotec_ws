@@ -1,0 +1,5 @@
+# Request is empty
+---
+
+# Response contains a Detection2DArray
+vision_msgs/Detection2DArray detections
