@@ -36,20 +36,9 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/festo/robotino3/protos/Robotino3.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/festo/robotino3/protos/Robotino3HokuyoMountingSupport.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/festo/robotino3/protos/Robotino3Webcam.proto"
-
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/hokuyo/protos/HokuyoUrg04lxug01.proto"
-
-DEF wheel_material Material {
-  diffuseColor 0.1 0.1 0.1
-}
-
-DEF floor_material Material {
-  diffuseColor 0.8 0.8 0.8
-}
-
-DEF WheelMat Material {
-  diffuseColor 0.1 0.1 0.1
-}
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/festo/robotino3/protos/Robotino3Platform.proto"
 
 WorldInfo {
   info [
@@ -59,14 +48,16 @@ WorldInfo {
   contactProperties [
     ContactProperties {
       material1 "WheelMat"
-      coulombFriction [0, 2, 0]
+      coulombFriction [
+        0, 2, 0
+      ]
       bounce 0
     }
   ]
 }
 Viewpoint {
-  orientation -0.4060317414729578 0.40603290835639455 0.8187035496735586 1.7695128936691449
-  position -3.879934779521019 -14.284005020800887 15.888926422025028
+  orientation -0.24279015690520134 0.035553177485936595 0.9694271046760563 2.859571046040204
+  position 0.4703637227601707 -5.265381487799243 3.881508992605012
   exposure 0.5
 }
 TexturedBackground {
@@ -103,11 +94,9 @@ DEF ROOF Solid {
           scale 8 8
         }
       }
-      geometry USE FLOOR_PLANE
     }
   ]
   name "roof"
-  boundingObject USE FLOOR_PLANE
   locked TRUE
 }
 Wall {
@@ -547,23 +536,67 @@ Television {
   translation -3.4329 -2.1547 1.5596
   rotation 0 0 1 3.14159
 }
-
-# OUR ROBOTINO - Using your EXACT working pattern
 Robotino3 {
+  
   translation -4.65 -4.2 0.1
   controller "<extern>"
   topSlot [
     Robotino3HokuyoMountingSupport {
       extensionSlot [
         HokuyoUrg04lxug01 {
-           maxRange 8.0
+           translation 0.055 0 0.0
         }
       ]
     }
   ]
+    bodySlot [
+    Robotino3Platform {
+    }
+
+    # --- Kinect-like block sitting on the platform ---
+    Transform {
+      # Height above base; tweak if it's too high/low
+      translation 0 -0.2 0.60
+      rotation 0 0 1 -1.5708
+      children [
+        # Visible "Kinect" body
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 0.1 0.1    # almost black
+            roughness 0.4
+            metalness 0.0
+          }
+          geometry Box {
+            size 0.07 0.25 0.07      # approx Kinect dimensions (width x depth x height)
+          }
+        }
+
+        # RGB camera (Kinect color)
+        Camera {
+          name "kinect_rgb"
+          width 640
+          height 480
+          fieldOfView 1.047
+          near 0.05
+          far 5.0
+        }
+
+        # Depth sensor (Kinect depth)
+        RangeFinder {
+          name "kinect_depth"
+          width 640
+          height 480
+          fieldOfView 1.047
+          minRange 0.3
+          maxRange 5.0
+        }
+      ]
+    }
+  ]
+
   cameraSlot [
-  Robotino3Webcam {
-    name "camera"
-  }
-]
+    Robotino3Webcam {
+      name "camera"
+    }
+  ]
 }

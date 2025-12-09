@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'vision_node = vision.vision_node:main',  # Adjust this line!
             'yolo_server = vision.yolo_service_node:main',
+            'kinect_pointcloud_node = vision.kinect_pointcloud_node:main',
         ],
     },
 )

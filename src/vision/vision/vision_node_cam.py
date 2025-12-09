@@ -7,6 +7,8 @@ from robotino_interfaces.srv import YoloDetect
 import cv2
 from cv_bridge import CvBridge
 
+## VENV HACK #!/home/oscar/venvs/yolo_env/bin/python3##
+###/home/oscar/robotino_ros2_ws/install/vision/lib/vision/kinect_pointcloud_node
 
 class VisionNode(Node):
     def __init__(self):
@@ -31,7 +33,7 @@ class VisionNode(Node):
         # Change this if your topic is named differently
         self.debug_sub = self.create_subscription(
             Image,
-            '/vision/yolo_debug_image',
+            '/yolo_debug_image',
             self.debug_image_callback,
             10
         )

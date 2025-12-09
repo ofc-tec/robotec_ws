@@ -57,6 +57,17 @@ def generate_launch_description():
                 'publish_frequency': 30.0
             }]
         ),
-
+         Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='kinect_optical_tf',
+            arguments=[
+                '0', '0', '0',              # x y z
+                '-0.5', '0.5', '-0.5', '0.5',  # qx qy qz qw
+                'kinect_link',              # parent frame
+                'kinect_optical'            # child frame
+            ],
+            output='screen'
+        ),
         
     ])
