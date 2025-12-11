@@ -1,62 +1,82 @@
 # robotino_bts/trees/roam_known_locs.py
 
 import py_trees
-from py_trees.common import Access
+from py_trees.common import Access, OneShotPolicy
 
 from robotino_bts.behaviors.init_blackboard import InitBlackboard
 from robotino_bts.behaviors.set_goal_from_location import SetGoalFromLocation
+from robotino_bts.behaviors.navigate_to_pose import NavigateToPoseFromBB
+from robotino_bts.behaviors.yolo_detect import YoloDetectBehaviour
 
 
 def create_behavior_tree(node):
     """
-    Simple BT:
-      1) InitBlackboard(target_object="cup")
-      2) SetGoalFromLocation("kitchen") -> writes goal_x/y/yaw
-      3) LogGoalBehaviour -> just logs the goal from BB
+    Build the 'roam known locations' behavior tree:
+
+      InitBlackboard -> SetGoal(kitchen) -> NavigateToPose -> YOLO -> LogDetections
+
+    Wrapped in a OneShot decorator so the whole sequence runs ONCE and then
+    never restarts on subsequent ticks.
     """
-    root = py_trees.composites.Sequence(
-        name="RoamKnownLocsRoot",
-        memory=False
+
+    # Inner sequence: the actual pipeline
+    seq = py_trees.composites.Sequence(
+        name="RoamKnownLocsSeq",
+        memory=True,   # remember child SUCCESS state while running
     )
 
-    # 1) Init blackboard
+    # 1) Initialise blackboard
     init_bb = InitBlackboard(target_object="cup")
 
-    # 2) Set goal for one known location (e.g., "kitchen")
+    # 2) Set goal for known location "kitchen"
     set_kitchen = SetGoalFromLocation(
         name="SetGoalKitchen",
         node=node,
         location_name="kitchen",
     )
 
-    # 3) Simple behaviour that logs the goal from the blackboard
-    class LogGoalBehaviour(py_trees.behaviour.Behaviour):
+    # 3) Navigate using Nav2
+    nav_to_kitchen = NavigateToPoseFromBB(
+        name="NavToKitchen",
+        node=node,
+        frame_id="map",
+    )
+
+    # 4) Call YOLO after navigation
+    yolo_after_nav = YoloDetectBehaviour(
+        name="YoloAfterKitchen",
+        node=node,
+    )
+
+    # 5) Log detections_log content
+    class LogDetections(py_trees.behaviour.Behaviour):
         def __init__(self, name, node):
             super().__init__(name)
             self.node = node
-            self.bb = py_trees.blackboard.Client(name="LogGoalBB")
-            self.bb.register_key("goal_x", Access.READ)
-            self.bb.register_key("goal_y", Access.READ)
-            self.bb.register_key("goal_yaw", Access.READ)
-            self.bb.register_key("current_location", Access.READ)
-            self.bb.register_key("target_object", Access.READ)
+            self.bb = py_trees.blackboard.Client(name="LogDetBB")
+            self.bb.register_key("detections_log", Access.READ)
 
         def update(self):
-            loc = getattr(self.bb, "current_location", "unknown")
-            x = getattr(self.bb, "goal_x", 0.0)
-            y = getattr(self.bb, "goal_y", 0.0)
-            yaw = getattr(self.bb, "goal_yaw", 0.0)
-            target = getattr(self.bb, "target_object", "unknown")
-
-            self.node.get_logger().info(
-                f"[BT] LogGoal: location='{loc}', "
-                f"goal=({x:.2f}, {y:.2f}, yaw={yaw:.2f}), "
-                f"target_object='{target}'"
-            )
+            log = getattr(self.bb, "detections_log", []) or []
+            self.node.get_logger().info(f"[BT] Detections log: {log}")
             return py_trees.common.Status.SUCCESS
 
-    log_goal = LogGoalBehaviour("LogGoal", node)
+    log_det = LogDetections("LogDetections", node)
 
-    root.add_children([init_bb, set_kitchen, log_goal])
+    seq.add_children([
+        init_bb,
+        set_kitchen,
+        nav_to_kitchen,
+        yolo_after_nav,
+        log_det,
+    ])
+
+    # Wrap sequence in a OneShot decorator:
+    # after the first SUCCESS, children are never ticked again.
+    root = py_trees.decorators.OneShot(
+        name="RoamKnownLocsRoot",
+        child=seq,
+        policy=OneShotPolicy.ON_SUCCESSFUL_COMPLETION,
+    )
 
     return py_trees.trees.BehaviourTree(root)
