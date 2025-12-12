@@ -7,6 +7,7 @@ find_package(vision_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/YoloDetect.srv"
+  "srv/LocationsServer.srv" 
   DEPENDENCIES vision_msgs
 )
 
