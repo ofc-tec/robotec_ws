@@ -11,69 +11,66 @@ from ament_index_python.packages import get_package_share_directory
 
 import yaml
 
+import py_trees
+import py_trees_ros
+
 from robotino_bts.trees.roam_known_locs import create_behavior_tree
 
 
 class BTExecutor(Node):
     """
-    Node that owns and ticks the Behavior Tree, while the ROS 2 executor
-    spins to service action callbacks, subscriptions, etc.
-
-    IMPORTANT: this node is also responsible for loading known_locations.yaml
-    into self.known_locations so SetGoalFromLocation can work.
+    Owns known_locations and builds the BT root. The py_trees_ros BehaviourTree
+    will create its own internal node named /tree for introspection.
     """
 
     def __init__(self):
         super().__init__("bt_executor")
 
         # ------------------------------------------------------------------ #
-        # 1) Load known locations from YAML into self.known_locations
+        # 1) Load known locations into self.known_locations
         # ------------------------------------------------------------------ #
         try:
             pkg_share = get_package_share_directory("robotino_bts")
             known_locations_file = os.path.join(pkg_share, "config", "known_locations.yaml")
-            self.get_logger().info(
-                f"[bt_executor] Loading known locations from: {known_locations_file}"
-            )
+            self.get_logger().info(f"[bt_executor] Loading known locations from: {known_locations_file}")
 
             with open(known_locations_file, "r") as f:
                 data = yaml.safe_load(f) or {}
 
-            if not isinstance(data, dict):
-                self.get_logger().error(
-                    f"[bt_executor] known_locations.yaml did not parse as a dict "
-                    f"(got {type(data)}), using empty dict."
-                )
-                self.known_locations = {}
-            else:
-                self.known_locations = data
-                self.get_logger().info(
-                    f"[bt_executor] Loaded known locations: {list(self.known_locations.keys())}"
-                )
+            self.known_locations = data if isinstance(data, dict) else {}
+            self.get_logger().info(f"[bt_executor] Loaded known locations: {list(self.known_locations.keys())}")
         except Exception as e:
-            self.get_logger().error(
-                f"[bt_executor] Failed to load known_locations.yaml: {e}. "
-                "Using empty dict."
-            )
+            self.get_logger().error(f"[bt_executor] Failed to load known_locations.yaml: {e}. Using empty dict.")
             self.known_locations = {}
 
         # ------------------------------------------------------------------ #
-        # 2) Build the Behavior Tree using this node
-        #     (SetGoalFromLocation will read self.known_locations)
+        # 2) Build your tree (may return root Behaviour or a BehaviourTree)
         # ------------------------------------------------------------------ #
-        self.tree = create_behavior_tree(self)
+        built = create_behavior_tree(self)
+
+        if isinstance(built, py_trees.behaviour.Behaviour):
+            root = built
+        elif hasattr(built, "root"):
+            root = built.root
+        else:
+            root = built
+
+        # ------------------------------------------------------------------ #
+        # 3) ROS-enabled tree wrapper (creates services/topics for GUI/watcher)
+        #    IMPORTANT: we will NOT pass node=self here.
+        #    setup() will create its own internal node named "tree" => /tree
+        # ------------------------------------------------------------------ #
+        self.tree = py_trees_ros.trees.BehaviourTree(root)
 
         try:
-            self.tree.setup(timeout=15.0)
+            # Force creation of internal node '/tree' (default node_name="tree")
+            self.tree.setup(node=None, node_name="tree", timeout=15.0)
         except Exception as e:
             self.get_logger().error(f"[bt_executor] Error in tree.setup(): {e}")
 
-        self.get_logger().info("[bt_executor] Behavior Tree setup complete")
+        self.get_logger().info("[bt_executor] Behavior Tree setup complete (introspection node: /tree)")
 
     def tick_tree(self):
-        """
-        Tick the Behavior Tree once.
-        """
         try:
             self.tree.tick()
         except Exception as e:
@@ -86,21 +83,18 @@ def main(args=None):
     node = BTExecutor()
     node.get_logger().info("[bt_executor] Starting Behavior Tree...")
 
-    # Multi-threaded executor so action callbacks + BT can coexist
     executor = MultiThreadedExecutor()
     executor.add_node(node)
 
+    # IMPORTANT: also spin the internal py_trees_ros node (/tree)
+    if getattr(node.tree, "node", None) is not None:
+        executor.add_node(node.tree.node)
+
     try:
         while rclpy.ok():
-            # 1) Let ROS2 process callbacks (actions, feedback, results, etc.)
             executor.spin_once(timeout_sec=0.05)
-
-            # 2) Tick the Behavior Tree
             node.tick_tree()
-
-            # Tick rate (20 Hz here)
             time.sleep(0.05)
-
     except KeyboardInterrupt:
         node.get_logger().info("[bt_executor] KeyboardInterrupt, shutting down...")
     finally:

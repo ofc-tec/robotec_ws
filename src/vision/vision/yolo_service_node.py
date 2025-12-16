@@ -10,8 +10,8 @@ from robotino_interfaces.srv import YoloDetect
 from cv_bridge import CvBridge
 from ultralytics import YOLO
 
-import cv2
 import numpy as np
+import cv2
 
 import tf2_ros
 from geometry_msgs.msg import TransformStamped
@@ -82,7 +82,7 @@ class YoloServiceNode(Node):
             self.handle_yolo_detect
         )
 
-        self.get_logger().info('[YOLO_SERVICE] Ready with seg masks + TFs (using depth).')
+        self.get_logger().info('[YOLO_SERVICE] Ready (depth optional: 2D always, TFs only when depth OK).')
 
     # ==========================
     # Callbacks
@@ -105,69 +105,61 @@ class YoloServiceNode(Node):
             response.detections = Detection2DArray()
             return response
 
-        if self.latest_depth_msg is None:
-            self.get_logger().warn('[YOLO_SERVICE] No depth image yet.')
-            response.detections = Detection2DArray()
-            return response
-
-        #if self.latest_cam_info is None:
-        #    self.get_logger().warn('[YOLO_SERVICE] No CameraInfo yet.')
-        #    response.detections = Detection2DArray()
-        #    return response
-
         # --- RGB image ---
         frame_bgr = self.bridge.imgmsg_to_cv2(self.latest_image_msg, desired_encoding='bgr8')
         H_img, W_img, _ = frame_bgr.shape
 
-        # --- Depth image ---
-        try:
-            depth = self.bridge.imgmsg_to_cv2(self.latest_depth_msg, desired_encoding='passthrough')
-        except Exception as e:
-            self.get_logger().warn(f'[YOLO_SERVICE] cv_bridge depth error: {e}')
-            response.detections = Detection2DArray()
-            return response
+        # --------------------------
+        # Depth is OPTIONAL
+        # --------------------------
+        depth_ok = (self.latest_depth_msg is not None)
+        if not depth_ok:
+            self.get_logger().warn('[YOLO_SERVICE] No depth image yet. Returning 2D detections only (no TFs).')
 
-        if depth.ndim != 2:
-            self.get_logger().warn('[YOLO_SERVICE] Depth image is not single-channel.')
-            response.detections = Detection2DArray()
-            return response
+        X = Y = Z = None  # only filled when depth_ok
 
-        H_d, W_d = depth.shape
-        if H_d != H_img or W_d != W_img:
-            self.get_logger().warn(
-                f'[YOLO_SERVICE] Depth size ({H_d},{W_d}) != RGB size ({H_img},{W_img}); '
-                'cannot align masks with depth.'
-            )
-            response.detections = Detection2DArray()
-            return response
+        if depth_ok:
+            try:
+                depth = self.bridge.imgmsg_to_cv2(self.latest_depth_msg, desired_encoding='passthrough')
+            except Exception as e:
+                self.get_logger().warn(f'[YOLO_SERVICE] cv_bridge depth error: {e}')
+                depth_ok = False
 
-        # --- Intrinsics ---
-        #K = self.latest_cam_info.k  # 3x3 row-major
-        #fx = K[0]
-        #fy = K[4]
-        #cx = K[2]
-        #cy = K[5]
+        if depth_ok:
+            if depth.ndim != 2:
+                self.get_logger().warn('[YOLO_SERVICE] Depth image is not single-channel. Returning 2D only (no TFs).')
+                depth_ok = False
 
+        if depth_ok:
+            H_d, W_d = depth.shape
+            if H_d != H_img or W_d != W_img:
+                self.get_logger().warn(
+                    f'[YOLO_SERVICE] Depth size ({H_d},{W_d}) != RGB size ({H_img},{W_img}); '
+                    'returning 2D only (no TFs).'
+                )
+                depth_ok = False
 
-        fx = 525.0   # focal length in pixels
-        fy = 525.0
-        cx = 319.5   # principal point (image center)
-        cy = 239.5
-        ###################################
-        # --- Depth units ---
-        if self.latest_depth_msg.encoding == '16UC1':
-            Z = depth.astype(np.float32) / 1000.0  # mm -> m
-        else:
-            Z = depth.astype(np.float32)
+        if depth_ok:
+            # --- Intrinsics (keep your constants) ---
+            fx = 525.0
+            fy = 525.0
+            cx = 319.5
+            cy = 239.5
 
-        Z[Z <= 0.0] = np.nan
+            # --- Depth units ---
+            if self.latest_depth_msg.encoding == '16UC1':
+                Z = depth.astype(np.float32) / 1000.0  # mm -> m
+            else:
+                Z = depth.astype(np.float32)
 
-        # --- Back-project depth to 3D (camera frame) ---
-        u = np.tile(np.arange(W_img), (H_img, 1))
-        v = np.tile(np.arange(H_img).reshape(-1, 1), (1, W_img))
+            Z[Z <= 0.0] = np.nan
 
-        X = (u - cx) * Z / fx
-        Y = (v - cy) * Z / fy
+            # --- Back-project depth to 3D (camera frame) ---
+            u = np.tile(np.arange(W_img), (H_img, 1))
+            v = np.tile(np.arange(H_img).reshape(-1, 1), (1, W_img))
+
+            X = (u - cx) * Z / fx
+            Y = (v - cy) * Z / fy
 
         # --- YOLO segmentation ---
         results = self.model(frame_bgr)
@@ -181,6 +173,12 @@ class YoloServiceNode(Node):
 
         if boxes is None or len(boxes) == 0:
             self.get_logger().info('[YOLO_SERVICE] No detections.')
+            # still publish debug image (it will be just the frame with no boxes)
+            annotated = result.plot()
+            debug_msg = self.bridge.cv2_to_imgmsg(annotated, encoding='bgr8')
+            debug_msg.header = self.latest_image_msg.header
+            self.debug_pub.publish(debug_msg)
+
             response.detections = detections_msg
             return response
 
@@ -190,8 +188,6 @@ class YoloServiceNode(Node):
 
         # --- Debug image ---
         annotated = result.plot()  # BGR
-        print("DEBUG: result.plot() type =", type(annotated))
-        print("DEBUG: annotated shape =", getattr(annotated, "shape", None))
         debug_msg = self.bridge.cv2_to_imgmsg(annotated, encoding='bgr8')
         debug_msg.header = self.latest_image_msg.header
         self.debug_pub.publish(debug_msg)
@@ -208,10 +204,10 @@ class YoloServiceNode(Node):
                 mask_array = None
 
         now = self.get_clock().now().to_msg()
-        parent_frame = 'kinect_optical' #self.latest_depth_msg.header.frame_id  # depth optical frame
+        parent_frame = 'kinect_optical'
 
         # ==========================
-        # Loop detections
+        # Loop detections (2D always)
         # ==========================
         for i, box in enumerate(boxes_xyxy):
             detection = Detection2D()
@@ -238,12 +234,11 @@ class YoloServiceNode(Node):
 
             detections_msg.detections.append(detection)
 
-            # 3D centroid from mask + depth
-            if mask_array is not None and i < mask_array.shape[0]:
+            # 3D centroid + TF ONLY if depth is OK
+            if depth_ok and (mask_array is not None) and (i < mask_array.shape[0]) and (X is not None) and (Y is not None) and (Z is not None):
                 mask = mask_array[i]  # [H, W]
                 submask = mask[y1_i:y2_i, x1_i:x2_i] > 0.5
                 if not np.any(submask):
-                    self.get_logger().warn(f'[YOLO_SERVICE] Empty mask for detection {i}')
                     continue
 
                 ys_idx, xs_idx = np.where(submask)
@@ -256,18 +251,12 @@ class YoloServiceNode(Node):
 
                 good = ~np.isnan(X_pts) & ~np.isnan(Y_pts) & ~np.isnan(Z_pts)
                 if not np.any(good):
-                    self.get_logger().warn(f'[YOLO_SERVICE] All depth NaN for detection {i}')
                     continue
 
-                X_g = X_pts[good]
-                Y_g = Y_pts[good]
-                Z_g = Z_pts[good]
+                cx3 = float(X_pts[good].mean())
+                cy3 = float(Y_pts[good].mean())
+                cz3 = float(Z_pts[good].mean())
 
-                cx = float(X_g.mean())
-                cy = float(Y_g.mean())
-                cz = float(Z_g.mean())
-
-                # TF
                 t = TransformStamped()
                 t.header.stamp = now
                 t.header.frame_id = parent_frame
@@ -275,10 +264,9 @@ class YoloServiceNode(Node):
                 class_name = self.class_names.get(class_ids[i], 'obj')
                 t.child_frame_id = f'yolo_{class_name}_{i}'
 
-                t.transform.translation.x = cx
-                t.transform.translation.y = cy
-                t.transform.translation.z = cz
-
+                t.transform.translation.x = cx3
+                t.transform.translation.y = cy3
+                t.transform.translation.z = cz3
                 t.transform.rotation.x = 0.0
                 t.transform.rotation.y = 0.0
                 t.transform.rotation.z = 0.0
@@ -288,7 +276,8 @@ class YoloServiceNode(Node):
 
         response.detections = detections_msg
         self.get_logger().info(
-            f'[YOLO_SERVICE] Request handled: {len(detections_msg.detections)} detections, TFs published.'
+            f'[YOLO_SERVICE] Request handled: {len(detections_msg.detections)} detections, '
+            f'TFs={"yes" if depth_ok else "no"} (depth optional).'
         )
         return response
 

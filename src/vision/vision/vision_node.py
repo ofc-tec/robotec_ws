@@ -3,6 +3,7 @@ from rclpy.node import Node
 
 from sensor_msgs.msg import Image
 from robotino_interfaces.srv import YoloDetect
+from robotino_interfaces.srv import FaceRecog
 
 import cv2
 from cv_bridge import CvBridge
@@ -28,27 +29,44 @@ class VisionNode(Node):
         )
 
         # --- Subscribe to YOLO debug image topic ---
-        # Change this if your topic is named differently
-        self.debug_sub = self.create_subscription(
+        self.yolo_debug_sub = self.create_subscription(
             Image,
             '/vision/yolo_debug_image',
-            self.debug_image_callback,
+            self.yolo_debug_image_callback,
             10
         )
 
-        # Store last debug image
+        # --- Subscribe to FACE debug image topic ---
+        self.face_debug_sub = self.create_subscription(
+            Image,
+            '/vision/face_recog_debug_image',
+            self.face_debug_image_callback,
+            10
+        )
+
+        # Store last debug image (generic)
         self.latest_debug_cv = None
+        self.latest_debug_source = ""
 
         # --- YOLO Detect service client (on-demand) ---
         self.yolo_client = self.create_client(YoloDetect, 'yolo_detect')
         while not self.yolo_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().warn("[vision] Waiting for /yolo_detect service...")
 
-        self.call_in_flight = False
+        self.yolo_call_in_flight = False
+
+        # --- FACE Recog service client (on-demand) ---
+        self.face_client = self.create_client(FaceRecog, '/face_recog')
+        while not self.face_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn("[vision] Waiting for /face_recog service...")
+
+        self.face_call_in_flight = False
 
         # --- OpenCV windows ---
         cv2.namedWindow('vision', cv2.WINDOW_NORMAL)
-        cv2.namedWindow('yolo_debug', cv2.WINDOW_NORMAL)
+        cv2.namedWindow('debug_image', cv2.WINDOW_NORMAL)
+
+        self.get_logger().info("[vision] Keys: q=quit, y=YOLO, f=FACE")
 
     # ======================================
     # MAIN RGB CALLBACK
@@ -71,50 +89,95 @@ class VisionNode(Node):
             return
 
         # Trigger YOLO once when pressing 'y'
-        if key == ord('y') and not self.call_in_flight:
+        if key == ord('y') and not self.yolo_call_in_flight:
             self.get_logger().info("[vision] Calling YOLO service...")
-            self.call_in_flight = True
-            req = YoloDetect.Request()
-            future = self.yolo_client.call_async(req)
-            future.add_done_callback(self.handle_yolo_response)
+            self.yolo_call_in_flight = True
+
+            yolo_req = YoloDetect.Request()
+            yolo_call = self.yolo_client.call_async(yolo_req)
+            yolo_call.add_done_callback(self.handle_yolo_response)
+
+        # Trigger FACE once when pressing 'f'
+        if key == ord('f') and not self.face_call_in_flight:
+            self.get_logger().info("[vision] Calling FACE service...")
+            self.face_call_in_flight = True
+
+            face_req = FaceRecog.Request()
+            face_req.name_request = []
+            face_req.min_confidence = 0.0
+
+            face_call = self.face_client.call_async(face_req)
+            face_call.add_done_callback(self.handle_face_response)
 
     # ======================================
     # YOLO SERVICE RESPONSE
     # ======================================
-    def handle_yolo_response(self, future):
-        self.call_in_flight = False
+    def handle_yolo_response(self, yolo_call):
+        self.yolo_call_in_flight = False
         try:
-            resp = future.result()
+            yolo_resp = yolo_call.result()
         except Exception as e:
             self.get_logger().error(f"[vision] YOLO service call failed: {e}")
             return
 
-        # Just log number of detections
         try:
-            n = len(resp.detections.detections)
+            n = len(yolo_resp.detections.detections)
         except Exception:
             n = 0
         self.get_logger().info(f"[vision] YOLO returned {n} detections.")
-
-        # The debug image itself comes via the /vision/yolo_debug_image topic.
-        # When the YOLO node publishes it, debug_image_callback will update the window.
+        # Debug image arrives via /vision/yolo_debug_image
 
     # ======================================
-    # DEBUG IMAGE CALLBACK (from YOLO topic)
+    # FACE SERVICE RESPONSE
     # ======================================
-    def debug_image_callback(self, msg: Image):
+    def handle_face_response(self, face_call):
+        self.face_call_in_flight = False
         try:
-            # Use the encoding you set in the YOLO node: 'bgr8' or 'rgb8'
+            face_resp = face_call.result()
+        except Exception as e:
+            self.get_logger().error(f"[vision] FACE service call failed: {e}")
+            return
+
+        try:
+            n = len(face_resp.name_response)
+        except Exception:
+            n = 0
+        self.get_logger().info(f"[vision] FACE returned {n} faces.")
+        # Debug image arrives via /vision/face_recog_debug_image
+
+    # ======================================
+    # GENERIC DEBUG SHOW
+    # ======================================
+    def _show_debug(self, msg: Image, source: str):
+        try:
             debug_cv = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
         except Exception as e:
-            self.get_logger().warn(f'[vision] Failed to convert debug image: {e}')
+            self.get_logger().warn(f'[vision] Failed to convert {source} debug image: {e}')
             return
 
         self.latest_debug_cv = debug_cv
+        self.latest_debug_source = source
 
-        # Show it immediately when received
-        cv2.imshow('yolo_debug', self.latest_debug_cv)
+        # Optional: show the source in the title
+        try:
+            cv2.setWindowTitle('debug_image', f'debug_image ({source})')
+        except Exception:
+            pass
+
+        cv2.imshow('debug_image', self.latest_debug_cv)
         cv2.waitKey(1)
+
+    # ======================================
+    # YOLO DEBUG IMAGE CALLBACK
+    # ======================================
+    def yolo_debug_image_callback(self, msg: Image):
+        self._show_debug(msg, "yolo")
+
+    # ======================================
+    # FACE DEBUG IMAGE CALLBACK
+    # ======================================
+    def face_debug_image_callback(self, msg: Image):
+        self._show_debug(msg, "face")
 
 
 def main(args=None):
