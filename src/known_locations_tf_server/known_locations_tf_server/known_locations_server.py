@@ -61,40 +61,44 @@ class KnownLocationsServer(Node):
         self.get_logger().info('Service /known_location_add available')
     
     def find_locations_file(self) -> Path:
-        """Find the existing known_locations.yaml file."""
+        """
+        Resolve a portable, user-editable locations yaml path.
+
+        Priority:
+        1) locations_file param (explicit override)
+        2) ~/.robotino/known_locations.yaml (auto-created + seeded from robotino_bts default)
+
+        Never falls back to CWD.
+        Never writes into install/share.
+        """
         from ament_index_python.packages import get_package_share_directory
-        
-        # If parameter specifies a file, use it
+        import shutil
+
+        # 1) Explicit override
         if self.locations_file_param:
-            path = Path(self.locations_file_param)
-            if path.exists():
-                return path
-            self.get_logger().warn(f'Parameter file not found: {path}')
-        
-        # Try to find it in robotino_bts package (where you already have it)
-        try:
-            robotino_bts_dir = get_package_share_directory('robotino_bts')
-            locations_path = Path(robotino_bts_dir) / 'config' / 'known_locations.yaml'
-            if locations_path.exists():
-                self.get_logger().info(f'Found locations file in robotino_bts: {locations_path}')
-                return locations_path
-        except Exception as e:
-            self.get_logger().debug(f'Could not find robotino_bts package: {e}')
-        
-        # Try this package's config
-        try:
-            this_pkg_dir = get_package_share_directory('known_locations_tf_server')
-            locations_path = Path(this_pkg_dir) / 'config' / 'known_locations.yaml'
-            if locations_path.exists():
-                self.get_logger().info(f'Found locations file in this package: {locations_path}')
-                return locations_path
-        except Exception as e:
-            self.get_logger().debug(f'Could not find this package share dir: {e}')
-        
-        # Fallback to current directory
-        fallback_path = Path('known_locations.yaml')
-        self.get_logger().warn(f'Using fallback location: {fallback_path}')
-        return fallback_path
+            p = Path(self.locations_file_param).expanduser()
+            p = p if p.is_absolute() else (Path.cwd() / p)
+            if p.exists():
+                return p
+            raise FileNotFoundError(f"locations_file parameter points to missing file: {p}")
+
+        # 2) Default user path
+        user_dir = Path.home() / ".robotino"
+        user_dir.mkdir(parents=True, exist_ok=True)
+        user_yaml = user_dir / "known_locations.yaml"
+
+        # Seed from package default if missing
+        if not user_yaml.exists():
+            share_dir = Path(get_package_share_directory("robotino_bts"))
+            packaged_yaml = share_dir / "config" / "known_locations.yaml"
+            if not packaged_yaml.exists():
+                raise FileNotFoundError(f"Packaged default yaml not found: {packaged_yaml}")
+
+            shutil.copyfile(packaged_yaml, user_yaml)
+            self.get_logger().info(f"Seeded user known locations: {user_yaml}")
+
+        return user_yaml
+
     
     def load_locations_from_yaml(self) -> Dict:
         """Load locations from YAML file with simple format."""
@@ -234,11 +238,11 @@ class KnownLocationsServer(Node):
         self.get_logger().info(f'Attempting to add new location: {location_name}')
         
         # Check if location already exists
-        if location_name in self.known_locations:
-            self.get_logger().warn(f'Location {location_name} already exists')
-            response.success = False
-            return response
-        
+        #if location_name in self.known_locations:
+        #    self.get_logger().warn(f'Location {location_name} already exists')
+        #    response.success = False
+        #    return response
+        #
         # Get robot's current pose
         pose = self.get_robot_pose()
         

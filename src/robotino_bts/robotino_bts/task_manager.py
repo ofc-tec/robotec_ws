@@ -3,16 +3,19 @@
 
 import os
 import time
+from pathlib import Path
+import shutil
 
 import rclpy
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
-from ament_index_python.packages import get_package_share_directory
 
 import yaml
 
 import py_trees
 import py_trees_ros
+
+from ament_index_python.packages import get_package_share_directory
 
 from robotino_bts.trees.roam_known_locs import create_behavior_tree
 
@@ -27,11 +30,17 @@ class BTExecutor(Node):
         super().__init__("bt_executor")
 
         # ------------------------------------------------------------------ #
-        # 1) Load known locations into self.known_locations
+        # 1) Declare + resolve known_locations YAML path (portable & editable)
+        # ------------------------------------------------------------------ #
+        self.declare_parameter("known_locations", "")
+        param_path = str(self.get_parameter("known_locations").value).strip()
+
+        known_locations_file = self._resolve_known_locations_file(param_path)
+
+        # ------------------------------------------------------------------ #
+        # 2) Load known locations into self.known_locations
         # ------------------------------------------------------------------ #
         try:
-            pkg_share = get_package_share_directory("robotino_bts")
-            known_locations_file = os.path.join(pkg_share, "config", "known_locations.yaml")
             self.get_logger().info(f"[bt_executor] Loading known locations from: {known_locations_file}")
 
             with open(known_locations_file, "r") as f:
@@ -40,35 +49,59 @@ class BTExecutor(Node):
             self.known_locations = data if isinstance(data, dict) else {}
             self.get_logger().info(f"[bt_executor] Loaded known locations: {list(self.known_locations.keys())}")
         except Exception as e:
-            self.get_logger().error(f"[bt_executor] Failed to load known_locations.yaml: {e}. Using empty dict.")
+            self.get_logger().error(f"[bt_executor] Failed to load known locations file: {e}. Using empty dict.")
             self.known_locations = {}
 
         # ------------------------------------------------------------------ #
-        # 2) Build your tree (may return root Behaviour or a BehaviourTree)
+        # 3) Build tree + setup introspection node
         # ------------------------------------------------------------------ #
         built = create_behavior_tree(self)
-
-        if isinstance(built, py_trees.behaviour.Behaviour):
-            root = built
-        elif hasattr(built, "root"):
-            root = built.root
-        else:
-            root = built
-
-        # ------------------------------------------------------------------ #
-        # 3) ROS-enabled tree wrapper (creates services/topics for GUI/watcher)
-        #    IMPORTANT: we will NOT pass node=self here.
-        #    setup() will create its own internal node named "tree" => /tree
-        # ------------------------------------------------------------------ #
+        root = built.root
         self.tree = py_trees_ros.trees.BehaviourTree(root)
-
         try:
-            # Force creation of internal node '/tree' (default node_name="tree")
             self.tree.setup(node=None, node_name="tree", timeout=15.0)
         except Exception as e:
             self.get_logger().error(f"[bt_executor] Error in tree.setup(): {e}")
 
         self.get_logger().info("[bt_executor] Behavior Tree setup complete (introspection node: /tree)")
+
+    def _resolve_known_locations_file(self, override: str) -> str:
+        """
+        Resolve known locations yaml path.
+
+        Priority:
+          1) override from ROS param 'known_locations' (must exist)
+          2) ~/.robotino/known_locations.yaml (seeded if missing)
+        """
+        # 1) Explicit override
+        if override:
+            p = Path(os.path.expanduser(override))
+            p = p if p.is_absolute() else (Path.cwd() / p).resolve()
+            if not p.exists():
+                raise FileNotFoundError(f"known_locations param points to missing file: {p}")
+            return str(p)
+
+        # 2) Default user path (ROS1-style)
+        user_dir = Path.home() / ".robotino"
+        user_dir.mkdir(parents=True, exist_ok=True)
+        user_yaml = user_dir / "known_locations.yaml"
+
+        # Seed if missing (prefer workspace src, fallback to package share)
+        if not user_yaml.exists():
+            ws_src_yaml = Path.home() / "robotino_ros2_ws" / "src" / "robotino_bts" / "config" / "known_locations.yaml"
+            if ws_src_yaml.exists():
+                seed_from = ws_src_yaml
+            else:
+                pkg_share = Path(get_package_share_directory("robotino_bts"))
+                seed_from = pkg_share / "config" / "known_locations.yaml"
+
+            if not seed_from.exists():
+                raise FileNotFoundError(f"No seed YAML found at: {seed_from}")
+
+            shutil.copyfile(seed_from, user_yaml)
+            self.get_logger().info(f"[bt_executor] Seeded user known locations: {user_yaml}")
+
+        return str(user_yaml)
 
     def tick_tree(self):
         try:

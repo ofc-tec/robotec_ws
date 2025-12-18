@@ -3,78 +3,45 @@
 import py_trees
 from py_trees.common import Access, OneShotPolicy
 
-from robotino_bts.behaviors.init_blackboard import InitBlackboard
-from robotino_bts.behaviors.set_goal_from_location import SetGoalFromLocation
-from robotino_bts.behaviors.navigate_to_pose import NavigateToPoseFromBB
-from robotino_bts.behaviors.yolo_detect import YoloDetectBehaviour
+from robotino_bts.behaviors.init_blackboard_receptionist import InitBlackboard , LogBB
+from robotino_bts.behaviors.navigate_to_known_location import NavToKnownLocation
+# from robotino_bts.behaviors.set_goal_from_location import SetGoalFromLocation
+# from robotino_bts.behaviors.navigate_to_pose import NavigateToPoseFromBB
+# from robotino_bts.behaviors.yolo_detect import YoloDetectBehaviour
 
 
 def create_behavior_tree(node):
     """
-    Build the 'roam known locations' behavior tree:
+    Minimal test tree:
+      InitBlackboard -> LogBlackboard
 
-      InitBlackboard -> SetGoal(kitchen) -> NavigateToPose -> YOLO -> LogDetections
-
-    Wrapped in a OneShot decorator so the whole sequence runs ONCE and then
-    never restarts on subsequent ticks.
+    Wrapped in OneShot so it runs once.
     """
 
-    # Inner sequence: the actual pipeline
+    node.get_logger().info("[BT] Building RoamKnownLocs tree (INIT+LOG test)")
+
     seq = py_trees.composites.Sequence(
-        name="RoamKnownLocsSeq",
-        memory=True,   # remember child SUCCESS state while running
+        name="ReceptionistSeq",
+        memory=True,
     )
 
-    # 1) Initialise blackboard
-    init_bb = InitBlackboard(target_object="cup")
-
-    # 2) Set goal for known location "kitchen"
-    set_kitchen = SetGoalFromLocation(
-        name="SetGoalKitchen",
-        node=node,
-        location_name="kitchen",
-    )
-
-    # 3) Navigate using Nav2
-    nav_to_kitchen = NavigateToPoseFromBB(
+    init_bb = InitBlackboard(host="jack")    ## init bb behavior
+    log_bb = LogBB("LogBB", node)           ## log bb behavior
+    goto_kitchen = NavToKnownLocation(  ## navigate to known location behavior
         name="NavToKitchen",
         node=node,
-        frame_id="map",
-    )
-
-    # 4) Call YOLO after navigation
-    yolo_after_nav = YoloDetectBehaviour(
-        name="YoloAfterKitchen",
-        node=node,
-    )
-
-    # 5) Log detections_log content
-    class LogDetections(py_trees.behaviour.Behaviour):
-        def __init__(self, name, node):
-            super().__init__(name)
-            self.node = node
-            self.bb = py_trees.blackboard.Client(name="LogDetBB")
-            self.bb.register_key("detections_log", Access.READ)
-
-        def update(self):
-            log = getattr(self.bb, "detections_log", []) or []
-            self.node.get_logger().info(f"[BT] Detections log: {log}")
-            return py_trees.common.Status.SUCCESS
-
-    log_det = LogDetections("LogDetections", node)
+        location_name="kitchen",
+        
+                            )
 
     seq.add_children([
         init_bb,
-        set_kitchen,
-        nav_to_kitchen,
-        yolo_after_nav,
-        log_det,
+        log_bb,
+        goto_kitchen,
     ])
 
-    # Wrap sequence in a OneShot decorator:
-    # after the first SUCCESS, children are never ticked again.
     root = py_trees.decorators.OneShot(
-        name="RoamKnownLocsRoot",
+        name="ROOT",
         child=seq,
         policy=OneShotPolicy.ON_SUCCESSFUL_COMPLETION,
     )
