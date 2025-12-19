@@ -21,15 +21,18 @@ class InitBlackboard(py_trees.behaviour.Behaviour):
         self.bb.register_key("host", Access.WRITE)
         self.bb.register_key("guest_1", Access.WRITE)
         self.bb.register_key("guest_2", Access.WRITE)
+        self.bb.register_key("detections_log", Access.WRITE)
 
     def update(self):
         self.bb.host = self.host
         self.bb.guest_1 = []
         self.bb.guest_2 = []
+        self.bb.detections_log = []
+
 
         self.logger.info(
             f"Blackboard initialized: host='{self.host}', "
-            f"guest_1=[], guest_2=[]"
+            f"guest_1=[], guest_2=[], detection_log=[]"
         )
         return py_trees.common.Status.SUCCESS
 

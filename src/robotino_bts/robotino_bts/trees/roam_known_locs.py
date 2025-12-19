@@ -7,7 +7,8 @@ from robotino_bts.behaviors.init_blackboard_receptionist import InitBlackboard ,
 from robotino_bts.behaviors.navigate_to_known_location import NavToKnownLocation
 # from robotino_bts.behaviors.set_goal_from_location import SetGoalFromLocation
 # from robotino_bts.behaviors.navigate_to_pose import NavigateToPoseFromBB
-# from robotino_bts.behaviors.yolo_detect import YoloDetectBehaviour
+from robotino_bts.behaviors.yolo_detect import YoloDetectBehaviour
+from robotino_bts.behaviors.wait_for_face import FaceRecognitionBehaviour
 
 
 def create_behavior_tree(node):
@@ -25,19 +26,40 @@ def create_behavior_tree(node):
         memory=True,
     )
 
+    #####################################################
     init_bb = InitBlackboard(host="jack")    ## init bb behavior
+    
+    
+    #####################################################
     log_bb = LogBB("LogBB", node)           ## log bb behavior
-    goto_kitchen = NavToKnownLocation(  ## navigate to known location behavior
-        name="NavToKitchen",
+    
+    #####################################################
+    goto_door = NavToKnownLocation(  ## navigate to known location behavior
+        name="NavToDoor",
         node=node,
+        #location_name="door",
         location_name="kitchen",
-        
                             )
+
+    #####################################################
+    yolo_call = YoloDetectBehaviour(
+        name="YoloCall",
+        node=node,
+    )
+
+    face_call = FaceRecognitionBehaviour(
+        name="FaceCall",
+        node=node,
+    )
+
+
 
     seq.add_children([
         init_bb,
         log_bb,
-        goto_kitchen,
+        goto_door,
+        yolo_call,
+        face_call,
     ])
 
     root = py_trees.decorators.OneShot(

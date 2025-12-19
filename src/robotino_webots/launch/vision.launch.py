@@ -60,6 +60,17 @@ def generate_launch_description():
             'cloud_topic': cloud_topic
         }]
     )
+    # --- FACE RECOG server ---
+    face_recog_server = Node(
+        package='vision',
+        executable='face_recog_service_node',
+        name='face_recog_service_node',
+        output='screen',
+        parameters=[{
+            'image_topic': image_topic,
+            'cloud_topic': cloud_topic
+        }]
+    )
 
     return LaunchDescription([
         declare_image_topic,
@@ -67,4 +78,5 @@ def generate_launch_description():
         sim_teleop,
         vision_node,
         yolo_server,
+        face_recog_server,
     ])

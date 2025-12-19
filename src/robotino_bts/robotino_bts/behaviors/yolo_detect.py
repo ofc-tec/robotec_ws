@@ -30,7 +30,7 @@ class YoloDetectBehaviour(py_trees.behaviour.Behaviour):
         # Blackboard client
         self.bb = py_trees.blackboard.Client(name=f"{name}_BB")
         self.bb.register_key("detections_log", Access.WRITE)
-        self.bb.register_key("current_location", Access.READ)
+        #self.bb.register_key("current_location", Access.READ)
 
         # ROS2 service client
         self.cli = self.node.create_client(YoloDetect, "yolo_detect")
@@ -78,18 +78,18 @@ class YoloDetectBehaviour(py_trees.behaviour.Behaviour):
             det_list = getattr(det_array, "detections", [])
             num = len(det_list)
 
-        location = getattr(self.bb, "current_location", "unknown")
+        #location = getattr(self.bb, "current_location", "unknown")
 
         # Append to detections_log
         log = self.bb.detections_log or []
         log.append({
-            "location": location,
+            #"location": location,
             "num_detections": num,
         })
         self.bb.detections_log = log
 
         self.node.get_logger().info(
-            f"[YOLO_BT] At location '{location}' got {num} detections. "
+            #f"[YOLO_BT] At location '{location}' got {num} detections. "
             f"detections_log length = {len(log)}"
         )
 

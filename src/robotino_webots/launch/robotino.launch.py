@@ -14,13 +14,15 @@ def generate_launch_description():
     nav_launch = os.path.join(robotino_webots_share, 'launch', 'nav_robotino.launch.py')
     vision_launch = os.path.join(robotino_webots_share, 'launch', 'vision.launch.py')
 
-    # Exposed launch arguments (defaults mirror the originals)
+    # launch arguments 
     world_file = LaunchConfiguration('world_file')
     map_file = LaunchConfiguration('map_file')
     use_sim_time = LaunchConfiguration('use_sim_time')
     image_topic = LaunchConfiguration('image_topic')
     cloud_topic = LaunchConfiguration('cloud_topic')
 
+    
+    
     declare_world = DeclareLaunchArgument(
         'world_file',
         default_value=os.path.join(robotino_webots_share, 'worlds', 'robotino_apartment.wbt'),
@@ -41,7 +43,8 @@ def generate_launch_description():
 
     declare_image_topic = DeclareLaunchArgument(
         'image_topic',
-        default_value='/kinect/rgb/image_raw',
+        #default_value='/kinect/rgb/image_raw',
+        default_value='/image_raw',
         description='RGB image topic for vision nodes'
     )
 
