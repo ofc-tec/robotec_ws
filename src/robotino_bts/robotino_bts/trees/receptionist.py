@@ -1,3 +1,4 @@
+import operator
 import py_trees
 from py_trees.common import OneShotPolicy, ComparisonExpression
 
@@ -51,7 +52,7 @@ def create_behavior_tree(node):
         check=ComparisonExpression(
             variable="face_ok",
             value=True,
-            operator="==",
+            operator=operator.eq,
         ),
     )
 
@@ -90,7 +91,7 @@ def create_behavior_tree(node):
         check=ComparisonExpression(
             variable="current_guest_name",
             value="",
-            operator="!=",
+            operator=operator.ne,
         ),
     )
 
@@ -99,7 +100,7 @@ def create_behavior_tree(node):
         check=ComparisonExpression(
             variable="current_guest_drink",
             value="",
-            operator="!=",
+            operator=operator.ne,
         ),
     )
 

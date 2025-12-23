@@ -9,6 +9,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/YoloDetect.srv"
   "srv/LocationsServer.srv" 
   "srv/FaceRecog.srv"
+  "srv/Talk.srv"
   DEPENDENCIES vision_msgs
 )
 
