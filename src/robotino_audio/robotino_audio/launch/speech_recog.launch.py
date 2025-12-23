@@ -19,6 +19,14 @@ def generate_launch_description():
 
     publish_partial = LaunchConfiguration("publish_partial")
 
+    # TTS params
+    tts_engine = LaunchConfiguration("tts_engine")
+    tts_voice = LaunchConfiguration("tts_voice")
+    tts_speed = LaunchConfiguration("tts_speed")
+    tts_pitch = LaunchConfiguration("tts_pitch")
+    tts_volume = LaunchConfiguration("tts_volume")
+    tts_interrupt = LaunchConfiguration("tts_interrupt")
+
     return LaunchDescription([
         DeclareLaunchArgument(
             "model_path",
@@ -61,6 +69,38 @@ def generate_launch_description():
             description="Publish partial recognition results"
         ),
 
+        # ---- TTS args (espeak backend for now) ----
+        DeclareLaunchArgument(
+            "tts_engine",
+            default_value="",
+            description='TTS engine binary. Empty = auto ("espeak-ng" then "espeak")'
+        ),
+        DeclareLaunchArgument(
+            "tts_voice",
+            default_value="",
+            description='TTS voice (e.g., "en-us", "en", "es-la"). Empty = default'
+        ),
+        DeclareLaunchArgument(
+            "tts_speed",
+            default_value="160",
+            description="TTS speed (words per minute)"
+        ),
+        DeclareLaunchArgument(
+            "tts_pitch",
+            default_value="50",
+            description="TTS pitch (0-99)"
+        ),
+        DeclareLaunchArgument(
+            "tts_volume",
+            default_value="100",
+            description="TTS volume/amplitude (commonly 0-200)"
+        ),
+        DeclareLaunchArgument(
+            "tts_interrupt",
+            default_value="true",
+            description="If true, new TTS request stops current speech"
+        ),
+
         # ---- Audio Capture ----
         Node(
             package="audio_capture",
@@ -72,8 +112,6 @@ def generate_launch_description():
                 "channels": channels,
                 "sample_format": sample_format,
                 "format": audio_format,
-                # Only set device if user passed something non-empty.
-                # (audio_capture_node ignores unknown/empty, but we keep it explicit)
                 "device": device,
             }]
         ),
@@ -87,8 +125,24 @@ def generate_launch_description():
             parameters=[{
                 "audio_topic": audio_topic,
                 "model_path": model_path,
-                "sample_rate": 16000,          # match capture
+                "sample_rate": 16000,  # match capture
                 "publish_partial": publish_partial,
+            }]
+        ),
+
+        # ---- TTS (eSpeak for now) ----
+        Node(
+            package="robotino_tts",
+            executable="espeak_tts_node",
+            name="tts_node",
+            output="screen",
+            parameters=[{
+                "engine": tts_engine,
+                "voice": tts_voice,
+                "speed": tts_speed,
+                "pitch": tts_pitch,
+                "volume": tts_volume,
+                "interrupt": tts_interrupt,
             }]
         ),
     ])

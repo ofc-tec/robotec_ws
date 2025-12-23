@@ -9,10 +9,12 @@ import os
 
 def generate_launch_description():
     robotino_webots_share = get_package_share_directory('robotino_webots')
+    robotino_audio_share = get_package_share_directory('robotino_audio')
 
     # Paths to existing launches
     nav_launch = os.path.join(robotino_webots_share, 'launch', 'nav_robotino.launch.py')
     vision_launch = os.path.join(robotino_webots_share, 'launch', 'vision.launch.py')
+    speech_launch = os.path.join(robotino_audio_share, 'launch', 'speech_recog.launch.py')
 
     # launch arguments 
     world_file = LaunchConfiguration('world_file')
@@ -72,6 +74,13 @@ def generate_launch_description():
         }.items()
     )
 
+    include_speech = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(speech_launch),
+        launch_arguments={
+            
+        }.items()
+    )
+
     return LaunchDescription([
         declare_world,
         declare_map,
@@ -80,4 +89,5 @@ def generate_launch_description():
         declare_cloud_topic,
         include_nav,
         include_vision,
+        include_speech,
     ])
