@@ -14,7 +14,7 @@
 #   So this BT node effectively becomes "sync speech" (sequence-friendly).
 
 import operator
-
+import time
 import py_trees
 from py_trees.common import OneShotPolicy, ComparisonExpression
 
@@ -24,6 +24,23 @@ from robotino_bts.behaviors.init_blackboard_receptionist import InitBlackboard
 from robotino_bts.behaviors.navigate_to_known_location import NavToKnownLocation
 from robotino_bts.behaviors.wait_for_face import FaceRecognitionBehaviour
 from robotino_bts.behaviors.wait_for_text import WaitForText
+
+from robotino_bts.behaviors.parse_receptionist import ParseGuestFromText
+
+class WaitSeconds(py_trees.behaviour.Behaviour):
+    def __init__(self, name, seconds: float):
+        super().__init__(name)
+        self.seconds = seconds
+        self._t0 = None
+
+    def initialise(self):
+        self._t0 = time.time()
+
+    def update(self):
+        return (py_trees.common.Status.SUCCESS
+                if (time.time() - self._t0) >= self.seconds
+                else py_trees.common.Status.RUNNING)
+
 
 
 class SayTextBehaviour(py_trees.behaviour.Behaviour):
@@ -117,39 +134,26 @@ def create_behavior_tree(node):
     )
 
     # -------------------------------------------------
-    # FACE BLOCK (<= 30s)
-    # SUCCESS only if bb.face_ok == True; timeout without face => FAIL.
-    has_face = py_trees.behaviours.CheckBlackboardVariableValue(
-        name="HasFace?",
-        check=ComparisonExpression(
-            variable="face_ok",
-            value=True,
-            operator=operator.eq,
-        ),
-    )
-
+    # FACE BLOCK (<= 30s): keep retrying until a face is found
     face_try = FaceRecognitionBehaviour(
         name="AcquireFace",
         node=node,
     )
 
-    face_loop = py_trees.composites.Selector(
-        name="FaceLoop",
-        memory=False,
+    # Retry indefinitely (or “a lot”), until SUCCESS
+    face_retry = py_trees.decorators.Retry(
+        name="FaceRetryUntilFound",
+        child=face_try,
+        num_failures=10_000,   # effectively "infinite"
     )
-    face_loop.add_children([has_face, face_try])
 
+    # But cap the total time spent retrying
     face_timeout = py_trees.decorators.Timeout(
         name="FaceTimeout30s",
-        child=face_loop,
+        child=face_retry,
         duration=30.0,
     )
 
-    face_gate = py_trees.composites.Sequence(
-        name="FaceGate",
-        memory=True,
-    )
-    face_gate.add_children([face_timeout, has_face])
 
     # -------------------------------------------------
     # SPEECH BLOCK (retry max 3)
@@ -159,41 +163,25 @@ def create_behavior_tree(node):
         text="What is your name and what drink would you like?",
         wait=True,
     )
-
+    cooldown = WaitSeconds("AfterAskCooldown", 3.0)   # start with 1.0s
     listen = WaitForText(
         name="ListenText",
         node=node,
     )
 
-    has_name = py_trees.behaviours.CheckBlackboardVariableValue(
-        name="HasName?",
-        check=ComparisonExpression(
-            variable="current_guest_name",
-            value="",
-            operator=operator.ne,
-        ),
+    known_names = ["jack", "oscar", "maria", "john"]
+    known_drinks = ["water", "coke", "tea", "coffee", "juice","beer"]
+
+
+    parse = ParseGuestFromText(
+        name="ParseNameDrink",
+        known_names=known_names,
+        known_drinks=known_drinks,
+        text_key="speech_last_text",
     )
 
-    has_drink = py_trees.behaviours.CheckBlackboardVariableValue(
-        name="HasDrink?",
-        check=ComparisonExpression(
-            variable="current_guest_drink",
-            value="",
-            operator=operator.ne,
-        ),
-    )
-
-    got_both = py_trees.composites.Sequence(
-        name="GotNameAndDrink",
-        memory=True,
-    )
-    got_both.add_children([has_name, has_drink])
-
-    ask_and_listen = py_trees.composites.Sequence(
-        name="AskAndListen",
-        memory=True,
-    )
-    ask_and_listen.add_children([ask, listen, got_both])
+    ask_and_listen = py_trees.composites.Sequence(name="AskListenParse", memory=True)
+    ask_and_listen.add_children([ask,cooldown, listen, parse])
 
     speech_retry = py_trees.decorators.Retry(
         name="SpeechRetry3",
@@ -201,10 +189,12 @@ def create_behavior_tree(node):
         num_failures=3,
     )
 
+   
+
     outro = SayTextBehaviour(
         name="OutroTalk",
         node=node,
-        text="Nice to meet you. Thank you.",
+        text="Nice to meet you. Please Follow me",
         wait=True,
     )
 
@@ -213,7 +203,7 @@ def create_behavior_tree(node):
         init_bb,
         intro,
         goto_door,
-        face_gate,
+        face_timeout,
         speech_retry,
         outro,
     ])
