@@ -33,7 +33,6 @@ def outro_text(node):
     bb = py_trees.blackboard.Client(name="OutroText")
     bb.register_key("current_guest_name", py_trees.common.Access.READ)
     name = (getattr(bb, "current_guest_name", "") or "").strip()
-
     node.get_logger().info(f"[OUTRO_TEXT] current_guest_name='{name}'")
 
     if name:
@@ -121,7 +120,7 @@ def create_behavior_tree(node):
 
 
     # -------------------------------------------------
-    # SPEECH BLOCK (retry max 35)
+    # SPEECH BLOCK (retry max 5)
     ask = SayTextBehaviour(
         name="AskNameDrink",
         node=node,
@@ -188,6 +187,7 @@ def create_behavior_tree(node):
         name="GrammarFree",
         node=node,
         mode="FREE",
+        phrases=[], 
         
     )
     # -------------------------------------------------
