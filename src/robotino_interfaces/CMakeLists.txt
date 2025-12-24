@@ -10,6 +10,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/LocationsServer.srv" 
   "srv/FaceRecog.srv"
   "srv/Talk.srv"
+  "srv/SetGrammar.srv"
+
   DEPENDENCIES vision_msgs
 )
 

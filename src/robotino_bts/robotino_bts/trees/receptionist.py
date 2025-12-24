@@ -14,6 +14,7 @@
 #   So this BT node effectively becomes "sync speech" (sequence-friendly).
 
 import operator
+from platform import node
 import time
 import py_trees
 from py_trees.common import OneShotPolicy, ComparisonExpression
@@ -24,8 +25,39 @@ from robotino_bts.behaviors.init_blackboard_receptionist import InitBlackboard
 from robotino_bts.behaviors.navigate_to_known_location import NavToKnownLocation
 from robotino_bts.behaviors.wait_for_face import FaceRecognitionBehaviour
 from robotino_bts.behaviors.wait_for_text import WaitForText
-
 from robotino_bts.behaviors.parse_receptionist import ParseGuestFromText
+from robotino_bts.behaviors.talk_behaviors import SayTextBehaviour
+from robotino_bts.behaviors.set_grammar_mode import SetGrammarMode
+
+def outro_text(node):
+    bb = py_trees.blackboard.Client(name="OutroText")
+    bb.register_key("current_guest_name", py_trees.common.Access.READ)
+    name = (getattr(bb, "current_guest_name", "") or "").strip()
+
+    node.get_logger().info(f"[OUTRO_TEXT] current_guest_name='{name}'")
+
+    if name:
+        return f"Nice to meet you {name}. Please follow me."
+    return "Nice to meet you. Please follow me."
+
+
+def ask_name_drink_text(node):
+    bb = py_trees.blackboard.Client(name="AskDrinkText")
+    bb.register_key("current_guest_name", py_trees.common.Access.READ)
+    bb.register_key("current_guest_drink", py_trees.common.Access.READ)
+    name = (getattr(bb, "current_guest_name", "") or "").strip()
+    drink = (getattr(bb, "current_guest_drink", "") or "").strip()
+    node.get_logger().info(f"[ASK_TEXT] name='{name}' drink='{drink}'")
+    if name and drink:
+        return ""
+
+    if name:
+        return f"Hi {name}. What drink would you like?"
+
+    if drink:
+        return f"I heard {drink}. Please repeat your name."
+
+    return "What is your name and what drink would you like?"
 
 class WaitSeconds(py_trees.behaviour.Behaviour):
     def __init__(self, name, seconds: float):
@@ -41,74 +73,7 @@ class WaitSeconds(py_trees.behaviour.Behaviour):
                 if (time.time() - self._t0) >= self.seconds
                 else py_trees.common.Status.RUNNING)
 
-
-
-class SayTextBehaviour(py_trees.behaviour.Behaviour):
-    """
-    Calls /tts/talk (robotino_interfaces/srv/Talk).
-
-    If request.wait=True, the server will block until speech finishes
-    and then reply -> this BT node will be RUNNING until it gets that reply.
-
-    If request.wait=False, the server replies immediately -> this node will complete fast.
-    """
-
-    def __init__(self, name, node, text: str, wait: bool = True, service_name: str = "/tts/talk"):
-        super().__init__(name)
-        self.node = node
-        self.text = text
-        self.wait = wait
-        self.service_name = service_name
-
-        self._client = None
-        self._future = None
-
-    def setup(self, **kwargs):
-        # Called by py_trees_ros behaviour tree if used; safe to keep.
-        if self._client is None:
-            self._client = self.node.create_client(Talk, self.service_name)
-
-    def initialise(self):
-        if self._client is None:
-            self._client = self.node.create_client(Talk, self.service_name)
-
-        # If service isn't available, fail fast (makes debugging obvious).
-        if not self._client.wait_for_service(timeout_sec=0.2):
-            self.node.get_logger().error(f"[SAY_TEXT] Service not available: {self.service_name}")
-            self._future = None
-            return
-
-        req = Talk.Request()
-        req.text = self.text
-        req.wait = bool(self.wait)
-
-        self.node.get_logger().info(f"[SAY_TEXT] Calling {self.service_name} wait={self.wait}: {self.text}")
-        self._future = self._client.call_async(req)
-
-    def update(self):
-        if self._future is None:
-            return py_trees.common.Status.FAILURE
-
-        if not self._future.done():
-            return py_trees.common.Status.RUNNING
-
-        try:
-            resp = self._future.result()
-        except Exception as e:
-            self.node.get_logger().error(f"[SAY_TEXT] Service call failed: {e}")
-            return py_trees.common.Status.FAILURE
-
-        if getattr(resp, "success", False):
-            return py_trees.common.Status.SUCCESS
-
-        msg = getattr(resp, "message", "unknown error")
-        self.node.get_logger().warn(f"[SAY_TEXT] TTS returned failure: {msg}")
-        return py_trees.common.Status.FAILURE
-
-    def terminate(self, new_status):
-        # Do not try to cancel the service call (rclpy doesn't cancel service futures reliably).
-        pass
-
+#####################################################START OF TREE DEFINITION
 
 def create_behavior_tree(node):
     seq = py_trees.composites.Sequence(
@@ -156,21 +121,41 @@ def create_behavior_tree(node):
 
 
     # -------------------------------------------------
-    # SPEECH BLOCK (retry max 3)
+    # SPEECH BLOCK (retry max 35)
     ask = SayTextBehaviour(
         name="AskNameDrink",
         node=node,
-        text="What is your name and what drink would you like?",
+        #text="What is your name and what drink would you like?",
+        text=ask_name_drink_text,  # callable
         wait=True,
     )
-    cooldown = WaitSeconds("AfterAskCooldown", 3.0)   # start with 1.0s
+    cooldown = WaitSeconds("AfterAskCooldown", 2.0)   
+    
+    ######################################
+    known_names = ["jack", "oscar", "maria", "john"]
+    known_drinks = ["water", "coke", "tea", "coffee", "juice", "beer"]
+    connectors = [
+        "my name is",
+        "i am",
+        "i would like",
+        "i want",
+        "and",
+    ]
+
+    grammar_phrases = known_names + known_drinks + connectors
+    #########################
+    set_custom_grammar = SetGrammarMode(
+        name="GrammarNameDrinkCustom",
+        node=node,
+        mode="CUSTOM",
+        phrases=grammar_phrases,
+    )
+
     listen = WaitForText(
         name="ListenText",
         node=node,
     )
 
-    known_names = ["jack", "oscar", "maria", "john"]
-    known_drinks = ["water", "coke", "tea", "coffee", "juice","beer"]
 
 
     parse = ParseGuestFromText(
@@ -181,23 +166,30 @@ def create_behavior_tree(node):
     )
 
     ask_and_listen = py_trees.composites.Sequence(name="AskListenParse", memory=True)
-    ask_and_listen.add_children([ask,cooldown, listen, parse])
+    ask_and_listen.add_children([ask,cooldown, set_custom_grammar,listen, parse])
 
     speech_retry = py_trees.decorators.Retry(
-        name="SpeechRetry3",
+        name="SpeechRetry5Times",
         child=ask_and_listen,
-        num_failures=3,
+        num_failures=5,
     )
 
    
+    
 
     outro = SayTextBehaviour(
         name="OutroTalk",
         node=node,
-        text="Nice to meet you. Please Follow me",
+        text=outro_text,  # callable
         wait=True,
     )
 
+    set_free_grammar = SetGrammarMode(
+        name="GrammarFree",
+        node=node,
+        mode="FREE",
+        
+    )
     # -------------------------------------------------
     seq.add_children([
         init_bb,
@@ -206,6 +198,7 @@ def create_behavior_tree(node):
         face_timeout,
         speech_retry,
         outro,
+        set_free_grammar,
     ])
 
     root = py_trees.decorators.OneShot(
