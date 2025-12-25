@@ -20,7 +20,8 @@ class FaceRecognitionBehaviour(py_trees.behaviour.Behaviour):
         # Blackboard client - safe registration
         self.bb = py_trees.blackboard.Client(name=f"{name}_BB")
         self.bb.register_key(key=self.guest_key, access=Access.WRITE)
-
+        self.bb.register_key("current_guest_name", py_trees.common.Access.WRITE)
+    
         # ROS2 service client
         self.cli = self.node.create_client(FaceRecog, "/face_recog")
         self._face_result = None
@@ -79,6 +80,7 @@ class FaceRecognitionBehaviour(py_trees.behaviour.Behaviour):
 
         # Write back
         self.bb.set(self.guest_key, guest_list)
+        self.bb.set("current_guest_name", guest_list[0] if guest_list else None)
 
         self.node.get_logger().info(
             f"[FACE_BT] Recognized {num_faces} face(s): {', '.join(names)} "

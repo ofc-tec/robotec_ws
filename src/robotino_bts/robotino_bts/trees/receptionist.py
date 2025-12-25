@@ -50,13 +50,10 @@ def ask_name_drink_text(node):
     node.get_logger().info(f"[ASK_TEXT] name='{name}' drink='{drink}'")
     if name and drink:
         return ""
-
-    if name:
+    if name and name != "unknown":
         return f"Hi {name}. What drink would you like?"
-
     if drink:
         return f"I heard {drink}. Please repeat your name."
-
     return "What is your name and what drink would you like?"
 
 class WaitSeconds(py_trees.behaviour.Behaviour):
