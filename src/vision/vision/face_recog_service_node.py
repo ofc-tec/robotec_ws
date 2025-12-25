@@ -279,16 +279,11 @@ class FaceRecogServiceNode(Node):
         return res
 
     def _handle_forget_all(self, req, res):
-        if req.data:
-            self.known = {}
-            self._save_db()
-            res.success = True
-            res.message = "cleared"
-        else:
-            res.success = True
-            res.message = "noop"
+        self.known = {}
+        self._save_db()
+        res.success = True
+        res.message = "cleared (data was %s)" % ("true" if req.data else "false")
         return res
-
 def main():
     rclpy.init()
     node = FaceRecogServiceNode()

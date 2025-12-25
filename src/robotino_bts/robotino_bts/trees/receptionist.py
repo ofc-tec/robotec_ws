@@ -24,6 +24,7 @@ from robotino_interfaces.srv import Talk
 from robotino_bts.behaviors.init_blackboard_receptionist import InitBlackboard
 from robotino_bts.behaviors.navigate_to_known_location import NavToKnownLocation
 from robotino_bts.behaviors.wait_for_face import FaceRecognitionBehaviour
+from robotino_bts.behaviors.train_face import TrainFace
 from robotino_bts.behaviors.wait_for_text import WaitForText
 from robotino_bts.behaviors.parse_receptionist import ParseGuestFromText
 from robotino_bts.behaviors.talk_behaviors import SayTextBehaviour
@@ -174,7 +175,11 @@ def create_behavior_tree(node):
     )
 
    
-    
+    face_train = TrainFace(
+        name="TrainFace",
+        node=node,
+        name_key="current_guest_name",
+        ) 
 
     outro = SayTextBehaviour(
         name="OutroTalk",
@@ -182,6 +187,8 @@ def create_behavior_tree(node):
         text=outro_text,  # callable
         wait=True,
     )
+
+
 
     set_free_grammar = SetGrammarMode(
         name="GrammarFree",
@@ -197,6 +204,7 @@ def create_behavior_tree(node):
         goto_door,
         face_timeout,
         speech_retry,
+        face_train,
         outro,
         set_free_grammar,
     ])
