@@ -86,6 +86,8 @@ class FaceRecogServiceNode(Node):
         self.create_service(SetBool, "/face_db/forget_all", self._handle_forget_all)
 
         self.get_logger().info("[FACE] Ready (YOLO + FaceNet).")
+        self.last_embedding: Optional[np.ndarray] = None
+        self.last_embedding_stamp = None
 
     def _image_cb(self, msg: Image):
         self.latest_image_msg = msg
@@ -153,7 +155,8 @@ class FaceRecogServiceNode(Node):
         t = (t - 0.5) / 0.5
         if self.device.startswith("cuda"):
             t = t.to(self.device)
-        with torch.no_grad():
+        #with torch.no_grad():
+        with torch.inference_mode():
             emb = self.embedder(t).detach().cpu().numpy()[0]
         emb = emb / (np.linalg.norm(emb) + 1e-9)
         return emb
@@ -197,7 +200,14 @@ class FaceRecogServiceNode(Node):
 
             res.name_response.append(name)
             res.confidence.append(conf)
-            res.features.append("ok")
+            if emb is None: 
+                res.features.append("")
+            else:
+                try:
+                    emb_list = emb.tolist() if hasattr(emb, "tolist") else list(emb)
+                    res.features.append(" ".join(f"{x:.6f}" for x in emb_list))
+                except Exception:
+                    res.features.append("")
             res.bounding_boxes.append(bbox2d_from_xyxy(x1,y1,x2,y2))
 
             debug_items.append((x1,y1,x2,y2,name,conf,det_conf))
@@ -206,6 +216,23 @@ class FaceRecogServiceNode(Node):
         return res
 
     def train_face_callback(self, req, res):
+
+        # Prefer cached embedding from last /face_recog
+        if self.last_embedding is not None:
+            emb = self.last_embedding
+            self.known.setdefault(train_name, [])
+            self.known[train_name].append(emb.astype(float).tolist())
+            self._save_db()
+            self.get_logger().info(f"[FACE] Trained '{train_name}' from cached embedding "
+                                f"(now {len(self.known[train_name])} samples)")
+            res.name_response.append(train_name)
+            res.confidence.append(1.0)
+            res.features.append("trained_cached")
+            # bounding box unknown here unless you cached it too; optional
+            self._publish_debug(bgr, [])
+            return res
+
+
         bgr = self._get_latest_bgr()
         if bgr is None:
             return res
