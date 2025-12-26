@@ -3,6 +3,8 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node
+
 from ament_index_python.packages import get_package_share_directory
 import os
 
@@ -21,7 +23,7 @@ def generate_launch_description():
     map_file = LaunchConfiguration('map_file')
     use_sim_time = LaunchConfiguration('use_sim_time')
     image_topic = LaunchConfiguration('image_topic')
-    cloud_topic = LaunchConfiguration('cloud_topic')
+    depth_topic = LaunchConfiguration('depth_topic')
 
     
     
@@ -45,16 +47,17 @@ def generate_launch_description():
 
     declare_image_topic = DeclareLaunchArgument(
         'image_topic',
-        #default_value='/kinect/rgb/image_raw',
-        default_value='/image_raw',
+        default_value='/kinect_sim/rgb/image_raw',
+        #default_value='/kinect/image_raw',
         description='RGB image topic for vision nodes'
     )
 
-    declare_cloud_topic = DeclareLaunchArgument(
-        'cloud_topic',
-        default_value='/kinect/depth/points',
-        description='Depth pointcloud topic'
+    declare_depth_topic = DeclareLaunchArgument(
+        'depth_topic',
+        default_value='/kinect_sim/depth/image_raw',
+        description='Depth pointcloud img  topic'
     )
+    
 
     # Include the nav and vision launch files, forwarding args
     include_nav = IncludeLaunchDescription(
@@ -70,7 +73,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(vision_launch),
         launch_arguments={
             'image_topic': image_topic,
-            'cloud_topic': cloud_topic
+            'depth_topic': depth_topic
         }.items()
     )
 
@@ -80,14 +83,22 @@ def generate_launch_description():
             
         }.items()
     )
+    kinect_depth_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='kinect_depth_tf_glue',
+        arguments=['0','0','0', '0','0','0', 'kinect_link', 'kinect_depth'],
+        output='screen'
+    )
 
     return LaunchDescription([
         declare_world,
         declare_map,
         declare_sim_time,
         declare_image_topic,
-        declare_cloud_topic,
+        declare_depth_topic,
         include_nav,
         include_vision,
-        include_speech,
+        kinect_depth_tf,
+        #include_speech,
     ])

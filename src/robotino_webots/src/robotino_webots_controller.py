@@ -84,7 +84,7 @@ class RobotinoWebotsController(Node):
             self.kinect_rgb = self.robot.getDevice('kinect_rgb')
             self.kinect_rgb.enable(self.timestep)
             if self.bridge:
-                self.kinect_rgb_pub = self.create_publisher(Image, 'kinect/rgb/image_raw', 10)
+                self.kinect_rgb_pub = self.create_publisher(Image, 'kinect_sim/rgb/image_raw', 10)
         except Exception:
             pass
 
@@ -92,7 +92,7 @@ class RobotinoWebotsController(Node):
             self.kinect_depth = self.robot.getDevice('kinect_depth')
             self.kinect_depth.enable(self.timestep)
             if self.bridge:
-                self.kinect_depth_pub = self.create_publisher(Image, 'kinect/depth/image_raw', 10)
+                self.kinect_depth_pub = self.create_publisher(Image, 'kinect_sim/depth/image_raw', 10)
         except Exception:
             pass
 
@@ -146,15 +146,15 @@ class RobotinoWebotsController(Node):
         # base_footprint -> kinect_link
         t = TransformStamped()
         t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = 'base_footprint'
+        t.header.frame_id = 'base_link'
         t.child_frame_id = 'kinect_link'
         t.transform.translation.x = 0.0
         t.transform.translation.y = 0.0
         t.transform.translation.z = 0.60
-        t.transform.rotation.x = 0.0
-        t.transform.rotation.y = 0.0
-        t.transform.rotation.z = 0.0
-        t.transform.rotation.w = 1.0
+        t.transform.rotation.x = -0.5
+        t.transform.rotation.y =  0.5
+        t.transform.rotation.z = -0.5
+        t.transform.rotation.w =  0.5
         static_tfs.append(t)
 
         self.static_tf_broadcaster.sendTransform(static_tfs)

@@ -204,7 +204,7 @@ class YoloServiceNode(Node):
                 mask_array = None
 
         now = self.get_clock().now().to_msg()
-        parent_frame = 'kinect_optical'
+        parent_frame = 'kinect_depth'
 
         # ==========================
         # Loop detections (2D always)

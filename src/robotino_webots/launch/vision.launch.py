@@ -19,7 +19,7 @@ def generate_launch_description():
 
     # --- Launch arguments ---
     image_topic = LaunchConfiguration('image_topic')
-    cloud_topic = LaunchConfiguration('cloud_topic')
+    depth_topic = LaunchConfiguration('depth_topic')
 
     declare_image_topic = DeclareLaunchArgument(
         'image_topic',
@@ -27,10 +27,10 @@ def generate_launch_description():
         description='RGB image topic for vision nodes'
     )
 
-    declare_cloud_topic = DeclareLaunchArgument(
-        'cloud_topic',
-        default_value='/kinect/depth/points',
-        description='Depth pointcloud topic'
+    declare_depth_topic = DeclareLaunchArgument(
+        'depth_topic',
+        default_value='/kinect/depth/image_raw',
+        description='Depth pointcloud depthimg topic'
     )
 
     # --- Webots simulation + teleop ---
@@ -57,7 +57,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'image_topic': image_topic,
-            'cloud_topic': cloud_topic
+            'depth_topic': depth_topic
         }]
     )
     # --- FACE RECOG server ---
@@ -68,13 +68,13 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'image_topic': image_topic,
-            'cloud_topic': cloud_topic
+            'depth_topic': depth_topic
         }]
     )
 
     return LaunchDescription([
         declare_image_topic,
-        declare_cloud_topic,
+        declare_depth_topic,
         sim_teleop,
         vision_node,
         yolo_server,
