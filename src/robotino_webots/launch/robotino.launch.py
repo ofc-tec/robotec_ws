@@ -47,14 +47,15 @@ def generate_launch_description():
 
     declare_image_topic = DeclareLaunchArgument(
         'image_topic',
-        default_value='/kinect_sim/rgb/image_raw',
-        #default_value='/kinect/image_raw',
+        #default_value='/kinect_sim/rgb/image_raw',
+        default_value='/kinect/image_raw',
         description='RGB image topic for vision nodes'
     )
 
     declare_depth_topic = DeclareLaunchArgument(
         'depth_topic',
-        default_value='/kinect_sim/depth/image_raw',
+        #default_value='/kinect_sim/depth/image_raw',
+        default_value='/kinect/depth/image_raw',
         description='Depth pointcloud img  topic'
     )
     

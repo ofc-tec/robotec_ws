@@ -2,6 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
+from rclpy.duration import Duration
 
 from sensor_msgs.msg import Image, CameraInfo
 from vision_msgs.msg import Detection2DArray, Detection2D, ObjectHypothesisWithPose, BoundingBox2D
@@ -14,7 +15,7 @@ import numpy as np
 import cv2
 
 import tf2_ros
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import TransformStamped, PoseStamped
 
 
 class YoloServiceNode(Node):
@@ -29,15 +30,23 @@ class YoloServiceNode(Node):
         self.declare_parameter('depth_info_topic', '/kinect/depth/camera_info')
         self.declare_parameter('model_path', 'yolo11n-seg.pt')  # adjust as needed
 
+        # NEW: frames for poses_map output
+        self.declare_parameter('map_frame', 'map')
+        self.declare_parameter('base_frame', 'base_link')
+
         image_topic = self.get_parameter('image_topic').get_parameter_value().string_value
         depth_topic = self.get_parameter('depth_topic').get_parameter_value().string_value
         depth_info_topic = self.get_parameter('depth_info_topic').get_parameter_value().string_value
         model_path = self.get_parameter('model_path').get_parameter_value().string_value
 
+        self.map_frame = self.get_parameter('map_frame').get_parameter_value().string_value
+        self.base_frame = self.get_parameter('base_frame').get_parameter_value().string_value
+
         self.get_logger().info(f'[YOLO_SERVICE] Using RGB topic        : {image_topic}')
         self.get_logger().info(f'[YOLO_SERVICE] Using DEPTH topic      : {depth_topic}')
         self.get_logger().info(f'[YOLO_SERVICE] Using DEPTH info topic : {depth_info_topic}')
         self.get_logger().info(f'[YOLO_SERVICE] Using model            : {model_path}')
+        self.get_logger().info(f'[YOLO_SERVICE] map_frame/base_frame   : {self.map_frame} / {self.base_frame}')
 
         # --- Subscriptions ---
         self.latest_image_msg = None
@@ -68,6 +77,10 @@ class YoloServiceNode(Node):
         # --- TF broadcaster ---
         self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
 
+        # NEW: TF listener/buffer for map lookups (poses_map)
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
+
         # --- Debug image publisher ---
         self.debug_pub = self.create_publisher(Image, '/vision/yolo_debug_image', 10)
 
@@ -97,9 +110,39 @@ class YoloServiceNode(Node):
         self.latest_cam_info = msg
 
     # ==========================
+    # Helpers (NEW)
+    # ==========================
+    def _pose_stamped_from_transform(self, t: TransformStamped) -> PoseStamped:
+        ps = PoseStamped()
+        ps.header = t.header
+        ps.pose.position.x = float(t.transform.translation.x)
+        ps.pose.position.y = float(t.transform.translation.y)
+        ps.pose.position.z = float(t.transform.translation.z)
+        ps.pose.orientation = t.transform.rotation
+        return ps
+
+    def _lookup_transform(self, target_frame: str, source_frame: str, timeout_sec: float = 0.08) -> TransformStamped | None:
+        """
+        Latest transform target_frame <- source_frame.
+        """
+        try:
+            return self.tf_buffer.lookup_transform(
+                target_frame,
+                source_frame,
+                rclpy.time.Time(),
+                timeout=Duration(seconds=timeout_sec),
+            )
+        except Exception:
+            return None
+
+    # ==========================
     # Service handler
     # ==========================
     def handle_yolo_detect(self, request, response: YoloDetect.Response):
+        # NEW: always initialize new fields (even on early returns)
+        response.class_names = []
+        response.poses_map = []
+
         if self.latest_image_msg is None:
             self.get_logger().warn('[YOLO_SERVICE] No RGB image yet.')
             response.detections = Detection2DArray()
@@ -180,6 +223,7 @@ class YoloServiceNode(Node):
             self.debug_pub.publish(debug_msg)
 
             response.detections = detections_msg
+            # response.class_names / poses_map already empty
             return response
 
         boxes_xyxy = boxes.xyxy.cpu().numpy()
@@ -205,6 +249,14 @@ class YoloServiceNode(Node):
 
         now = self.get_clock().now().to_msg()
         parent_frame = 'kinect_depth'
+
+        # NEW: compute robot pose fallback once (map -> base_link)
+        # (Used if map->object TF not available)
+        base_in_map = self._lookup_transform(self.map_frame, self.base_frame, timeout_sec=0.12)
+        base_pose_fallback = None
+        if base_in_map is not None:
+            base_pose_fallback = self._pose_stamped_from_transform(base_in_map)
+            base_pose_fallback.header.frame_id = self.map_frame
 
         # ==========================
         # Loop detections (2D always)
@@ -234,50 +286,69 @@ class YoloServiceNode(Node):
 
             detections_msg.detections.append(detection)
 
+            # NEW: fill semantic class name list (ALIGNED with detections)
+            class_name = self.class_names.get(class_ids[i], 'obj')
+            response.class_names.append(class_name)
+
+            # Default pose entry (we will try to replace with object pose in map)
+            pose_out = None
+
+            child_frame_id = f'yolo_{class_name}_{i}'
+
             # 3D centroid + TF ONLY if depth is OK
             if depth_ok and (mask_array is not None) and (i < mask_array.shape[0]) and (X is not None) and (Y is not None) and (Z is not None):
                 mask = mask_array[i]  # [H, W]
                 submask = mask[y1_i:y2_i, x1_i:x2_i] > 0.5
-                if not np.any(submask):
-                    continue
+                if np.any(submask):
+                    ys_idx, xs_idx = np.where(submask)
+                    ys_full = ys_idx + y1_i
+                    xs_full = xs_idx + x1_i
 
-                ys_idx, xs_idx = np.where(submask)
-                ys_full = ys_idx + y1_i
-                xs_full = xs_idx + x1_i
+                    X_pts = X[ys_full, xs_full]
+                    Y_pts = Y[ys_full, xs_full]
+                    Z_pts = Z[ys_full, xs_full]
 
-                X_pts = X[ys_full, xs_full]
-                Y_pts = Y[ys_full, xs_full]
-                Z_pts = Z[ys_full, xs_full]
+                    good = ~np.isnan(X_pts) & ~np.isnan(Y_pts) & ~np.isnan(Z_pts)
+                    if np.any(good):
+                        cx3 = float(X_pts[good].mean())
+                        cy3 = float(Y_pts[good].mean())
+                        cz3 = float(Z_pts[good].mean())
 
-                good = ~np.isnan(X_pts) & ~np.isnan(Y_pts) & ~np.isnan(Z_pts)
-                if not np.any(good):
-                    continue
+                        t = TransformStamped()
+                        t.header.stamp = now
+                        t.header.frame_id = parent_frame
+                        t.child_frame_id = child_frame_id
+                        t.transform.translation.x = cx3
+                        t.transform.translation.y = cy3
+                        t.transform.translation.z = cz3
+                        t.transform.rotation.x = 0.0
+                        t.transform.rotation.y = 0.0
+                        t.transform.rotation.z = 0.0
+                        t.transform.rotation.w = 1.0
 
-                cx3 = float(X_pts[good].mean())
-                cy3 = float(Y_pts[good].mean())
-                cz3 = float(Z_pts[good].mean())
+                        self.tf_broadcaster.sendTransform(t)
 
-                t = TransformStamped()
-                t.header.stamp = now
-                t.header.frame_id = parent_frame
+                        # NEW: try to lookup pose of this object in map
+                        obj_in_map = self._lookup_transform(self.map_frame, child_frame_id, timeout_sec=0.08)
+                        if obj_in_map is not None:
+                            pose_out = self._pose_stamped_from_transform(obj_in_map)
+                            pose_out.header.frame_id = self.map_frame
 
-                class_name = self.class_names.get(class_ids[i], 'obj')
-                t.child_frame_id = f'yolo_{class_name}_{i}'
+            # NEW: fallback if we couldn't compute object pose in map
+            if pose_out is None:
+                if base_pose_fallback is not None:
+                    pose_out = base_pose_fallback
+                else:
+                    pose_out = PoseStamped()
+                    pose_out.header.frame_id = self.map_frame
 
-                t.transform.translation.x = cx3
-                t.transform.translation.y = cy3
-                t.transform.translation.z = cz3
-                t.transform.rotation.x = 0.0
-                t.transform.rotation.y = 0.0
-                t.transform.rotation.z = 0.0
-                t.transform.rotation.w = 1.0
-
-                self.tf_broadcaster.sendTransform(t)
+            response.poses_map.append(pose_out)
 
         response.detections = detections_msg
         self.get_logger().info(
             f'[YOLO_SERVICE] Request handled: {len(detections_msg.detections)} detections, '
-            f'TFs={"yes" if depth_ok else "no"} (depth optional).'
+            f'TFs={"yes" if depth_ok else "no"} (depth optional). '
+            f'class_names={len(response.class_names)} poses_map={len(response.poses_map)}'
         )
         return response
 
