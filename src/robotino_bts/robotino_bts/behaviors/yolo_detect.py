@@ -13,7 +13,7 @@ class YoloDetectBehaviour(py_trees.behaviour.Behaviour):
     Stores in blackboard.detections_log a compact entry:
       {
         "classes":   [str, ...],
-        "poses_map": [PoseStamped, ...],
+        "poses_kinect_link": [PoseStamped, ...],
       }
     """
 
@@ -61,17 +61,17 @@ class YoloDetectBehaviour(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.FAILURE
 
         classes = list(getattr(resp, "class_names", []) or [])
-        poses_map = list(getattr(resp, "poses_map", []) or [])
+        poses_kinect_link = list(getattr(resp, "poses", []) or [])
 
         # Keep alignment safe (in case server returns mismatched lengths)
-        n = min(len(classes), len(poses_map))
+        n = min(len(classes), len(poses_kinect_link))
         classes = classes[:n]
-        poses_map = poses_map[:n]
+        poses_kinect_link = poses_kinect_link[:n]
 
         log = self.bb.detections_log or []
         log.append({
             "classes": classes,
-            "poses_map": poses_map,
+            "poses": poses_kinect_link,
         })
         self.bb.detections_log = log
 

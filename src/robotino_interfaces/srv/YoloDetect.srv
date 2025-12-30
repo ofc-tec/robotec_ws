@@ -4,4 +4,4 @@
 # Response contains a Detection2DArray
 vision_msgs/Detection2DArray detections
 string[] class_names
-geometry_msgs/PoseStamped[] poses_map
+geometry_msgs/PoseStamped[] poses

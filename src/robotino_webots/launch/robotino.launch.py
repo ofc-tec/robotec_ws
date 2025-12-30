@@ -91,7 +91,13 @@ def generate_launch_description():
         arguments=['0','0','0', '0','0','0', 'kinect_link', 'kinect_depth'],
         output='screen'
     )
-
+    base_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='base_footprint_to_base_link_tf',
+        arguments=['0','0','0', '0','0','0', 'base_footprint', 'base_link'],
+        output='screen'
+    )
     return LaunchDescription([
         declare_world,
         declare_map,
@@ -101,5 +107,6 @@ def generate_launch_description():
         include_nav,
         include_vision,
         kinect_depth_tf,
+        base_tf,
         #include_speech,
     ])

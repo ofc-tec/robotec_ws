@@ -1,8 +1,19 @@
 #!/usr/bin/env python3
+"""
+YOLO Detect Service (ROS 2) — corrected drop-in version
+
+Key behavior:
+- ALWAYS returns 2D detections + class_names.
+- Returns 3D PoseStamped ONLY when depth is valid:
+    pose.header.frame_id = parent_frame (typically your depth frame)
+    pose.pose.position = (cx3, cy3, cz3) in that frame
+- DOES NOT depend on map / base_link / localization.
+- DOES NOT do any TF lookups to map.
+- Publishes TF frames yolo_<class>_<i> as child of parent_frame (sensor frame).
+"""
 
 import rclpy
 from rclpy.node import Node
-from rclpy.duration import Duration
 
 from sensor_msgs.msg import Image, CameraInfo
 from vision_msgs.msg import Detection2DArray, Detection2D, ObjectHypothesisWithPose, BoundingBox2D
@@ -12,90 +23,56 @@ from cv_bridge import CvBridge
 from ultralytics import YOLO
 
 import numpy as np
-import cv2
-
 import tf2_ros
 from geometry_msgs.msg import TransformStamped, PoseStamped
 
 
 class YoloServiceNode(Node):
     def __init__(self):
-        super().__init__('yolo_service_node')
+        super().__init__("yolo_service_node")
 
         self.bridge = CvBridge()
 
         # --- Parameters ---
-        self.declare_parameter('image_topic', '/kinect/rgb/image_raw')
-        self.declare_parameter('depth_topic', '/kinect/depth/image_raw')
-        self.declare_parameter('depth_info_topic', '/kinect/depth/camera_info')
-        self.declare_parameter('model_path', 'yolo11n-seg.pt')  # adjust as needed
+        self.declare_parameter("image_topic", "/kinect/rgb/image_raw")
+        self.declare_parameter("depth_topic", "/kinect/depth/image_raw")
+        self.declare_parameter("depth_info_topic", "/kinect/depth/camera_info")
+        self.declare_parameter("model_path", "yolo11n-seg.pt")  # adjust as needed
 
-        # NEW: frames for poses_map output
-        self.declare_parameter('map_frame', 'map')
-        self.declare_parameter('base_frame', 'base_link')
+        image_topic = self.get_parameter("image_topic").get_parameter_value().string_value
+        depth_topic = self.get_parameter("depth_topic").get_parameter_value().string_value
+        depth_info_topic = self.get_parameter("depth_info_topic").get_parameter_value().string_value
+        model_path = self.get_parameter("model_path").get_parameter_value().string_value
 
-        image_topic = self.get_parameter('image_topic').get_parameter_value().string_value
-        depth_topic = self.get_parameter('depth_topic').get_parameter_value().string_value
-        depth_info_topic = self.get_parameter('depth_info_topic').get_parameter_value().string_value
-        model_path = self.get_parameter('model_path').get_parameter_value().string_value
-
-        self.map_frame = self.get_parameter('map_frame').get_parameter_value().string_value
-        self.base_frame = self.get_parameter('base_frame').get_parameter_value().string_value
-
-        self.get_logger().info(f'[YOLO_SERVICE] Using RGB topic        : {image_topic}')
-        self.get_logger().info(f'[YOLO_SERVICE] Using DEPTH topic      : {depth_topic}')
-        self.get_logger().info(f'[YOLO_SERVICE] Using DEPTH info topic : {depth_info_topic}')
-        self.get_logger().info(f'[YOLO_SERVICE] Using model            : {model_path}')
-        self.get_logger().info(f'[YOLO_SERVICE] map_frame/base_frame   : {self.map_frame} / {self.base_frame}')
+        self.get_logger().info(f"[YOLO_SERVICE] Using RGB topic        : {image_topic}")
+        self.get_logger().info(f"[YOLO_SERVICE] Using DEPTH topic      : {depth_topic}")
+        self.get_logger().info(f"[YOLO_SERVICE] Using DEPTH info topic : {depth_info_topic}")
+        self.get_logger().info(f"[YOLO_SERVICE] Using model            : {model_path}")
+        self.get_logger().info("[YOLO_SERVICE] Output poses are in SENSOR frame only (no map/base).")
 
         # --- Subscriptions ---
         self.latest_image_msg = None
         self.latest_depth_msg = None
         self.latest_cam_info = None
 
-        self.image_sub = self.create_subscription(
-            Image,
-            image_topic,
-            self.image_callback,
-            10
-        )
+        self.image_sub = self.create_subscription(Image, image_topic, self.image_callback, 10)
+        self.depth_sub = self.create_subscription(Image, depth_topic, self.depth_callback, 10)
+        self.cam_info_sub = self.create_subscription(CameraInfo, depth_info_topic, self.cam_info_callback, 10)
 
-        self.depth_sub = self.create_subscription(
-            Image,
-            depth_topic,
-            self.depth_callback,
-            10
-        )
-
-        self.cam_info_sub = self.create_subscription(
-            CameraInfo,
-            depth_info_topic,
-            self.cam_info_callback,
-            10
-        )
-
-        # --- TF broadcaster ---
+        # --- TF broadcaster (publishes yolo_<class>_<i> under parent_frame) ---
         self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
 
-        # NEW: TF listener/buffer for map lookups (poses_map)
-        self.tf_buffer = tf2_ros.Buffer()
-        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
-
         # --- Debug image publisher ---
-        self.debug_pub = self.create_publisher(Image, '/vision/yolo_debug_image', 10)
+        self.debug_pub = self.create_publisher(Image, "/vision/yolo_debug_image", 10)
 
         # --- YOLO seg model ---
         self.model = YOLO(model_path)
         self.class_names = self.model.names  # dict: id -> name
 
         # --- Service server ---
-        self.srv = self.create_service(
-            YoloDetect,
-            '/yolo_detect',
-            self.handle_yolo_detect
-        )
+        self.srv = self.create_service(YoloDetect, "/yolo_detect", self.handle_yolo_detect)
 
-        self.get_logger().info('[YOLO_SERVICE] Ready (depth optional: 2D always, TFs only when depth OK).')
+        self.get_logger().info("[YOLO_SERVICE] Ready (depth optional: 2D always, 3D+TF only when depth OK).")
 
     # ==========================
     # Callbacks
@@ -110,75 +87,55 @@ class YoloServiceNode(Node):
         self.latest_cam_info = msg
 
     # ==========================
-    # Helpers (NEW)
-    # ==========================
-    def _pose_stamped_from_transform(self, t: TransformStamped) -> PoseStamped:
-        ps = PoseStamped()
-        ps.header = t.header
-        ps.pose.position.x = float(t.transform.translation.x)
-        ps.pose.position.y = float(t.transform.translation.y)
-        ps.pose.position.z = float(t.transform.translation.z)
-        ps.pose.orientation = t.transform.rotation
-        return ps
-
-    def _lookup_transform(self, target_frame: str, source_frame: str, timeout_sec: float = 0.08) -> TransformStamped | None:
-        """
-        Latest transform target_frame <- source_frame.
-        """
-        try:
-            return self.tf_buffer.lookup_transform(
-                target_frame,
-                source_frame,
-                rclpy.time.Time(),
-                timeout=Duration(seconds=timeout_sec),
-            )
-        except Exception:
-            return None
-
-    # ==========================
     # Service handler
     # ==========================
     def handle_yolo_detect(self, request, response: YoloDetect.Response):
-        # NEW: always initialize new fields (even on early returns)
+        # Always initialize
         response.class_names = []
-        response.poses_map = []
+        response.poses = []
+        response.detections = Detection2DArray()
 
         if self.latest_image_msg is None:
-            self.get_logger().warn('[YOLO_SERVICE] No RGB image yet.')
-            response.detections = Detection2DArray()
+            self.get_logger().warn("[YOLO_SERVICE] No RGB image yet.")
             return response
 
         # --- RGB image ---
-        frame_bgr = self.bridge.imgmsg_to_cv2(self.latest_image_msg, desired_encoding='bgr8')
+        frame_bgr = self.bridge.imgmsg_to_cv2(self.latest_image_msg, desired_encoding="bgr8")
         H_img, W_img, _ = frame_bgr.shape
+
+        # Prepare detections msg header
+        detections_msg = Detection2DArray()
+        detections_msg.header = self.latest_image_msg.header
 
         # --------------------------
         # Depth is OPTIONAL
         # --------------------------
         depth_ok = (self.latest_depth_msg is not None)
         if not depth_ok:
-            self.get_logger().warn('[YOLO_SERVICE] No depth image yet. Returning 2D detections only (no TFs).')
+            self.get_logger().warn("[YOLO_SERVICE] No depth image yet. Returning 2D only (poses invalid).")
 
-        X = Y = Z = None  # only filled when depth_ok
+        X = Y = Z = None  # 3D arrays only if depth_ok
+        parent_frame = "kinect_depth"
+        if self.latest_depth_msg is not None and self.latest_depth_msg.header.frame_id:
+            parent_frame = self.latest_depth_msg.header.frame_id
 
         if depth_ok:
             try:
-                depth = self.bridge.imgmsg_to_cv2(self.latest_depth_msg, desired_encoding='passthrough')
+                depth = self.bridge.imgmsg_to_cv2(self.latest_depth_msg, desired_encoding="passthrough")
             except Exception as e:
-                self.get_logger().warn(f'[YOLO_SERVICE] cv_bridge depth error: {e}')
+                self.get_logger().warn(f"[YOLO_SERVICE] cv_bridge depth error: {e}")
                 depth_ok = False
 
         if depth_ok:
             if depth.ndim != 2:
-                self.get_logger().warn('[YOLO_SERVICE] Depth image is not single-channel. Returning 2D only (no TFs).')
+                self.get_logger().warn("[YOLO_SERVICE] Depth image is not single-channel. Returning 2D only.")
                 depth_ok = False
 
         if depth_ok:
             H_d, W_d = depth.shape
             if H_d != H_img or W_d != W_img:
                 self.get_logger().warn(
-                    f'[YOLO_SERVICE] Depth size ({H_d},{W_d}) != RGB size ({H_img},{W_img}); '
-                    'returning 2D only (no TFs).'
+                    f"[YOLO_SERVICE] Depth size ({H_d},{W_d}) != RGB size ({H_img},{W_img}); returning 2D only."
                 )
                 depth_ok = False
 
@@ -190,14 +147,17 @@ class YoloServiceNode(Node):
             cy = 239.5
 
             # --- Depth units ---
-            if self.latest_depth_msg.encoding == '16UC1':
+            if self.latest_depth_msg.encoding == "16UC1":
                 Z = depth.astype(np.float32) / 1000.0  # mm -> m
             else:
                 Z = depth.astype(np.float32)
 
+            # Sanitize + clamp
+            Z[~np.isfinite(Z)] = np.nan
             Z[Z <= 0.0] = np.nan
+            Z[(Z < 0.25) | (Z > 6.0)] = np.nan
 
-            # --- Back-project depth to 3D (camera frame) ---
+            # Back-project to 3D in the depth frame convention used by your projection
             u = np.tile(np.arange(W_img), (H_img, 1))
             v = np.tile(np.arange(H_img).reshape(-1, 1), (1, W_img))
 
@@ -209,54 +169,39 @@ class YoloServiceNode(Node):
         result = results[0]
 
         boxes = result.boxes
-        masks = result.masks  # segmentation masks
-
-        detections_msg = Detection2DArray()
-        detections_msg.header = self.latest_image_msg.header
+        masks = result.masks
 
         if boxes is None or len(boxes) == 0:
-            self.get_logger().info('[YOLO_SERVICE] No detections.')
-            # still publish debug image (it will be just the frame with no boxes)
+            self.get_logger().info("[YOLO_SERVICE] No detections.")
             annotated = result.plot()
-            debug_msg = self.bridge.cv2_to_imgmsg(annotated, encoding='bgr8')
+            debug_msg = self.bridge.cv2_to_imgmsg(annotated, encoding="bgr8")
             debug_msg.header = self.latest_image_msg.header
             self.debug_pub.publish(debug_msg)
 
             response.detections = detections_msg
-            # response.class_names / poses_map already empty
             return response
 
         boxes_xyxy = boxes.xyxy.cpu().numpy()
         class_ids = boxes.cls.cpu().numpy().astype(int)
         confidences = boxes.conf.cpu().numpy()
 
-        # --- Debug image ---
-        annotated = result.plot()  # BGR
-        debug_msg = self.bridge.cv2_to_imgmsg(annotated, encoding='bgr8')
+        # Debug image
+        annotated = result.plot()
+        debug_msg = self.bridge.cv2_to_imgmsg(annotated, encoding="bgr8")
         debug_msg.header = self.latest_image_msg.header
         self.debug_pub.publish(debug_msg)
 
-        # --- Masks ---
+        # Masks
         mask_array = None
         if masks is not None and masks.data is not None:
             mask_array = masks.data.cpu().numpy()  # [N, H, W]
             if mask_array.shape[1] != H_img or mask_array.shape[2] != W_img:
                 self.get_logger().warn(
-                    f'[YOLO_SERVICE] Mask size {mask_array.shape[1:]} '
-                    f'does not match image size {(H_img, W_img)}.'
+                    f"[YOLO_SERVICE] Mask size {mask_array.shape[1:]} does not match image size {(H_img, W_img)}."
                 )
                 mask_array = None
 
         now = self.get_clock().now().to_msg()
-        parent_frame = 'kinect_depth'
-
-        # NEW: compute robot pose fallback once (map -> base_link)
-        # (Used if map->object TF not available)
-        base_in_map = self._lookup_transform(self.map_frame, self.base_frame, timeout_sec=0.12)
-        base_pose_fallback = None
-        if base_in_map is not None:
-            base_pose_fallback = self._pose_stamped_from_transform(base_in_map)
-            base_pose_fallback.header.frame_id = self.map_frame
 
         # ==========================
         # Loop detections (2D always)
@@ -286,19 +231,26 @@ class YoloServiceNode(Node):
 
             detections_msg.detections.append(detection)
 
-            # NEW: fill semantic class name list (ALIGNED with detections)
-            class_name = self.class_names.get(class_ids[i], 'obj')
+            # class name aligned with detections
+            class_name = self.class_names.get(class_ids[i], "obj")
             response.class_names.append(class_name)
 
-            # Default pose entry (we will try to replace with object pose in map)
-            pose_out = None
+            # Default pose entry: invalid (no 3D)
+            pose_out = PoseStamped()
+            pose_out.header.frame_id = ""  # invalid unless we set 3D below
 
-            child_frame_id = f'yolo_{class_name}_{i}'
+            child_frame_id = f"yolo_{class_name}_{i}"
 
-            # 3D centroid + TF ONLY if depth is OK
-            if depth_ok and (mask_array is not None) and (i < mask_array.shape[0]) and (X is not None) and (Y is not None) and (Z is not None):
+            # 3D centroid + TF ONLY if depth is OK and mask available
+            if (
+                depth_ok
+                and (mask_array is not None)
+                and (i < mask_array.shape[0])
+                and (X is not None) and (Y is not None) and (Z is not None)
+            ):
                 mask = mask_array[i]  # [H, W]
                 submask = mask[y1_i:y2_i, x1_i:x2_i] > 0.5
+
                 if np.any(submask):
                     ys_idx, xs_idx = np.where(submask)
                     ys_full = ys_idx + y1_i
@@ -308,47 +260,47 @@ class YoloServiceNode(Node):
                     Y_pts = Y[ys_full, xs_full]
                     Z_pts = Z[ys_full, xs_full]
 
-                    good = ~np.isnan(X_pts) & ~np.isnan(Y_pts) & ~np.isnan(Z_pts)
+                    good = np.isfinite(X_pts) & np.isfinite(Y_pts) & np.isfinite(Z_pts)
+
                     if np.any(good):
-                        cx3 = float(X_pts[good].mean())
-                        cy3 = float(Y_pts[good].mean())
-                        cz3 = float(Z_pts[good].mean())
+                        cx3 = float(np.nanmedian(X_pts[good]))
+                        cy3 = float(np.nanmedian(Y_pts[good]))
+                        cz3 = float(np.nanmedian(Z_pts[good]))
 
-                        t = TransformStamped()
-                        t.header.stamp = now
-                        t.header.frame_id = parent_frame
-                        t.child_frame_id = child_frame_id
-                        t.transform.translation.x = cx3
-                        t.transform.translation.y = cy3
-                        t.transform.translation.z = cz3
-                        t.transform.rotation.x = 0.0
-                        t.transform.rotation.y = 0.0
-                        t.transform.rotation.z = 0.0
-                        t.transform.rotation.w = 1.0
+                        if np.isfinite(cx3) and np.isfinite(cy3) and np.isfinite(cz3):
+                            # Publish TF (sensor-frame -> object)
+                            t = TransformStamped()
+                            t.header.stamp = now
+                            t.header.frame_id = parent_frame
+                            t.child_frame_id = child_frame_id
+                            t.transform.translation.x = cx3
+                            t.transform.translation.y = cy3
+                            t.transform.translation.z = cz3
+                            t.transform.rotation.x = 0.0
+                            t.transform.rotation.y = 0.0
+                            t.transform.rotation.z = 0.0
+                            t.transform.rotation.w = 1.0
+                            self.tf_broadcaster.sendTransform(t)
 
-                        self.tf_broadcaster.sendTransform(t)
+                            # Return PoseStamped in SENSOR frame (parent_frame)
+                            pose_out = PoseStamped()
+                            pose_out.header.stamp = now
+                            pose_out.header.frame_id = parent_frame
+                            pose_out.pose.position.x = cx3
+                            pose_out.pose.position.y = cy3
+                            pose_out.pose.position.z = cz3
+                            pose_out.pose.orientation.x = 0.0
+                            pose_out.pose.orientation.y = 0.0
+                            pose_out.pose.orientation.z = 0.0
+                            pose_out.pose.orientation.w = 1.0
 
-                        # NEW: try to lookup pose of this object in map
-                        obj_in_map = self._lookup_transform(self.map_frame, child_frame_id, timeout_sec=0.08)
-                        if obj_in_map is not None:
-                            pose_out = self._pose_stamped_from_transform(obj_in_map)
-                            pose_out.header.frame_id = self.map_frame
-
-            # NEW: fallback if we couldn't compute object pose in map
-            if pose_out is None:
-                if base_pose_fallback is not None:
-                    pose_out = base_pose_fallback
-                else:
-                    pose_out = PoseStamped()
-                    pose_out.header.frame_id = self.map_frame
-
-            response.poses_map.append(pose_out)
+            response.poses.append(pose_out)
 
         response.detections = detections_msg
         self.get_logger().info(
-            f'[YOLO_SERVICE] Request handled: {len(detections_msg.detections)} detections, '
-            f'TFs={"yes" if depth_ok else "no"} (depth optional). '
-            f'class_names={len(response.class_names)} poses_map={len(response.poses_map)}'
+            f"[YOLO_SERVICE] Request handled: {len(detections_msg.detections)} detections, "
+            f"3D={'yes' if depth_ok else 'no'} (poses valid only when 3D), "
+            f"class_names={len(response.class_names)} poses={len(response.poses)}"
         )
         return response
 
@@ -365,5 +317,5 @@ def main(args=None):
         rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
