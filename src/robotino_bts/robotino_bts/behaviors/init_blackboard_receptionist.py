@@ -65,7 +65,7 @@ class InitBlackboard(py_trees.behaviour.Behaviour):
         self.bb.speech_last_stamp_ns = 0
         # If you always want fresh numbering each run, set = 0 unconditionally.
         self.bb.guest_counter = 0
-        self.bb.free_seat = False
+        self.bb.free_seat = ""
 
         self.logger.info(
             f"[InitBB] host='{self.host}', guest_1=[], guest_2=[], detections_log=[], "

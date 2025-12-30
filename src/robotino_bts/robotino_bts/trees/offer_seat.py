@@ -70,17 +70,14 @@ def create_behavior_tree(node):
         reset_on_success=True,
         keys_to_print=[
             # YOLO lists
-            "yolo_class_names",
+            #"yolo_class_names",
             "yolo_poses_map",
+            "free_seat",
 
-            # single best pick (if you store it)
-            "yolo_best_name",
-            "yolo_best_pose",
-
-            # anything else you want to see
-            "last_text",
-            "current_guest_name",
-            "current_guest_drink",
+            ## anything else you want to see
+            #"last_text",
+            #"current_guest_name",
+            #"current_guest_drink",
         ],
     )
     
@@ -92,6 +89,8 @@ def create_behavior_tree(node):
             self.bb = self.attach_blackboard_client(name=name)
             self.bb.register_key("detections_log", Access.READ)
             self.bb.register_key("yolo_poses_map", Access.WRITE)
+            self.bb.register_key("free_seat", Access.WRITE)
+
             self.tf_buffer = tf2_ros.Buffer()
             self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, node)
 
@@ -150,39 +149,51 @@ def create_behavior_tree(node):
                     occupied_seats = seats[occupied_mask]
                     free_seats = seats[~occupied_mask]                    
                     node.get_logger().info(f"Occupied seat: {occupied_seats}")
-                    node.get_logger().info(f"Free seat: {free_seats}")
-
+                    node.get_logger().info(f"Free seat: {free_seats[0]}")
                     ###########################
-                    
+                 
 
                     self.bb.yolo_poses_map.append((x, y))
+                    self.bb.free_seat = free_seats[0]
+
 
                 except Exception as e:
                     node.get_logger().warn(f"[BT] TF to map failed: {e}")
                     return py_trees.common.Status.RUNNING
-
-
             return py_trees.common.Status.SUCCESS
-            
-        
-            
-            
-
 
     person_finder = PersonSeen(node=node)
     wait_and_inspect.setup(node=node)
-
-    #####################################################
-    face_call = FaceRecognitionBehaviour(
-        name="FaceCall",
-        node=node,
+    
+    detect_once= py_trees.composites.Sequence(
+        name="DetectOnce",
+        memory=True,
     )
-
+    
+    detect_once.add_children([
+    yolo_call,
+    person_finder,
+    ])
+    ##############################################
+    # Retry detecting human until found
+    human_retry = py_trees.decorators.Retry(
+        name="HumanRetryUntilFound",
+        child=detect_once,
+        num_failures=10_000,   # effectively "infinite"
+    )
+    # But cap the total time spent retrying
+    human_timeout = py_trees.decorators.Timeout(
+        name="HumanTimeout3s",
+        child=human_retry,
+        duration=3.0,
+    )
+    ###############################################
+    #
     seq.add_children([
         init_bb,
         # goto_door,
-        yolo_call,
-        person_finder,
+        #yolo_call,
+        human_timeout,
         wait_and_inspect,
         # face_call,
     ])
