@@ -10,6 +10,7 @@ from robotino_bts.behaviors.yolo_detect import YoloDetectBehaviour
 from robotino_bts.behaviors.wait_for_face import FaceRecognitionBehaviour
 from robotino_bts.behaviors.wait_for_continue import WaitForContinue
 from robotino_bts.behaviors.talk_behaviors import SayTextBehaviour
+from robotino_bts.behaviors.utils_receptionist import FreeSeatEquals
 import rclpy
 
 import tf2_ros
@@ -36,7 +37,11 @@ def create_behavior_tree(node):
         name="ReceptionistSeq",
         memory=True,
     )
-    
+    seq_oneshot = py_trees.decorators.OneShot(
+        name="ReceptionistSeqOneshot",
+        child=seq,
+        policy=OneShotPolicy.ON_SUCCESSFUL_COMPLETION,
+    )
     #####################################################
     init_bb = InitBlackboard()
 
@@ -173,11 +178,21 @@ def create_behavior_tree(node):
         num_failures=10_000,   # effectively "infinite"
     )
     # But cap the total time spent retrying
+
+
     human_timeout = py_trees.decorators.Timeout(
-        name="HumanTimeout3s",
+        name="HumanTimeout30s",
         child=human_retry,
-        duration=3.0,
+        duration=30.0,
     )
+    
+    detect_person_once = py_trees.decorators.OneShot(
+    name="DetectPersonOnce",
+    child=human_timeout,
+    #policy=py_trees.common.OneShotPolicy.ON_SUCCESSFUL_COMPLETION,
+    policy= py_trees.common.OneShotPolicy.ON_COMPLETION,
+    )
+    
     ###############################################
     present_seat_1 = SayTextBehaviour(
         name="say sit here ",
@@ -194,27 +209,16 @@ def create_behavior_tree(node):
         text="here is a place to seat",  # callable
         wait=True,
     )
-    ###############################################
-    class FreeSeatEquals(py_trees.behaviour.Behaviour):
-        def __init__(self, expected_value: str):
-            super().__init__(name=f"FreeSeat == '{expected_value}'")
-            self.expected_value = expected_value
-            self.bb = self.attach_blackboard_client(name=self.name)
-            self.bb.register_key("free_seat", Access.READ)
-
-
-        def update(self):
-            value = self.bb.free_seat
-            if value == self.expected_value:
-                return py_trees.common.Status.SUCCESS
-            else:
-                return py_trees.common.Status.FAILURE
+    
     ##########################################       
     seat_selector = py_trees.composites.Selector(
         name="SeatDecision",
         memory=True,   # stick to chosen branch until it finishes
     )
     case_seat_1 = py_trees.composites.Sequence(name="CaseSeat1", memory=True)
+   
+    
+
     case_seat_1.add_children([
         FreeSeatEquals("seat_1"),
         NavToKnownLocation(
@@ -261,7 +265,8 @@ def create_behavior_tree(node):
         init_bb,
         # goto_door,
         #yolo_call,
-        human_timeout,
+        #human_timeout,
+        detect_person_once,
         seat_selector,
         wait_and_inspect,
         # face_call,
@@ -271,6 +276,7 @@ def create_behavior_tree(node):
         name="ROOT",
         child=seq,
         policy=OneShotPolicy.ON_SUCCESSFUL_COMPLETION,
+        
     )
 
     return py_trees.trees.BehaviourTree(root)
