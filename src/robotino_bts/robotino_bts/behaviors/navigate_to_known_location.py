@@ -112,3 +112,13 @@ class NavToKnownLocation(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.SUCCESS
 
         return py_trees.common.Status.FAILURE
+    def terminate(self, new_status):
+        # If this behaviour stops being ticked while a goal is active, cancel it
+        try:
+            if self._goal_handle is not None:
+                self.node.get_logger().warn(
+                    f"[NavToKnownLocation] Terminate({new_status}), canceling Nav2 goal"
+                )
+                self._goal_handle.cancel_goal_async()
+        except Exception as e:
+            self.node.get_logger().warn(f"[NavToKnownLocation] Cancel failed: {e}")

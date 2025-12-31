@@ -108,5 +108,5 @@ def generate_launch_description():
         include_vision,
         kinect_depth_tf,
         base_tf,
-        #include_speech,
+        include_speech,
     ])

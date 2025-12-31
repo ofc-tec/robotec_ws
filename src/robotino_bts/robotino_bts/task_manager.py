@@ -28,7 +28,7 @@ class BTExecutor(Node):
     """
 
     def __init__(self):
-        super().__init__("bt_executor")
+        super().__init__("bt_executor_main")
 
         # ------------------------------------------------------------------ #
         # 1) Declare + resolve known_locations YAML path (portable & editable)

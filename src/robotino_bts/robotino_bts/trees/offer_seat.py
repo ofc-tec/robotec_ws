@@ -9,6 +9,7 @@ from robotino_bts.behaviors.navigate_to_known_location import NavToKnownLocation
 from robotino_bts.behaviors.yolo_detect import YoloDetectBehaviour
 from robotino_bts.behaviors.wait_for_face import FaceRecognitionBehaviour
 from robotino_bts.behaviors.wait_for_continue import WaitForContinue
+from robotino_bts.behaviors.talk_behaviors import SayTextBehaviour
 import rclpy
 
 import tf2_ros
@@ -35,7 +36,7 @@ def create_behavior_tree(node):
         name="ReceptionistSeq",
         memory=True,
     )
-
+    
     #####################################################
     init_bb = InitBlackboard()
 
@@ -52,16 +53,7 @@ def create_behavior_tree(node):
         node=node,
     )
 
-    #####################################################
-    # NEW: pause + dump blackboard keys we care about
-    #
-    # Assumes your YOLO behavior writes these keys:
-    #   - yolo_class_names: list[str]
-    #   - yolo_poses_map  : list[PoseStamped]
-    #   - yolo_best_name  : str (optional)
-    #   - yolo_best_pose  : PoseStamped (optional)
-    #
-    # If your key names differ, just change this list to match.
+    
     wait_and_inspect = WaitForContinue(
         name="WAIT_INSPECT_BB",
         continue_key="debug_continue",
@@ -136,7 +128,6 @@ def create_behavior_tree(node):
 
                     pose_map = do_transform_pose_stamped(pose, tf)
                     pose_map.header.frame_id = "map"
-
                     x = pose_map.pose.position.x
                     y = pose_map.pose.position.y
                     #############CLEAN THIS
@@ -188,12 +179,90 @@ def create_behavior_tree(node):
         duration=3.0,
     )
     ###############################################
-    #
+    present_seat_1 = SayTextBehaviour(
+        name="say sit here ",
+        node=node,
+        #text="What is your name and what drink would you like?",
+        text="here is a place to seat",  # callable
+        wait=True,
+    )
+    ###############################################
+    present_seat_2 = SayTextBehaviour(
+        name="say sit here  2",
+        node=node,
+        #text="What is your name and what drink would you like?",
+        text="here is a place to seat",  # callable
+        wait=True,
+    )
+    ###############################################
+    class FreeSeatEquals(py_trees.behaviour.Behaviour):
+        def __init__(self, expected_value: str):
+            super().__init__(name=f"FreeSeat == '{expected_value}'")
+            self.expected_value = expected_value
+            self.bb = self.attach_blackboard_client(name=self.name)
+            self.bb.register_key("free_seat", Access.READ)
+
+
+        def update(self):
+            value = self.bb.free_seat
+            if value == self.expected_value:
+                return py_trees.common.Status.SUCCESS
+            else:
+                return py_trees.common.Status.FAILURE
+    ##########################################       
+    seat_selector = py_trees.composites.Selector(
+        name="SeatDecision",
+        memory=True,   # stick to chosen branch until it finishes
+    )
+    case_seat_1 = py_trees.composites.Sequence(name="CaseSeat1", memory=True)
+    case_seat_1.add_children([
+        FreeSeatEquals("seat_1"),
+        NavToKnownLocation(
+            name="NavToSeat1",
+            node=node,
+            location_name="seat_1",
+        ),
+        present_seat_1,
+    ])
+
+    case_seat_2 = py_trees.composites.Sequence(name="CaseSeat2", memory=True)
+    case_seat_2.add_children([
+        FreeSeatEquals("seat_2"),
+        NavToKnownLocation(
+            name="NavToSeat2",
+            node=node,
+            location_name="seat_2",
+        ),
+        present_seat_2,
+    ])
+
+    case_no_seat = py_trees.composites.Sequence(name="CaseNoSeat", memory=True)
+    case_no_seat.add_children([
+        FreeSeatEquals(""),
+        NavToKnownLocation(
+            name="NavToFindSeat2",
+            node=node,
+            location_name="find_seat_2",
+        ),
+    ])
+
+    seat_selector.add_children([
+        case_seat_1,
+        case_seat_2,
+        case_no_seat,
+    ])
+    
+    
+    ##########################################       
+    
+    # 
+    #  
     seq.add_children([
         init_bb,
         # goto_door,
         #yolo_call,
         human_timeout,
+        seat_selector,
         wait_and_inspect,
         # face_call,
     ])
