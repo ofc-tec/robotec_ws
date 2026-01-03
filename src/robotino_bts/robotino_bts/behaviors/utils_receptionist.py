@@ -7,7 +7,49 @@ import numpy as np
 
 from rclpy.time import Time
 
+class ChooseOnce(py_trees.composites.Composite):
+    """
+    Like a selector for choosing a branch, but once a child is selected,
+    it NEVER falls through to other children. If the chosen child fails,
+    the whole composite fails.
+    """
+    def __init__(self, name="ChooseOnce", memory=True):
+        super().__init__(name)
+        self.chosen_index = None
+        self.memory = memory
 
+    def tick(self):
+        # Choose phase
+        if self.chosen_index is None:
+            for i, child in enumerate(self.children):
+                for node in child.tick():
+                    yield node
+                status = child.status
+                if status in (py_trees.common.Status.RUNNING, py_trees.common.Status.SUCCESS):
+                    self.chosen_index = i
+                    self.status = status
+                    yield self
+                    return
+                # if FAILURE, try next child during choose phase only
+
+            # none matched
+            self.status = py_trees.common.Status.FAILURE
+            yield self
+            return
+
+        # Commit phase (never try others)
+        child = self.children[self.chosen_index]
+        for node in child.tick():
+            yield node
+        self.status = child.status
+        yield self
+        return
+
+    def stop(self, new_status=py_trees.common.Status.INVALID):
+        # reset choice when parent stops us
+        self.chosen_index = None
+        super().stop(new_status)
+###############################################
 class PersonSeen(py_trees.behaviour.Behaviour):
     def __init__(self,node, name="PersonSeen"):
 

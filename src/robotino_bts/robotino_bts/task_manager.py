@@ -16,9 +16,10 @@ import py_trees
 import py_trees_ros
 #
 #from ament_index_python.packages import get_package_share_directory
+from robotino_bts.trees.receptionist import create_behavior_tree
 
-from robotino_bts.trees.offer_seat import create_behavior_tree
-#from robotino_bts.trees.receptionist import create_behavior_tree
+#from robotino_bts.trees.offer_seat import create_behavior_tree
+#from robotino_bts.trees.meet_guest import create_behavior_tree
 
 
 class BTExecutor(Node):

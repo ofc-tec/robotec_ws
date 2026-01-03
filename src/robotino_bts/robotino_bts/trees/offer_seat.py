@@ -1,6 +1,3 @@
-# robotino_bts/trees/roam_known_locs.py
-
-from platform import node
 import py_trees
 import numpy as np
 from py_trees.common import OneShotPolicy , Access
@@ -10,7 +7,7 @@ from robotino_bts.behaviors.yolo_detect import YoloDetectBehaviour
 from robotino_bts.behaviors.wait_for_face import FaceRecognitionBehaviour
 from robotino_bts.behaviors.wait_for_continue import WaitForContinue
 from robotino_bts.behaviors.talk_behaviors import SayTextBehaviour
-from robotino_bts.behaviors.utils_receptionist import FreeSeatEquals
+from robotino_bts.behaviors.utils_receptionist import FreeSeatEquals ,    PersonSeen  , ChooseOnce
 import rclpy
 
 import tf2_ros
@@ -22,7 +19,9 @@ from rclpy.time import Time
 
 
 
-def create_behavior_tree(node):
+#def create_behavior_tree(node):
+def build_offer_seat_subtree(node):
+
     """
     Growing working example:
       InitBlackboard -> YoloCall -> WaitForContinue (prints BB contents + pauses)
@@ -34,16 +33,16 @@ def create_behavior_tree(node):
     node.get_logger().info("[BT] Building RoamKnownLocs tree (INIT + YOLO + WAIT)")
 
     seq = py_trees.composites.Sequence(
-        name="ReceptionistSeq",
+        name="MeetGuestSeq",
         memory=True,
     )
     seq_oneshot = py_trees.decorators.OneShot(
-        name="ReceptionistSeqOneshot",
+        name="MeetGuestSeqOneshot",
         child=seq,
         policy=OneShotPolicy.ON_SUCCESSFUL_COMPLETION,
     )
     #####################################################
-    init_bb = InitBlackboard()
+    #init_bb = InitBlackboard()
 
     #####################################################
     goto_door = NavToKnownLocation(
@@ -67,7 +66,6 @@ def create_behavior_tree(node):
         reset_on_success=True,
         keys_to_print=[
             # YOLO lists
-            #"yolo_class_names",
             "yolo_poses_map",
             "free_seat",
 
@@ -78,85 +76,7 @@ def create_behavior_tree(node):
         ],
     )
     
-    class PersonSeen(py_trees.behaviour.Behaviour):
-        def __init__(self,node, name="PersonSeen"):
-
-            super().__init__(name)
-            self.node = node
-            self.bb = self.attach_blackboard_client(name=name)
-            self.bb.register_key("detections_log", Access.READ)
-            self.bb.register_key("yolo_poses_map", Access.WRITE)
-            self.bb.register_key("free_seat", Access.WRITE)
-
-            self.tf_buffer = tf2_ros.Buffer()
-            self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, node)
-
-
-        def update(self):
-            log = getattr(self.bb, "detections_log", [])
-            if not log:
-                return py_trees.common.Status.FAILURE
-
-            last = log[-1]
-            classes = last.get("classes", [])
-            poses= last.get("poses", [])
-
-            if "person" not in classes:return py_trees.common.Status.FAILURE
-            node.get_logger().info("Human detected!")
-            self.bb.yolo_poses_map = []
-
-            for cls, pose in zip(classes, poses):
-                if cls != "person":
-                    continue
-
-                x = pose.pose.position.x
-                y = pose.pose.position.y
-                node.get_logger().info(f"Human detected at kinect ({x:.2f}, {y:.2f})")
-                #pose.header.stamp = Time().to_msg()   # latest available TF time
-                pose.header.frame_id = "kinect_link"
-                
-                # FORCE latest: zero stamp
-                pose.header.stamp.sec = 0
-                pose.header.stamp.nanosec = 0
-
-                t = Time()
-                if not self.tf_buffer.can_transform("map", "kinect_link", Time(), timeout=Duration(seconds=0.2)):
-                    self.node.get_logger().info("[BT] Waiting for TF map<-kinect_link...")
-                    return py_trees.common.Status.RUNNING
-                try:
-                    tf = self.tf_buffer.lookup_transform(
-                        "map",               # target
-                        "kinect_link",       # source
-                        t,
-                        timeout=Duration(seconds=0.4),
-                    )
-
-                    pose_map = do_transform_pose_stamped(pose, tf)
-                    pose_map.header.frame_id = "map"
-                    x = pose_map.pose.position.x
-                    y = pose_map.pose.position.y
-                    #############CLEAN THIS
-                    arr=np.asarray (([-3.7,1.45],[-3.867,2.30])) #seat_1, seat_2
-                    seats=np.asarray(['seat_1', 'seat_2'])
-                    node.get_logger().info(f"Human in map at ({x:.2f}, {y:.2f})")
-                    human_pose=np.asarray((x,y))
-                    dist = np.linalg.norm(arr - human_pose, axis=1)
-                    occupied_mask = dist < 0.50
-                    occupied_seats = seats[occupied_mask]
-                    free_seats = seats[~occupied_mask]                    
-                    node.get_logger().info(f"Occupied seat: {occupied_seats}")
-                    node.get_logger().info(f"Free seat: {free_seats[0]}")
-                    ###########################
-                 
-
-                    self.bb.yolo_poses_map.append((x, y))
-                    self.bb.free_seat = free_seats[0]
-
-
-                except Exception as e:
-                    node.get_logger().warn(f"[BT] TF to map failed: {e}")
-                    return py_trees.common.Status.RUNNING
-            return py_trees.common.Status.SUCCESS
+    
 
     person_finder = PersonSeen(node=node)
     wait_and_inspect.setup(node=node)
@@ -210,44 +130,64 @@ def create_behavior_tree(node):
         wait=True,
     )
     
-    ##########################################       
+    ###########################################       
     seat_selector = py_trees.composites.Selector(
         name="SeatDecision",
         memory=True,   # stick to chosen branch until it finishes
     )
+
+    #seat_selector=  ChooseOnce(name="SeatDecision")  ### REMOVE FROM UTILS IF DEPERECATED
     case_seat_1 = py_trees.composites.Sequence(name="CaseSeat1", memory=True)
    
-    
+    nav_to_seat1 = py_trees.decorators.Retry(
+    name="RetryNavToSeat1_5",
+    child=NavToKnownLocation(
+        name="NavToSeat1",
+        node=node,
+        location_name="seat_1",
+    ),
+    num_failures=5,
+    )
 
     case_seat_1.add_children([
         FreeSeatEquals("seat_1"),
-        NavToKnownLocation(
-            name="NavToSeat1",
-            node=node,
-            location_name="seat_1",
-        ),
+        nav_to_seat1,
         present_seat_1,
     ])
 
     case_seat_2 = py_trees.composites.Sequence(name="CaseSeat2", memory=True)
+    nav_to_seat2 = py_trees.decorators.Retry(
+    name="RetryNavToSeat2_5",
+    child=NavToKnownLocation(
+        name="NavToSeat2",
+        node=node,
+        location_name="seat_2",
+    ),
+    num_failures=5,
+    )
+    
+    
+    
+    
     case_seat_2.add_children([
         FreeSeatEquals("seat_2"),
-        NavToKnownLocation(
-            name="NavToSeat2",
-            node=node,
-            location_name="seat_2",
-        ),
+        nav_to_seat2,
         present_seat_2,
     ])
 
     case_no_seat = py_trees.composites.Sequence(name="CaseNoSeat", memory=True)
+    nav_to_place_seat = py_trees.decorators.Retry(
+    name="RetryNavToFindseat2_5",
+    child=NavToKnownLocation(
+        name="NavToFindSeat2",
+        node=node,
+        location_name="find_seat_2",
+    ),
+    num_failures=5,
+    )
     case_no_seat.add_children([
-        FreeSeatEquals(""),
-        NavToKnownLocation(
-            name="NavToFindSeat2",
-            node=node,
-            location_name="find_seat_2",
-        ),
+        FreeSeatEquals("None"),
+        nav_to_place_seat,
     ])
 
     seat_selector.add_children([
@@ -262,7 +202,7 @@ def create_behavior_tree(node):
     # 
     #  
     seq.add_children([
-        init_bb,
+        #init_bb,
         # goto_door,
         #yolo_call,
         #human_timeout,
@@ -272,11 +212,6 @@ def create_behavior_tree(node):
         # face_call,
     ])
 
-    root = py_trees.decorators.OneShot(
-        name="ROOT",
-        child=seq,
-        policy=OneShotPolicy.ON_SUCCESSFUL_COMPLETION,
-        
-    )
+   
 
-    return py_trees.trees.BehaviourTree(root)
+    return seq_oneshot

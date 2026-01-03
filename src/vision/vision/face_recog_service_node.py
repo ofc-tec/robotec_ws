@@ -197,7 +197,8 @@ class FaceRecogServiceNode(Node):
             conf = self._dist_to_conf(dist)
             if dist > self.distance_threshold:
                 name = "unknown"
-
+            self.last_embedding = emb
+            self.last_embedding_stamp = self.get_clock().now()
             res.name_response.append(name)
             res.confidence.append(conf)
             if emb is None: 
@@ -212,11 +213,23 @@ class FaceRecogServiceNode(Node):
 
             debug_items.append((x1,y1,x2,y2,name,conf,det_conf))
 
-        self._publish_debug(bgr, debug_items)
+        #self._publish_debug(bgr, debug_items)
         return res
 
     def train_face_callback(self, req, res):
 
+        bgr = self._get_latest_bgr()
+        if bgr is None:
+            return res
+        train_name = req.name_request[0].strip()
+        # Use first entry in name_request as the name to train
+        if not req.name_request:
+            self.get_logger().warn("[FACE] /face_train called but name_request is empty")
+            return res
+
+        if not train_name:
+            self.get_logger().warn("[FACE] /face_train called but name_request[0] is empty string")
+            return res
         # Prefer cached embedding from last /face_recog
         if self.last_embedding is not None:
             emb = self.last_embedding
@@ -232,20 +245,6 @@ class FaceRecogServiceNode(Node):
             self._publish_debug(bgr, [])
             return res
 
-
-        bgr = self._get_latest_bgr()
-        if bgr is None:
-            return res
-
-        # Use first entry in name_request as the name to train
-        if not req.name_request:
-            self.get_logger().warn("[FACE] /face_train called but name_request is empty")
-            return res
-
-        train_name = req.name_request[0].strip()
-        if not train_name:
-            self.get_logger().warn("[FACE] /face_train called but name_request[0] is empty string")
-            return res
 
         dets = self._detect_faces_yolo(bgr)
         if not dets:

@@ -26,6 +26,7 @@ class FaceRecognitionBehaviour(py_trees.behaviour.Behaviour):
         self.cli = self.node.create_client(FaceRecog, "/face_recog")
         self._face_result = None
         self._completed = False
+      
 
     def initialise(self):
         self._completed = False
@@ -80,7 +81,10 @@ class FaceRecognitionBehaviour(py_trees.behaviour.Behaviour):
 
         # Write back
         self.bb.set(self.guest_key, guest_list)
-        self.bb.set("current_guest_name", guest_list[0] if guest_list else None)
+        
+        if guest_list and guest_list[0] != "unknown":
+            self.bb.set("current_guest_name", guest_list[0])
+
 
         self.node.get_logger().info(
             f"[FACE_BT] Recognized {num_faces} face(s): {', '.join(names)} "

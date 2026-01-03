@@ -51,6 +51,7 @@ class WaitForText(py_trees.behaviour.Behaviour):
     def initialise(self):
         # Freshness boundary: only accept speech that arrives AFTER this moment
         self._start_stamp_ns = self.node.get_clock().now().nanoseconds
+        self.node.get_logger().info(f"[WAIT_FOR_TEXT] TALK NOW'")
 
     def update(self):
         if self._latest_text is None or self._latest_stamp_ns is None:
