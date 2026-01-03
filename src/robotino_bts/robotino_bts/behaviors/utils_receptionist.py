@@ -67,7 +67,7 @@ class PersonSeen(py_trees.behaviour.Behaviour):
     def update(self):
         log = getattr(self.bb, "detections_log", [])
         if not log:
-            return py_trees.common.Status.FAILURE
+            return py_trees.common.Status.RUNNING
 
         last = log[-1]
         classes = last.get("classes", [])

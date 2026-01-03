@@ -213,7 +213,7 @@ class FaceRecogServiceNode(Node):
 
             debug_items.append((x1,y1,x2,y2,name,conf,det_conf))
 
-        #self._publish_debug(bgr, debug_items)
+        self._publish_debug(bgr, debug_items)
         return res
 
     def train_face_callback(self, req, res):

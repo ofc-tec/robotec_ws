@@ -146,16 +146,16 @@ def build_meet_guest_subtree(node):
     )
 
     # Retry indefinitely (or “a lot”), until SUCCESS
-    face_retry = py_trees.decorators.Retry(
-        name="FaceRetryUntilFound",
-        child=face_try,
-        num_failures=10_000,   # effectively "infinite"
-    )
+    #face_retry = py_trees.decorators.Retry(
+    #    name="FaceRetryUntilFound",
+    #    child=face_try,
+    #    num_failures=10_000,   # effectively "infinite"
+    #)
 
     # But cap the total time spent retrying
     face_timeout = py_trees.decorators.Timeout(
         name="FaceTimeout30s",
-        child=face_retry,
+        child=face_try,
         duration=30.0,
     )
 

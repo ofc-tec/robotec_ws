@@ -48,7 +48,7 @@ class YoloDetectBehaviour(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.SUCCESS
 
         if self.future is None:
-            return py_trees.common.Status.FAILURE
+            return py_trees.common.Status.RUNNING#FAILURE
 
         if not self.future.done():
             return py_trees.common.Status.RUNNING
