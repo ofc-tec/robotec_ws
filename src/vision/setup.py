@@ -23,7 +23,8 @@ setup(
             'vision_node = vision.vision_node:main',  
             'yolo_server = vision.yolo_service_node:main',
             'kinect_pointcloud_node = vision.kinect_pointcloud_node:main',
-             "face_recog_service_node = vision.face_recog_service_node:main",
+            "face_recog_service_node = vision.face_recog_service_node:main",
+            "pose_service_node = vision.pose_service_node:main",
         ],
     },
 )

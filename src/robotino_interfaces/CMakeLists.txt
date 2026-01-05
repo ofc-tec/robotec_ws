@@ -11,6 +11,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/FaceRecog.srv"
   "srv/Talk.srv"
   "srv/SetGrammar.srv"
+  "srv/PoseDetect.srv"
 
   DEPENDENCIES vision_msgs
 )

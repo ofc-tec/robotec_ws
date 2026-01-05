@@ -2,8 +2,7 @@ import rclpy
 from rclpy.node import Node
 
 from sensor_msgs.msg import Image
-from robotino_interfaces.srv import YoloDetect
-from robotino_interfaces.srv import FaceRecog
+from robotino_interfaces.srv import YoloDetect, FaceRecog, PoseDetect
 
 import cv2
 from cv_bridge import CvBridge
@@ -44,6 +43,14 @@ class VisionNode(Node):
             10
         )
 
+        # --- Subscribe to POSE debug image topic ---
+        self.pose_debug_sub = self.create_subscription(
+            Image,
+            '/vision/pose_debug_image',
+            self.pose_debug_image_callback,
+            10
+        )
+
         # Store last debug image (generic)
         self.latest_debug_cv = None
         self.latest_debug_source = ""
@@ -51,22 +58,26 @@ class VisionNode(Node):
         # --- YOLO Detect service client (on-demand) ---
         self.yolo_client = self.create_client(YoloDetect, 'yolo_detect')
         while not self.yolo_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().warn("[vision] Waiting for /yolo_detect service...")
-
+            self.get_logger().warn("[vision] Waiting for yolo_detect service...")
         self.yolo_call_in_flight = False
 
         # --- FACE Recog service client (on-demand) ---
-        self.face_client = self.create_client(FaceRecog, '/face_recog')
+        self.face_client = self.create_client(FaceRecog, 'face_recog')
         while not self.face_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().warn("[vision] Waiting for /face_recog service...")
-
+            self.get_logger().warn("[vision] Waiting for face_recog service...")
         self.face_call_in_flight = False
+
+        # --- POSE Detect service client (on-demand) ---
+        self.pose_client = self.create_client(PoseDetect, 'pose_detect')
+        while not self.pose_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn("[vision] Waiting for pose_detect service...")
+        self.pose_call_in_flight = False
 
         # --- OpenCV windows ---
         cv2.namedWindow('vision', cv2.WINDOW_NORMAL)
         cv2.namedWindow('debug_image', cv2.WINDOW_NORMAL)
 
-        self.get_logger().info("[vision] Keys: q=quit, y=YOLO, f=FACE")
+        self.get_logger().info("[vision] Keys: q=quit, y=YOLO, f=FACE, p=POSE")
 
     # ======================================
     # MAIN RGB CALLBACK
@@ -109,6 +120,38 @@ class VisionNode(Node):
             face_call = self.face_client.call_async(face_req)
             face_call.add_done_callback(self.handle_face_response)
 
+        # Trigger POSE once when pressing 'p'
+        if key == ord('p') and not self.pose_call_in_flight:
+            self.get_logger().info("[vision] Calling POSE service...")
+            self.pose_call_in_flight = True
+
+            req = PoseDetect.Request()
+            req.name_request = []
+            req.min_confidence = 0.3
+            req.want_3d = True
+            req.publish_debug = True
+
+            future = self.pose_client.call_async(req)
+
+            def _pose_done(fut):
+                self.pose_call_in_flight = False
+                try:
+                    resp = fut.result()
+                except Exception as e:
+                    self.get_logger().error(f"[vision] POSE service call failed: {e}")
+                    return
+
+                if not resp.success:
+                    self.get_logger().warn(f"[vision] POSE failed: {resp.status}")
+                    return
+
+                self.get_logger().info(
+                    f"[vision] POSE returned {resp.num_people} people "
+                    f"(3D={'yes' if resp.used_3d else 'no'})"
+                )
+
+            future.add_done_callback(_pose_done)
+
     # ======================================
     # YOLO SERVICE RESPONSE
     # ======================================
@@ -125,7 +168,6 @@ class VisionNode(Node):
         except Exception:
             n = 0
         self.get_logger().info(f"[vision] YOLO returned {n} detections.")
-        # Debug image arrives via /vision/yolo_debug_image
 
     # ======================================
     # FACE SERVICE RESPONSE
@@ -143,7 +185,6 @@ class VisionNode(Node):
         except Exception:
             n = 0
         self.get_logger().info(f"[vision] FACE returned {n} faces.")
-        # Debug image arrives via /vision/face_recog_debug_image
 
     # ======================================
     # GENERIC DEBUG SHOW
@@ -158,7 +199,6 @@ class VisionNode(Node):
         self.latest_debug_cv = debug_cv
         self.latest_debug_source = source
 
-        # Optional: show the source in the title
         try:
             cv2.setWindowTitle('debug_image', f'debug_image ({source})')
         except Exception:
@@ -178,6 +218,12 @@ class VisionNode(Node):
     # ======================================
     def face_debug_image_callback(self, msg: Image):
         self._show_debug(msg, "face")
+
+    # ======================================
+    # POSE DEBUG IMAGE CALLBACK
+    # ======================================
+    def pose_debug_image_callback(self, msg: Image):
+        self._show_debug(msg, "pose")
 
 
 def main(args=None):

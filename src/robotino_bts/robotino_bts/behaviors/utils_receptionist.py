@@ -73,7 +73,7 @@ class PersonSeen(py_trees.behaviour.Behaviour):
         classes = last.get("classes", [])
         poses= last.get("poses", [])
 
-        if "person" not in classes:return py_trees.common.Status.FAILURE
+        if "person" not in classes:return py_trees.common.Status.RUNNING#FAILURE
         self.node.get_logger().info("Human detected!")
         self.bb.yolo_poses_map = []
 
@@ -127,7 +127,7 @@ class PersonSeen(py_trees.behaviour.Behaviour):
 
             except Exception as e:
                 self.node.get_logger().warn(f"[BT] TF to map failed: {e}")
-                return py_trees.common.Status.RUNNING
+                return py_trees.common.Status.FAILURE
         return py_trees.common.Status.SUCCESS
 
 ###############################################
