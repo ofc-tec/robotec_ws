@@ -60,11 +60,24 @@ def generate_launch_description():
             'depth_topic': depth_topic
         }]
     )
+
     # --- FACE RECOG server ---
     face_recog_server = Node(
         package='vision',
         executable='face_recog_service_node',
         name='face_recog_service_node',
+        output='screen',
+        parameters=[{
+            'image_topic': image_topic,
+            'depth_topic': depth_topic
+        }]
+    )
+
+    # --- POSE DETECT server ---
+    pose_service_node = Node(
+        package='vision',
+        executable='pose_service_node',
+        name='pose_service_node',
         output='screen',
         parameters=[{
             'image_topic': image_topic,
@@ -79,4 +92,5 @@ def generate_launch_description():
         vision_node,
         yolo_server,
         face_recog_server,
+        pose_service_node,
     ])

@@ -43,6 +43,13 @@ def _resolve_known_locations_yaml(context, *args, **kwargs):
                 output="screen",
                 parameters=[{"locations_file": yaml_path}],
             ),
+             Node(
+                package="robot_movement",
+                executable="pid_yaw",
+                name="pid_yaw",
+                output="screen",
+                
+            ),
         ]
 
     # 2) Default user path
@@ -57,21 +64,27 @@ def _resolve_known_locations_yaml(context, *args, **kwargs):
     yaml_path = str(user_yaml)
 
     return [
-        Node(
-            package="robotino_bts",
-            executable="task_manager",
-            name="bt_executor",
-            output="screen",
-            parameters=[{"known_locations": yaml_path}],
-        ),
-        Node(
-            package="known_locations_tf_server",
-            executable="known_locations_server",
-            name="known_locations_server",
-            output="screen",
-            parameters=[{"locations_file": yaml_path}],
-        ),
-    ]
+    Node(
+        package="robotino_bts",
+        executable="task_manager",
+        name="bt_executor",
+        output="screen",
+        parameters=[{"known_locations": yaml_path}],
+    ),
+    Node(
+        package="known_locations_tf_server",
+        executable="known_locations_server",
+        name="known_locations_server",
+        output="screen",
+        parameters=[{"locations_file": yaml_path}],
+    ),
+    Node(
+        package="robot_movement",
+        executable="pid_yaw",
+        name="pid_yaw",
+        output="screen",
+    ),    ]
+
 
 
 def generate_launch_description():

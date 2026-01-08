@@ -23,6 +23,7 @@ setup(
         'line_detector = robot_movement.line_detector:main',
         'data_odom_collector = robot_movement.data_odom_collector:main',
         'pot_fields = robot_movement.pot_fields:main',
+        'pid_yaw = robot_movement.pid_yaw:main',
     ],
     },
 )

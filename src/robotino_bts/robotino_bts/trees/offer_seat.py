@@ -1,3 +1,4 @@
+from platform import node
 import py_trees
 import numpy as np
 from py_trees.common import OneShotPolicy , Access
@@ -45,12 +46,13 @@ def build_offer_seat_subtree(node):
     #init_bb = InitBlackboard()
 
     #####################################################
-    goto_door = NavToKnownLocation(
-        name="NavToDoor",
+    say_look_at_me = SayTextBehaviour(
+        name="say look at me ",
         node=node,
-        location_name="living_room",
+        #text="What is your name and what drink would you like?",
+        text="I am looking for a place to seat, please look at me",  
+        wait=True,
     )
-
     #####################################################
     yolo_call = YoloDetectBehaviour(
         name="YoloCall",
@@ -206,6 +208,7 @@ def build_offer_seat_subtree(node):
         # goto_door,
         #yolo_call,
         #human_timeout,
+        say_look_at_me,
         detect_person_once,
         seat_selector,
         wait_and_inspect,
