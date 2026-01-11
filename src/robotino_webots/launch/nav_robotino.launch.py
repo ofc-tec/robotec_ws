@@ -96,7 +96,7 @@ def generate_launch_description():
             ]
         ),
         
-        # 5. Map server with frame_id fix (CRITICAL)
+        # 5. Map server with frame_id fix (CRITICAL)## I KNOW IT IS UGLY but I kill it later I swear, lets fix this bootstrap.
         TimerAction(
             period=8.0,
             actions=[
@@ -140,11 +140,51 @@ def generate_launch_description():
                     executable='controller_server',
                     name='controller_server',
                     output='screen',
-                    parameters=[nav2_params_path, {'use_sim_time': use_sim_time}]
+                    parameters=[nav2_params_path, {'use_sim_time': use_sim_time}],
+                    remappings=[
+                        ('cmd_vel', 'cmd_vel_nav'),
+                    ]
                 )
             ]
         ),
-        
+    # N. VEL SMOOTHER
+
+        TimerAction(
+            period=17.0,
+            actions=[
+                Node(
+                    package='nav2_velocity_smoother',
+                    executable='velocity_smoother',
+                    name='velocity_smoother',
+                    output='screen',
+                    parameters=[nav2_params_path, {'use_sim_time': use_sim_time}],
+                    remappings=[
+                        ('cmd_vel', 'cmd_vel_nav'),
+                        ('cmd_vel_smoothed', 'cmd_vel_smoothed'),
+                        ('odom', 'odom'),
+                    ]
+                )
+            ]
+        ),
+        # N. COLLISION MONITOR
+        TimerAction(
+            period=18.0,
+            actions=[
+                Node(
+                    package='nav2_collision_monitor',
+                    executable='collision_monitor',
+                    name='collision_monitor',
+                    output='screen',
+                    parameters=[nav2_params_path, {'use_sim_time': use_sim_time}],
+                    remappings=[
+                        ('cmd_vel_smoothed', 'cmd_vel_smoothed'),
+                        ('cmd_vel', 'cmd_vel'),
+                        ('scan', 'scan'),
+                    ]
+                )
+            ]
+        ),
+
         # 8. Planner server
         TimerAction(
             period=14.0,
@@ -201,12 +241,15 @@ def generate_launch_description():
                         'autostart': True,
                         'node_names': [
                             'map_server',
-                            'amcl', 
+                            'amcl',
                             'controller_server',
                             'planner_server',
                             'behavior_server',
-                            'bt_navigator'
+                            'bt_navigator',
+                            'velocity_smoother',
+                            'collision_monitor',
                         ]
+
                     }]
                 )
             ]

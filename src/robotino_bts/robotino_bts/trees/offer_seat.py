@@ -85,7 +85,7 @@ def build_offer_seat_subtree(node):
     
     detect_once= py_trees.composites.Sequence(
         name="DetectOnce",
-        memory=True,
+        memory=False,
     )
     
     detect_once.add_children([
@@ -108,12 +108,12 @@ def build_offer_seat_subtree(node):
         duration=30.0,
     )
     
-    detect_person_once = py_trees.decorators.OneShot(
-    name="DetectPersonOnce",
-    child=human_timeout,
-    #policy=py_trees.common.OneShotPolicy.ON_SUCCESSFUL_COMPLETION,
-    policy= py_trees.common.OneShotPolicy.ON_COMPLETION,
-    )
+    #detect_person_once = py_trees.decorators.OneShot(
+    #name="DetectPersonOnce",
+    #child=human_timeout,
+    ##policy=py_trees.common.OneShotPolicy.ON_SUCCESSFUL_COMPLETION,
+    #policy= py_trees.common.OneShotPolicy.ON_COMPLETION,
+    #)
     
     ###############################################
     present_seat_1 = SayTextBehaviour(
@@ -209,7 +209,7 @@ def build_offer_seat_subtree(node):
         #yolo_call,
         #human_timeout,
         say_look_at_me,
-        detect_person_once,
+        human_timeout,
         seat_selector,
         wait_and_inspect,
         # face_call,
