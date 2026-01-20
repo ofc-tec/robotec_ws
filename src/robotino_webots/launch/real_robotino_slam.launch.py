@@ -58,8 +58,8 @@ def generate_launch_description():
             
             # MAXIMUM UPDATE FREQUENCY
             'slam_toolbox.map_update_interval': '0.1',  # Update every 0.1 seconds
-            'slam_toolbox.transform_timeout': '0.02',   # Ultra-fast TF lookups
-            'slam_toolbox.processing_queue_size': '1',   # No queuing, process immediately
+            'slam_toolbox.transform_timeout': '0.1',   # Ultra-fast TF lookups
+            'slam_toolbox.processing_queue_size': '10',   # No queuing, process immediately
             
             # Minimal movement thresholds
             'slam_toolbox.minimum_travel_distance': '0.01',  # Update after tiny moves

@@ -22,8 +22,8 @@ def generate_launch_description():
     
     # Nav2 params file
     #nav2_params_path = os.path.join(nav2_bringup_share, 'params', 'nav2_params.yaml')
-    nav2_params_path = "/home/oscar/robotino_ros2_ws/src/robotino_webots/config/nav2_robotino_webots.yaml"
-
+    #nav2_params_path = "/home/oscar/robotino_ros2_ws/src/robotino_webots/config/nav2_robotino_webots.yaml"
+    nav2_params_path = "/home/oscar/robotino_ros2_ws/src/robotino_webots/config/nav2_robotino_webots_pure_pursuit.yaml"
     
     return LaunchDescription([
 

@@ -12,7 +12,7 @@ from std_msgs.msg import Float32, Bool
 class NavToKnownLocation(py_trees.behaviour.Behaviour):
     """
     Nav2 to named location with:
-    - Pre-rotate hack (cancel on first plan → publish yaw from lookahead → wait align → resend)
+    - Pre-rotate hack (cancel on first / plan / publish yaw from lookahead / wait /align / resend)
     - Always final yaw correction after arrival using the **original goal yaw**
     """
 
@@ -25,7 +25,8 @@ class NavToKnownLocation(py_trees.behaviour.Behaviour):
         self.node = node
         self.location_name = location_name
         self.timeout_sec = float(timeout_sec)
-        self.plan_topic = plan_topic
+        #self.plan_topic = plan_topic   # MPPI IMPORTANT DO NOT REMOVE
+        self.plan_topic = "/plan"
         self.yaw_topic = yaw_topic
         self.lookahead_idx = int(lookahead_idx)
         self.align_timeout_sec = float(align_timeout_sec)
