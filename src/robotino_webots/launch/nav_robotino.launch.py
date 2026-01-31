@@ -198,7 +198,20 @@ def generate_launch_description():
                 )
             ]
         ),
-        
+        # 8.5 Smoother server (Nav2) - only to satisfy RViz panels
+        TimerAction(
+            period=15.0,
+            actions=[
+                Node(
+                    package='nav2_smoother',
+                    executable='smoother_server',
+                    name='smoother_server',
+                    output='screen',
+                    parameters=[nav2_params_path, {'use_sim_time': use_sim_time}]
+                )
+            ]
+        ),
+
         # 9. Behavior server (for recovery behaviors)
         TimerAction(
             period=16.0,
@@ -244,6 +257,7 @@ def generate_launch_description():
                             'amcl',
                             'controller_server',
                             'planner_server',
+                            'smoother_server',
                             'behavior_server',
                             'bt_navigator',
                             'velocity_smoother',
