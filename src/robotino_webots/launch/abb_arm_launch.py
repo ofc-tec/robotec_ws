@@ -22,7 +22,9 @@ def generate_launch_description():
 
     declare_world = DeclareLaunchArgument(
         'world_file',
-        default_value=os.path.join(pkg_share, 'ABB_inverse_kinematics.wbt'),
+
+        default_value=os.path.join(pkg_share, 'worlds', 'ABB_inverse_kinematics.wbt'),
+
         description='Path to Webots world file'
     )
 

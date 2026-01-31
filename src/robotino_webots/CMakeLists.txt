@@ -41,16 +41,17 @@ install(PROGRAMS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# Keep worlds flat at share/<pkg> (preserves existing launch paths that reference .wbt directly)
+
 install(
   DIRECTORY worlds/
-  DESTINATION share/${PROJECT_NAME}
+  DESTINATION share/${PROJECT_NAME}/worlds
 )
 
-# Webots expects controllers at <project_root>/controllers/<controller_name>/...
+
 install(
   DIRECTORY controllers/
   DESTINATION share/${PROJECT_NAME}/controllers
 )
+
 
 ament_package()
