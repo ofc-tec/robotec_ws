@@ -24,19 +24,33 @@ install(
   DESTINATION share/${PROJECT_NAME}/launch
 )
 
-# Install URDF files - FIXED PATH (added /urdf)
-install(DIRECTORY urdf/  DESTINATION share/${PROJECT_NAME}/urdf)
+# Install URDF files
+install(
+  DIRECTORY urdf/
+  DESTINATION share/${PROJECT_NAME}/urdf
+)
 
 # (Optional) install assets so package:// resolves (uncomment if you have them)
-# install(DIRECTORY meshes/ DESTINATION share/${PROJECT_NAME} OPTIONAL)
-# install(DIRECTORY rviz/  DESTINATION share/${PROJECT_NAME} OPTIONAL)
+# install(DIRECTORY meshes/ DESTINATION share/${PROJECT_NAME})
+# install(DIRECTORY rviz/  DESTINATION share/${PROJECT_NAME})
+# install(DIRECTORY protos/ DESTINATION share/${PROJECT_NAME})
 
-# Install your Python controller
+# Install your Python ROS node (NOT the Webots controller)
 install(PROGRAMS
   src/robotino_webots_controller.py
   DESTINATION lib/${PROJECT_NAME}
 )
-install(DIRECTORY worlds/
-  DESTINATION share/${PROJECT_NAME}/worlds
+
+# Keep worlds flat at share/<pkg> (preserves existing launch paths that reference .wbt directly)
+install(
+  DIRECTORY worlds/
+  DESTINATION share/${PROJECT_NAME}
 )
+
+# Webots expects controllers at <project_root>/controllers/<controller_name>/...
+install(
+  DIRECTORY controllers/
+  DESTINATION share/${PROJECT_NAME}/controllers
+)
+
 ament_package()
