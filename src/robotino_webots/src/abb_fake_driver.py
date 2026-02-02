@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 """
 abb_fake_driver.py
 
@@ -18,7 +17,6 @@ import sys
 import tempfile
 
 from controller import Supervisor
-print("### RUNNING CONTROLLER FROM:", __file__)
 
 # --- ikpy import (only used to discover links/motor names from URDF) ---
 try:
