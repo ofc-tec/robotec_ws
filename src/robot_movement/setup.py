@@ -24,6 +24,7 @@ setup(
         'data_odom_collector = robot_movement.data_odom_collector:main',
         'pot_fields = robot_movement.pot_fields:main',
         'pid_yaw = robot_movement.pid_yaw:main',
+        'odom_delay = robot_movement.odom_delay:main',
     ],
     },
 )
