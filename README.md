@@ -1,100 +1,71 @@
-Robotino Navigation with ROS 2 (Webots + Real Robot)
+# Robotec WS — Minimal Setup
 
-This repository provides a unified ROS 2 navigation stack for Festo Robotino, designed to run unchanged core logic across:
+This repository contains a minimal ROS 2 + Webots setup for Robotino.
 
-✅ Webots simulation (Robotino + LiDAR + Nav2)
+----------------------------------------
 
-✅ Real Robotino hardware using Nav2 + AMCL
+Minimal Test
 
-✅ Low-level tools for debugging odometry vs. laser, and experimenting with virtual attractors / potential fields
+1. Clone the repository
 
-The guiding principle of this repo is:
+cd ~/robotec_ws/src
+git clone https://github.com/ofc-tec/robotec_ws.git
 
-Same navigation pipeline, same behaviors — only launch files and parameters change between simulation and real robot.
+----------------------------------------
 
-Repository Structure (Current)
-robotino_ros2_ws/
-├── src/
-│   ├── robotino_webots/
-│   │   ├── worlds/            # Webots worlds (apartment, lab, test maps)
-│   │   ├── description/       # Robotino URDF / Xacro (LiDAR, camera, frames)
-│   │   ├── launch/
-│   │   │   ├── sim/           # Webots simulation launches
-│   │   │   ├── nav2/          # Nav2 bringup (sim + real)
-│   │   │   └── real/          # Real Robotino bringup
-│   │   └── config/            # Nav2, AMCL, controller params
-│   │
-│   ├── robotino_bts/           # Behavior Trees (py_trees / Nav2 actions)
-│   │   ├── trees/
-│   │   ├── behaviors/
-│   │   └── launch/
-│   │
-│   ├── vision/                 # Camera, YOLO, segmentation, services
-│   │   ├── launch/
-│   │   └── nodes/
-│   │
-│   ├── robot_movement/         # Potential fields, attractors, helpers
-│   │
-│   └── robotino_interfaces/    # Custom ROS 2 messages/services
-│
-├── install/
-├── build/
-└── log/
+2. Build
 
+cd ~/robotec_ws
+colcon build
 
-⚠️ Note
-Older references to ROS 1, deprecated navigation stacks, or duplicated bringup logic have been removed.
-Navigation is Nav2-only, both in simulation and on the real robot.
+----------------------------------------
 
-Key Design Decisions
+3. Source
 
-Nav2 everywhere
-No forked logic between sim and real — only parameter files and topic remaps differ.
+source install/setup.bash
 
-Webots as first-class citizen
-Webots is used not just for visualization, but for:
+(Do this in every new terminal)
 
-Odometry debugging
+----------------------------------------
 
-AMCL tuning
+4. Launch Robotino (Webots)
 
-Costmap validation
+ros2 launch robotino_webots robotino_min.launch.py
 
-Behavior Tree testing
+----------------------------------------
 
-Behavior Trees at task level
-High-level behaviors live in robotino_bts, decoupled from:
+5. Run Vision Node
 
-Localization source (AMCL)
+ros2 run vision vision_node_min --ros-args -p image_topic:=/kinect_sim/rgb/image_raw
 
-Planner/controller choice
+----------------------------------------
 
-Simulation vs. hardware
+6. Send Test Command
 
-Explicit debugging tools
-Nodes and launch files exist specifically to:
+ros2 topic pub -1 /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.0}, angular: {z: 0.0}}"
 
-Compare odom vs laser consistency
+----------------------------------------
 
-Visualize navigation failures
+Expected Behavior
 
-Test artificial attractors / fields independently of Nav2
+- Webots launches Robotino
+- Vision window shows camera feed
+- /cmd_vel accepts commands
 
-Simulation vs. Real Robot
-Component	Simulation (Webots)	Real Robotino
-Localization	AMCL	AMCL
-Navigation	Nav2	Nav2
-Robot Description	Same URDF/Xacro	Same
-Behaviors	Same BTs	Same
-Difference	Launch + params	Launch + params
-Status
+----------------------------------------
 
-✔ Webots navigation stable
+Notes
 
-✔ Real robot navigation working with AMCL
+- If nothing moves:
+  ros2 topic info /cmd_vel
 
-✔ TF tree aligned between sim and real
+- If image does not appear:
+  ros2 topic list
 
-✔ Behavior Trees reusable across platforms
+----------------------------------------
 
-This repository is actively used for research, teaching, and RoboCup-style domestic robotics tasks, and is intentionally kept minimal, explicit, and debuggable.
+Goal
+
+Minimal pipeline test:
+
+Sensors → Vision → ROS2 → Control
