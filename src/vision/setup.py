@@ -22,6 +22,8 @@ setup(
         'console_scripts': [
             'vision_node = vision.vision_node:main',  
             'vision_node_min = vision.vision_node_min:main',  
+            #'vision_node_ptcld_min = vision.vision_ptcld_min:main',
+            'vision_segment = vision.vision_segment:main',
             'yolo_server = vision.yolo_service_node:main',
             'kinect_pointcloud_node = vision.kinect_pointcloud_node:main',
             "face_recog_service_node = vision.face_recog_service_node:main",

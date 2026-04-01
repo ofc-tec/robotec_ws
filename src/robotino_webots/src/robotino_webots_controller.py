@@ -3,7 +3,9 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import LaserScan, JointState, Image
+from sensor_msgs.msg import LaserScan, JointState, Image, PointCloud2 ,  PointField
+from sensor_msgs_py import point_cloud2
+from std_msgs.msg import Header
 from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 from rclpy.parameter import Parameter
@@ -79,12 +81,13 @@ class RobotinoWebotsController(Node):
         self.kinect_depth = None
         self.kinect_rgb_pub = None
         self.kinect_depth_pub = None
-
+        self.kinect_points_pub = None
         try:
             self.kinect_rgb = self.robot.getDevice('kinect_rgb')
             self.kinect_rgb.enable(self.timestep)
             if self.bridge:
                 self.kinect_rgb_pub = self.create_publisher(Image, 'kinect_sim/rgb/image_raw', 10)
+            self.kinect_points_pub = self.create_publisher(PointCloud2, '/kinect_sim/points', 10)
         except Exception:
             pass
 
@@ -215,7 +218,53 @@ class RobotinoWebotsController(Node):
             self.get_logger().warn(f'Odometry update error: {e}')
 
     # =============================================================
+    from sensor_msgs.msg import PointCloud2, PointField
+    import struct
 
+    def make_kinect_pointcloud_msg(self, depth_np, stamp):
+        height, width = depth_np.shape
+
+        hfov = self.kinect_depth.getFov()
+        vfov = 2.0 * math.atan(math.tan(hfov / 2.0) * (height / width))
+
+        fx = width / (2.0 * math.tan(hfov / 2.0))
+        fy = height / (2.0 * math.tan(vfov / 2.0))
+        cx = (width - 1) / 2.0
+        cy = (height - 1) / 2.0
+
+        u, v = np.meshgrid(np.arange(width), np.arange(height))
+
+        z = depth_np.astype(np.float32)
+        x = (u - cx) * z / fx
+        y = (v - cy) * z / fy
+
+        # keep full image shape, do NOT flatten
+        xyz = np.stack((x, y, z), axis=-1).astype(np.float32)
+
+        # invalid pixels -> NaN, but keep them in place
+        invalid = ~np.isfinite(z) | (z <= 0.0)
+        xyz[invalid] = np.nan
+
+        msg = PointCloud2()
+        msg.header.stamp = stamp
+        msg.header.frame_id = 'kinect_link'
+
+        msg.height = height
+        msg.width = width
+
+        msg.fields = [
+            PointField(name='x', offset=0,  datatype=PointField.FLOAT32, count=1),
+            PointField(name='y', offset=4,  datatype=PointField.FLOAT32, count=1),
+            PointField(name='z', offset=8,  datatype=PointField.FLOAT32, count=1),
+        ]
+
+        msg.is_bigendian = False
+        msg.point_step = 12
+        msg.row_step = msg.point_step * width
+        msg.is_dense = False
+        msg.data = xyz.tobytes()
+
+        return msg
     def run(self):
         # ensure odom starts clean each run
         self.wheel_encoders_initialized = False
@@ -322,6 +371,9 @@ class RobotinoWebotsController(Node):
                         msg.header.stamp = now
                         msg.header.frame_id = 'kinect_link'
                         self.kinect_depth_pub.publish(msg)
+                        if self.kinect_points_pub:
+                            cloud_msg = self.make_kinect_pointcloud_msg(depth_np, now)
+                            self.kinect_points_pub.publish(cloud_msg)
                 except Exception as e:
                     self.get_logger().warn(f'Kinect depth publish error: {e}')
 

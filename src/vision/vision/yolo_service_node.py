@@ -140,7 +140,7 @@ class YoloServiceNode(Node):
                 depth_ok = False
 
         if depth_ok:
-            # --- Intrinsics (keep your constants) ---
+            # --- Intrinsics (keep your constants) --- pINHOLE model with typical Kinect parameters (adjust if you have real intrinsics)
             fx = 525.0
             fy = 525.0
             cx = 319.5
