@@ -37,6 +37,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'map_file',
             default_value=os.path.expanduser('~/robotino_ros2_ws/map_2.yaml'),
+            #default_value=os.path.expanduser('~/blank_map.yaml'),
             description='Path to map YAML file'
         ),
         DeclareLaunchArgument(

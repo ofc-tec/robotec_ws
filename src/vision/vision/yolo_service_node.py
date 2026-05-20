@@ -22,6 +22,7 @@ from robotino_interfaces.srv import YoloDetect
 from cv_bridge import CvBridge
 from ultralytics import YOLO
 
+import cv2
 import numpy as np
 import tf2_ros
 from geometry_msgs.msg import TransformStamped, PoseStamped
@@ -122,22 +123,30 @@ class YoloServiceNode(Node):
         if depth_ok:
             try:
                 depth = self.bridge.imgmsg_to_cv2(self.latest_depth_msg, desired_encoding="passthrough")
+                self.get_logger().info(
+                    f"[YOLO_SERVICE] depth encoding={self.latest_depth_msg.encoding}, shape={depth.shape}"
+                )
             except Exception as e:
                 self.get_logger().warn(f"[YOLO_SERVICE] cv_bridge depth error: {e}")
                 depth_ok = False
 
         if depth_ok:
+            if depth.ndim == 3 and depth.shape[2] == 1:
+                depth = depth[:, :, 0]
             if depth.ndim != 2:
-                self.get_logger().warn("[YOLO_SERVICE] Depth image is not single-channel. Returning 2D only.")
+                self.get_logger().warn(
+                    f"[YOLO_SERVICE] Depth image is not single-channel "
+                    f"(encoding={self.latest_depth_msg.encoding}, shape={depth.shape}). Returning 2D only."
+                )
                 depth_ok = False
 
         if depth_ok:
             H_d, W_d = depth.shape
             if H_d != H_img or W_d != W_img:
-                self.get_logger().warn(
-                    f"[YOLO_SERVICE] Depth size ({H_d},{W_d}) != RGB size ({H_img},{W_img}); returning 2D only."
+                self.get_logger().info(
+                    f"[YOLO_SERVICE] Depth size ({H_d},{W_d}) differs from RGB size ({H_img},{W_img}); "
+                    "scaling mask pixels into depth image."
                 )
-                depth_ok = False
 
         if depth_ok:
             # --- Intrinsics (keep your constants) --- pINHOLE model with typical Kinect parameters (adjust if you have real intrinsics)
@@ -158,8 +167,8 @@ class YoloServiceNode(Node):
             Z[(Z < 0.25) | (Z > 6.0)] = np.nan
 
             # Back-project to 3D in the depth frame convention used by your projection
-            u = np.tile(np.arange(W_img), (H_img, 1))
-            v = np.tile(np.arange(H_img).reshape(-1, 1), (1, W_img))
+            u = np.tile(np.arange(W_d), (H_d, 1))
+            v = np.tile(np.arange(H_d).reshape(-1, 1), (1, W_d))
 
             X = (u - cx) * Z / fx
             Y = (v - cy) * Z / fy
@@ -196,10 +205,15 @@ class YoloServiceNode(Node):
         if masks is not None and masks.data is not None:
             mask_array = masks.data.cpu().numpy()  # [N, H, W]
             if mask_array.shape[1] != H_img or mask_array.shape[2] != W_img:
-                self.get_logger().warn(
-                    f"[YOLO_SERVICE] Mask size {mask_array.shape[1:]} does not match image size {(H_img, W_img)}."
+                self.get_logger().info(
+                    f"[YOLO_SERVICE] Resizing mask size {mask_array.shape[1:]} to image size {(H_img, W_img)}."
                 )
-                mask_array = None
+                resized_masks = []
+                for mask in mask_array:
+                    resized_masks.append(
+                        cv2.resize(mask, (W_img, H_img), interpolation=cv2.INTER_NEAREST)
+                    )
+                mask_array = np.stack(resized_masks, axis=0)
 
         now = self.get_clock().now().to_msg()
 
@@ -248,13 +262,21 @@ class YoloServiceNode(Node):
                 and (i < mask_array.shape[0])
                 and (X is not None) and (Y is not None) and (Z is not None)
             ):
-                mask = mask_array[i]  # [H, W]
-                submask = mask[y1_i:y2_i, x1_i:x2_i] > 0.5
+                mask = mask_array[i]  # [H_img, W_img]
+                if mask.shape != Z.shape:
+                    mask = cv2.resize(mask, (W_d, H_d), interpolation=cv2.INTER_NEAREST)
+
+                x1_d = max(0, min(W_d - 1, int(round(x1_i * W_d / W_img))))
+                x2_d = max(0, min(W_d - 1, int(round(x2_i * W_d / W_img))))
+                y1_d = max(0, min(H_d - 1, int(round(y1_i * H_d / H_img))))
+                y2_d = max(0, min(H_d - 1, int(round(y2_i * H_d / H_img))))
+
+                submask = mask[y1_d:y2_d, x1_d:x2_d] > 0.5
 
                 if np.any(submask):
                     ys_idx, xs_idx = np.where(submask)
-                    ys_full = ys_idx + y1_i
-                    xs_full = xs_idx + x1_i
+                    ys_full = ys_idx + y1_d
+                    xs_full = xs_idx + x1_d
 
                     X_pts = X[ys_full, xs_full]
                     Y_pts = Y[ys_full, xs_full]

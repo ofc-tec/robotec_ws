@@ -38,6 +38,8 @@ install(
 # Install your Python ROS node (NOT the Webots controller)
 install(PROGRAMS
   src/robotino_webots_controller.py
+  src/kinect_camera_info_publisher.py
+  src/loger.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

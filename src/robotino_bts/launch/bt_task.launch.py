@@ -93,7 +93,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             "with_viewer",
-            default_value="false",
+            default_value="true",
             description="Start py_trees_ros_viewer GUI (py-trees-tree-viewer)"
         ),
         DeclareLaunchArgument(
