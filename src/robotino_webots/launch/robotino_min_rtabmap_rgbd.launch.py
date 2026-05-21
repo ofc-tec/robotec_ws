@@ -10,6 +10,8 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
+    """~/robotino_ros2_ws$ ros2 launch robotino_webots robotino_min_rtabmap_rgbd.launch.py   subscribe_scan:=false   reg_strategy:=0   grid_sensor:=1   loger_csv_path:=~/.ros/robotino_rtabmap_visual_only_correction_log.csv
+    """
     use_sim_time = LaunchConfiguration('use_sim_time')
     frame_id = LaunchConfiguration('frame_id')
     odom_frame_id = LaunchConfiguration('odom_frame_id')
@@ -23,6 +25,8 @@ def generate_launch_description():
     incremental_memory = LaunchConfiguration('incremental_memory')
     init_wm_with_all_nodes = LaunchConfiguration('init_wm_with_all_nodes')
     subscribe_scan = LaunchConfiguration('subscribe_scan')
+    subscribe_rgb = LaunchConfiguration('subscribe_rgb')
+    subscribe_depth = LaunchConfiguration('subscribe_depth')
     reg_strategy = LaunchConfiguration('reg_strategy')
     grid_sensor = LaunchConfiguration('grid_sensor')
     enable_loger = LaunchConfiguration('enable_loger')
@@ -70,8 +74,8 @@ def generate_launch_description():
             'map_frame_id': map_frame_id,
             'database_path': rtabmap_db_path,
             'subscribe_scan': ParameterValue(subscribe_scan, value_type=bool),
-            'subscribe_rgb': True,
-            'subscribe_depth': True,
+            'subscribe_rgb': ParameterValue(subscribe_rgb, value_type=bool),
+            'subscribe_depth': ParameterValue(subscribe_depth, value_type=bool),
             'subscribe_stereo': False,
             'approx_sync': True,
             'topic_queue_size': 30,
@@ -135,8 +139,8 @@ def generate_launch_description():
             'frame_id': frame_id,
             'odom_frame_id': odom_frame_id,
             'subscribe_scan': ParameterValue(subscribe_scan, value_type=bool),
-            'subscribe_rgb': True,
-            'subscribe_depth': True,
+            'subscribe_rgb': ParameterValue(subscribe_rgb, value_type=bool),
+            'subscribe_depth': ParameterValue(subscribe_depth, value_type=bool),
             'approx_sync': True,
             'topic_queue_size': 30,
             'sync_queue_size': 30,
@@ -175,6 +179,8 @@ def generate_launch_description():
         DeclareLaunchArgument('incremental_memory', default_value='false'),
         DeclareLaunchArgument('init_wm_with_all_nodes', default_value='true'),
         DeclareLaunchArgument('subscribe_scan', default_value='true'),
+        DeclareLaunchArgument('subscribe_rgb', default_value='true'),
+        DeclareLaunchArgument('subscribe_depth', default_value='true'),
         DeclareLaunchArgument('reg_strategy', default_value='2'),
         DeclareLaunchArgument('grid_sensor', default_value='2'),
         DeclareLaunchArgument('enable_loger', default_value='true'),
