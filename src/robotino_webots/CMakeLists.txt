@@ -10,6 +10,8 @@ find_package(ament_cmake REQUIRED)
 find_package(webots_ros2_driver REQUIRED)
 find_package(rclcpp REQUIRED)
 
+ament_environment_hooks(env-hooks/robotino_cyclonedds.dsv.in)
+
 # Testing (optional)
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -22,6 +24,11 @@ endif()
 install(
   DIRECTORY launch/
   DESTINATION share/${PROJECT_NAME}/launch
+)
+
+install(
+  DIRECTORY config/
+  DESTINATION share/${PROJECT_NAME}/config
 )
 
 # Install URDF files

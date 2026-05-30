@@ -20,6 +20,7 @@ def generate_launch_description():
     # --- Launch arguments ---
     image_topic = LaunchConfiguration('image_topic')
     depth_topic = LaunchConfiguration('depth_topic')
+    depth_info_topic = LaunchConfiguration('depth_info_topic')
 
     declare_image_topic = DeclareLaunchArgument(
         'image_topic',
@@ -31,6 +32,12 @@ def generate_launch_description():
         'depth_topic',
         default_value='/kinect/depth/image_raw',
         description='Depth pointcloud depthimg topic'
+    )
+
+    declare_depth_info_topic = DeclareLaunchArgument(
+        'depth_info_topic',
+        default_value='/kinect/depth/camera_info',
+        description='Depth camera info topic for 3D vision nodes'
     )
 
     # --- Webots simulation + teleop ---
@@ -57,7 +64,8 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'image_topic': image_topic,
-            'depth_topic': depth_topic
+            'depth_topic': depth_topic,
+            'depth_info_topic': depth_info_topic
         }]
     )
 
@@ -69,7 +77,8 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'image_topic': image_topic,
-            'depth_topic': depth_topic
+            'depth_topic': depth_topic,
+            'depth_info_topic': depth_info_topic
         }]
     )
 
@@ -81,13 +90,15 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'image_topic': image_topic,
-            'depth_topic': depth_topic
+            'depth_topic': depth_topic,
+            'depth_info_topic': depth_info_topic
         }]
     )
 
     return LaunchDescription([
         declare_image_topic,
         declare_depth_topic,
+        declare_depth_info_topic,
         sim_teleop,
         vision_node,
         yolo_server,

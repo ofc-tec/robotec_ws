@@ -1,0 +1,1 @@
+set;CYCLONEDDS_URI;file://@CMAKE_INSTALL_PREFIX@/share/robotino_webots/config/cyclonedds_many_nodes.xml

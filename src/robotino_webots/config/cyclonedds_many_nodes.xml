@@ -1,0 +1,8 @@
+<CycloneDDS>
+  <Domain>
+    <Discovery>
+      <ParticipantIndex>auto</ParticipantIndex>
+      <MaxAutoParticipantIndex>500</MaxAutoParticipantIndex>
+    </Discovery>
+  </Domain>
+</CycloneDDS>
