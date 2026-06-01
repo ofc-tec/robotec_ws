@@ -29,6 +29,9 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     gui = LaunchConfiguration("gui")
     rviz = LaunchConfiguration("rviz")
+    robot_description_topic = LaunchConfiguration("robot_description_topic")
+    rviz_node_name = LaunchConfiguration("rviz_node_name")
+    publish_initial_map_to_odom = LaunchConfiguration("publish_initial_map_to_odom")
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -56,6 +59,21 @@ def generate_launch_description():
             default_value=os.path.join(rto_description_share, "launch", "robotino_gz_wheels.launch.py"),
             description="Robotino Gazebo base launch file",
         ),
+        DeclareLaunchArgument(
+            "robot_description_topic",
+            default_value="/robot_description",
+            description="Topic where Robotino's robot_state_publisher republishes its robot_description",
+        ),
+        DeclareLaunchArgument(
+            "rviz_node_name",
+            default_value="rviz2",
+            description="Node name for the Nav2 RViz process",
+        ),
+        DeclareLaunchArgument(
+            "publish_initial_map_to_odom",
+            default_value="true",
+            description="Publish bootstrap map -> odom until AMCL owns localization",
+        ),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(gz_launch),
@@ -75,6 +93,9 @@ def generate_launch_description():
                         "use_sim_time": use_sim_time,
                         "publish_frequency": 30.0,
                     }],
+                    remappings=[
+                        ("/robot_description", robot_description_topic),
+                    ],
                 )
             ],
         ),
@@ -83,6 +104,7 @@ def generate_launch_description():
             period=3.0,
             actions=[
                 Node(
+                    condition=IfCondition(publish_initial_map_to_odom),
                     package="tf2_ros",
                     executable="static_transform_publisher",
                     name="map_to_odom",
@@ -239,7 +261,7 @@ def generate_launch_description():
                 Node(
                     package="rviz2",
                     executable="rviz2",
-                    name="rviz2",
+                    name=rviz_node_name,
                     parameters=[{"use_sim_time": use_sim_time}],
                     arguments=[
                         "-d",

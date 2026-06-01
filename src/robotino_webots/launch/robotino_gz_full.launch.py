@@ -24,6 +24,9 @@ def generate_launch_description():
     gui = LaunchConfiguration("gui")
     rviz = LaunchConfiguration("rviz")
     robotino_gz_launch = LaunchConfiguration("robotino_gz_launch")
+    robot_description_topic = LaunchConfiguration("robot_description_topic")
+    rviz_node_name = LaunchConfiguration("rviz_node_name")
+    publish_initial_map_to_odom = LaunchConfiguration("publish_initial_map_to_odom")
     image_topic = LaunchConfiguration("image_topic")
     depth_topic = LaunchConfiguration("depth_topic")
     depth_info_topic = LaunchConfiguration("depth_info_topic")
@@ -36,6 +39,9 @@ def generate_launch_description():
             "gui": gui,
             "rviz": rviz,
             "robotino_gz_launch": robotino_gz_launch,
+            "robot_description_topic": robot_description_topic,
+            "rviz_node_name": rviz_node_name,
+            "publish_initial_map_to_odom": publish_initial_map_to_odom,
         }.items(),
     )
 
@@ -85,6 +91,21 @@ def generate_launch_description():
             "robotino_gz_launch",
             default_value=os.path.join(rto_description_share, "launch", "robotino_gz_wheels.launch.py"),
             description="Optional Robotino Gazebo base launch file passed through to nav_robotino_gz",
+        ),
+        DeclareLaunchArgument(
+            "robot_description_topic",
+            default_value="/robot_description",
+            description="Topic where Robotino republishes robot_description",
+        ),
+        DeclareLaunchArgument(
+            "rviz_node_name",
+            default_value="rviz2",
+            description="Node name for the Nav2 RViz process",
+        ),
+        DeclareLaunchArgument(
+            "publish_initial_map_to_odom",
+            default_value="true",
+            description="Publish bootstrap map -> odom until AMCL owns localization",
         ),
         DeclareLaunchArgument(
             "image_topic",
