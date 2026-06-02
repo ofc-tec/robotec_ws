@@ -111,6 +111,8 @@ def launch_setup(context, *args, **kwargs):
     rviz = LaunchConfiguration("rviz")
     xarm_rviz = LaunchConfiguration("xarm_rviz")
     run_action_servers = LaunchConfiguration("run_action_servers")
+    robotino_gz_launch = LaunchConfiguration("robotino_gz_launch")
+    gz_world_name = LaunchConfiguration("gz_world_name")
     xarm_spawn_x = LaunchConfiguration("xarm_spawn_x")
     xarm_spawn_y = LaunchConfiguration("xarm_spawn_y")
     xarm_spawn_z = LaunchConfiguration("xarm_spawn_z")
@@ -267,9 +269,7 @@ def launch_setup(context, *args, **kwargs):
             "use_sim_time": use_sim_time,
             "gui": gui,
             "rviz": rviz,
-            "robotino_gz_launch": os.path.join(
-                rto_description_share, "launch", "robotino_gz_wheels_table_xarm.launch.py"
-            ),
+            "robotino_gz_launch": robotino_gz_launch,
             "robot_description_topic": "/robotino/robot_description",
             "rviz_node_name": "robotino_nav_rviz",
             "publish_initial_map_to_odom": "false",
@@ -302,7 +302,7 @@ def launch_setup(context, *args, **kwargs):
         output="screen",
         arguments=[
             "-world",
-            "robotino_gz_wheels",
+            gz_world_name,
             "-param",
             "robot_description",
             "-name",
@@ -557,6 +557,20 @@ def generate_launch_description():
         DeclareLaunchArgument("rviz", default_value="true"),
         DeclareLaunchArgument("xarm_rviz", default_value="true"),
         DeclareLaunchArgument("run_action_servers", default_value="true"),
+        DeclareLaunchArgument(
+            "robotino_gz_launch",
+            default_value=os.path.join(
+                get_package_share_directory("rto_description"),
+                "launch",
+                "robotino_gz_wheels_table_xarm.launch.py",
+            ),
+            description="Robotino Gazebo launch file used by the combined Robotino+xArm stack",
+        ),
+        DeclareLaunchArgument(
+            "gz_world_name",
+            default_value="robotino_gz_wheels",
+            description="Gazebo world name used by ros_gz_sim create when spawning xArm",
+        ),
         DeclareLaunchArgument("dof", default_value="6"),
         DeclareLaunchArgument("robot_type", default_value="xarm"),
         DeclareLaunchArgument("prefix", default_value=""),
