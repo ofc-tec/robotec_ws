@@ -18,9 +18,13 @@ def generate_launch_description():
 
     gz_launch = LaunchConfiguration("robotino_gz_launch")
     urdf_path = os.path.join(robotino_webots_share, "urdf", "Robotino3.urdf")
+    # Gazebo Tak Tec Fest tuning: fast Regulated Pure Pursuit.
     nav2_params_path = os.path.join(
-        robotino_webots_share, "config", "nav2_robotino_gz.yaml"
+        robotino_webots_share, "config", "nav2_taktecfesto_gz_pure_pursuit.yaml"
     )
+    # nav2_params_path = os.path.join(
+    #     robotino_webots_share, "config", "nav2_taktecfesto_gz.yaml"
+    # )
 
     with open(urdf_path, "r") as urdf_file:
         robot_description = urdf_file.read()
@@ -32,6 +36,10 @@ def generate_launch_description():
     robot_description_topic = LaunchConfiguration("robot_description_topic")
     rviz_node_name = LaunchConfiguration("rviz_node_name")
     publish_initial_map_to_odom = LaunchConfiguration("publish_initial_map_to_odom")
+    robotino_spawn_x = LaunchConfiguration("robotino_spawn_x")
+    robotino_spawn_y = LaunchConfiguration("robotino_spawn_y")
+    robotino_spawn_z = LaunchConfiguration("robotino_spawn_z")
+    robotino_spawn_yaw = LaunchConfiguration("robotino_spawn_yaw")
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -74,10 +82,19 @@ def generate_launch_description():
             default_value="true",
             description="Publish bootstrap map -> odom until AMCL owns localization",
         ),
-
+        DeclareLaunchArgument("robotino_spawn_x", default_value="0.0"),
+        DeclareLaunchArgument("robotino_spawn_y", default_value="0.0"),
+        DeclareLaunchArgument("robotino_spawn_z", default_value="0.0"),
+        DeclareLaunchArgument("robotino_spawn_yaw", default_value="0.0"),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(gz_launch),
-            launch_arguments={"gui": gui}.items(),
+            launch_arguments={
+                "gui": gui,
+                "robotino_spawn_x": robotino_spawn_x,
+                "robotino_spawn_y": robotino_spawn_y,
+                "robotino_spawn_z": robotino_spawn_z,
+                "robotino_spawn_yaw": robotino_spawn_yaw,
+            }.items(),
         ),
 
         TimerAction(

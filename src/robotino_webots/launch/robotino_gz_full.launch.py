@@ -12,12 +12,11 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     robotino_webots_share = get_package_share_directory("robotino_webots")
-    robotino_audio_share = get_package_share_directory("robotino_audio")
+    # robotino_audio_share = get_package_share_directory("robotino_audio")
     rto_description_share = get_package_share_directory("rto_description")
 
     nav_launch = os.path.join(robotino_webots_share, "launch", "nav_robotino_gz.launch.py")
-    vision_launch = os.path.join(robotino_webots_share, "launch", "vision.launch.py")
-    speech_launch = os.path.join(robotino_audio_share, "launch", "speech_recog.launch.py")
+    # speech_launch = os.path.join(robotino_audio_share, "launch", "speech_recog.launch.py")
 
     map_file = LaunchConfiguration("map_file")
     use_sim_time = LaunchConfiguration("use_sim_time")
@@ -30,6 +29,12 @@ def generate_launch_description():
     image_topic = LaunchConfiguration("image_topic")
     depth_topic = LaunchConfiguration("depth_topic")
     depth_info_topic = LaunchConfiguration("depth_info_topic")
+    yolo_confidence_threshold = LaunchConfiguration("yolo_confidence_threshold")
+    yolo_input_color = LaunchConfiguration("yolo_input_color")
+    robotino_spawn_x = LaunchConfiguration("robotino_spawn_x")
+    robotino_spawn_y = LaunchConfiguration("robotino_spawn_y")
+    robotino_spawn_z = LaunchConfiguration("robotino_spawn_z")
+    robotino_spawn_yaw = LaunchConfiguration("robotino_spawn_yaw")
 
     include_nav = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(nav_launch),
@@ -42,21 +47,64 @@ def generate_launch_description():
             "robot_description_topic": robot_description_topic,
             "rviz_node_name": rviz_node_name,
             "publish_initial_map_to_odom": publish_initial_map_to_odom,
+            "robotino_spawn_x": robotino_spawn_x,
+            "robotino_spawn_y": robotino_spawn_y,
+            "robotino_spawn_z": robotino_spawn_z,
+            "robotino_spawn_yaw": robotino_spawn_yaw,
         }.items(),
     )
 
-    include_vision = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(vision_launch),
-        launch_arguments={
+    vision_node = Node(
+        package="vision",
+        executable="vision_node",
+        name="vision_node",
+        output="screen",
+        parameters=[{
+            "image_topic": image_topic,
+        }],
+    )
+
+    yolo_server = Node(
+        package="vision",
+        executable="yolo_server",
+        name="yolo_server",
+        output="screen",
+        parameters=[{
             "image_topic": image_topic,
             "depth_topic": depth_topic,
             "depth_info_topic": depth_info_topic,
-        }.items(),
+            "confidence_threshold": yolo_confidence_threshold,
+            "yolo_input_color": yolo_input_color,
+            "log_image_stats": True,
+        }],
     )
 
-    include_speech = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(speech_launch),
+    face_recog_server = Node(
+        package="vision",
+        executable="face_recog_service_node",
+        name="face_recog_service_node",
+        output="screen",
+        parameters=[{
+            "image_topic": image_topic,
+            "depth_topic": depth_topic,
+            "depth_info_topic": depth_info_topic,
+        }],
     )
+
+    pose_service_node = Node(
+        package="vision",
+        executable="pose_service_node",
+        name="pose_service_node",
+        output="screen",
+        parameters=[{
+            "image_topic": image_topic,
+            "depth_topic": depth_topic,
+            "depth_info_topic": depth_info_topic,
+        }],
+    )
+
+    # Audio is intentionally left out for YOLO/CUDA test launches.
+    # include_speech = IncludeLaunchDescription(PythonLaunchDescriptionSource(speech_launch))
 
     kinect_depth_tf = Node(
         package="tf2_ros",
@@ -122,8 +170,25 @@ def generate_launch_description():
             default_value="/kinect_sim/depth/camera_info",
             description="Depth camera info topic for 3D vision nodes",
         ),
+        DeclareLaunchArgument(
+            "yolo_confidence_threshold",
+            default_value="0.25",
+            description="YOLO confidence threshold passed to the vision server",
+        ),
+        DeclareLaunchArgument(
+            "yolo_input_color",
+            default_value="bgr",
+            description="Color order passed to the YOLO server: bgr or rgb",
+        ),
+        DeclareLaunchArgument("robotino_spawn_x", default_value="0.0"),
+        DeclareLaunchArgument("robotino_spawn_y", default_value="0.0"),
+        DeclareLaunchArgument("robotino_spawn_z", default_value="0.0"),
+        DeclareLaunchArgument("robotino_spawn_yaw", default_value="0.0"),
         include_nav,
-        include_vision,
+        vision_node,
+        yolo_server,
+        # face_recog_server,
+        # pose_service_node,
         kinect_depth_tf,
-        include_speech,
+        # include_speech,
     ])

@@ -113,6 +113,12 @@ def launch_setup(context, *args, **kwargs):
     run_action_servers = LaunchConfiguration("run_action_servers")
     robotino_gz_launch = LaunchConfiguration("robotino_gz_launch")
     gz_world_name = LaunchConfiguration("gz_world_name")
+    yolo_confidence_threshold = LaunchConfiguration("yolo_confidence_threshold")
+    yolo_input_color = LaunchConfiguration("yolo_input_color")
+    robotino_spawn_x = LaunchConfiguration("robotino_spawn_x")
+    robotino_spawn_y = LaunchConfiguration("robotino_spawn_y")
+    robotino_spawn_z = LaunchConfiguration("robotino_spawn_z")
+    robotino_spawn_yaw = LaunchConfiguration("robotino_spawn_yaw")
     xarm_spawn_x = LaunchConfiguration("xarm_spawn_x")
     xarm_spawn_y = LaunchConfiguration("xarm_spawn_y")
     xarm_spawn_z = LaunchConfiguration("xarm_spawn_z")
@@ -276,6 +282,12 @@ def launch_setup(context, *args, **kwargs):
             "image_topic": "/camera/color/image_raw",
             "depth_topic": "/camera/depth/image",
             "depth_info_topic": "/camera/depth/camera_info",
+            "yolo_confidence_threshold": yolo_confidence_threshold,
+            "yolo_input_color": yolo_input_color,
+            "robotino_spawn_x": robotino_spawn_x,
+            "robotino_spawn_y": robotino_spawn_y,
+            "robotino_spawn_z": robotino_spawn_z,
+            "robotino_spawn_yaw": robotino_spawn_yaw,
         }.items(),
     )
 
@@ -571,6 +583,24 @@ def generate_launch_description():
             default_value="robotino_gz_wheels",
             description="Gazebo world name used by ros_gz_sim create when spawning xArm",
         ),
+        DeclareLaunchArgument(
+            "yolo_confidence_threshold",
+            default_value="0.25",
+            description="YOLO confidence threshold passed through Robotino full launch",
+        ),
+        DeclareLaunchArgument(
+            "yolo_input_color",
+            default_value="bgr",
+            description="Color order passed to the YOLO server: bgr or rgb",
+        ),
+        DeclareLaunchArgument(
+            "robotino_spawn_x",
+            default_value="2.443",
+            description="Robotino Gazebo spawn X near the RC2025 shelf for YOLO tests",
+        ),
+        DeclareLaunchArgument("robotino_spawn_y", default_value="-0.528"),
+        DeclareLaunchArgument("robotino_spawn_z", default_value="0.0"),
+        DeclareLaunchArgument("robotino_spawn_yaw", default_value="-3.068"),
         DeclareLaunchArgument("dof", default_value="6"),
         DeclareLaunchArgument("robot_type", default_value="xarm"),
         DeclareLaunchArgument("prefix", default_value=""),
@@ -594,16 +624,16 @@ def generate_launch_description():
         DeclareLaunchArgument("xarm_attach_to", default_value="xarm_mount_link"),
         DeclareLaunchArgument(
             "xarm_attach_xyz",
-            default_value='"0.18 0 0.06"',
+            default_value='"0 0 0.06"',
             description="xArm base pose relative to Robotino's xarm_mount_link in the combined model",
         ),
         DeclareLaunchArgument("xarm_attach_rpy", default_value='"0 0 0"'),
         DeclareLaunchArgument(
             "xarm_spawn_x",
-            default_value="0.18",
+            default_value="2.443",
             description="Gazebo spawn X for the xArm model; should match xarm_attach_xyz in the combined launch",
         ),
-        DeclareLaunchArgument("xarm_spawn_y", default_value="0.0"),
+        DeclareLaunchArgument("xarm_spawn_y", default_value="-0.528"),
         DeclareLaunchArgument(
             "xarm_spawn_z",
             default_value="0.66",
@@ -611,6 +641,6 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument("xarm_spawn_roll", default_value="0"),
         DeclareLaunchArgument("xarm_spawn_pitch", default_value="0"),
-        DeclareLaunchArgument("xarm_spawn_yaw", default_value="0"),
+        DeclareLaunchArgument("xarm_spawn_yaw", default_value="-3.068"),
         OpaqueFunction(function=launch_setup),
     ])

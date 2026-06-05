@@ -4,6 +4,8 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /MotionPlanning1
+        - /MotionPlanning1/Planning Request1
         - /RobotModel1
         - /Trajectory1
         - /TF1
@@ -185,15 +187,15 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          world:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
           xarm_gripper_base_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
+          xarm_mount_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
         Loop Animation: false
         Robot Alpha: 0.5
         Robot Color: 150; 50; 150
@@ -218,7 +220,7 @@ Visualization Manager:
         Interactive Marker Size: 0
         Joint Violation Color: 255; 0; 255
         Planning Group: xarm6
-        Query Goal State: false
+        Query Goal State: true
         Query Start State: false
         Show Workspace: false
         Start State Alpha: 1
@@ -350,15 +352,15 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          world:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
           xarm_gripper_base_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
+          xarm_mount_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
         Robot Alpha: 1
         Show Robot Collision: false
         Show Robot Visual: true
@@ -382,125 +384,6 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        camera_color_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_color_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_depth_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_depth_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_left_ir_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_left_ir_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_right_ir_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_right_ir_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        left_finger:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        left_inner_knuckle:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        left_outer_knuckle:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link_base:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link_eef:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link_tcp:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        right_finger:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_inner_knuckle:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_outer_knuckle:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        world:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        xarm_gripper_base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
       Mass Properties:
         Inertia: false
         Mass: false
@@ -629,15 +512,15 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        world:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         xarm_gripper_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        xarm_mount_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Loop Animation: false
       Name: Trajectory
       Robot Alpha: 0.5
@@ -691,8 +574,20 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        Hokuyo URG-04LX-UG01:
+          Value: true
+        Hokuyo mounting support for Robotino 3:
+          Value: true
         UF_ROBOT/link6/cameradepth:
           Value: false
+        accelerometer:
+          Value: true
+        arm_table_link:
+          Value: true
+        base_footprint:
+          Value: true
+        base_link:
+          Value: true
         camera_color_frame:
           Value: false
         camera_color_optical_frame:
@@ -711,6 +606,48 @@ Visualization Manager:
           Value: false
         camera_right_ir_optical_frame:
           Value: false
+        cap screw:
+          Value: true
+        cap screw(1):
+          Value: true
+        cap screw(2):
+          Value: true
+        cap screw(3):
+          Value: true
+        cap screw(4):
+          Value: true
+        cap screw(5):
+          Value: true
+        cap screw(6):
+          Value: true
+        compass:
+          Value: true
+        gyro:
+          Value: true
+        inertial unit:
+          Value: true
+        ir1:
+          Value: true
+        ir2:
+          Value: true
+        ir3:
+          Value: true
+        ir4:
+          Value: true
+        ir5:
+          Value: true
+        ir6:
+          Value: true
+        ir7:
+          Value: true
+        ir8:
+          Value: true
+        ir9:
+          Value: true
+        kinect_depth:
+          Value: true
+        kinect_link:
+          Value: true
         left_finger:
           Value: false
         left_inner_knuckle:
@@ -737,16 +674,30 @@ Visualization Manager:
           Value: false
         map:
           Value: false
+        odom:
+          Value: true
         right_finger:
           Value: false
         right_inner_knuckle:
           Value: false
         right_outer_knuckle:
           Value: false
+        robotec/base_link/rplidar:
+          Value: true
+        touch sensor:
+          Value: true
+        wheel0_link:
+          Value: true
+        wheel1_link:
+          Value: true
+        wheel2_link:
+          Value: true
         world:
           Value: false
         xarm_gripper_base_link:
           Value: false
+        xarm_mount_link:
+          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
@@ -754,44 +705,102 @@ Visualization Manager:
       Show Names: false
       Tree:
         map:
-          {}
-        world:
-          link_base:
-            link1:
-              link2:
-                link3:
-                  link4:
-                    link5:
-                      link6:
-                        UF_ROBOT/link6/cameradepth:
-                          {}
-                        link_eef:
-                          camera_link:
-                            camera_color_frame:
-                              camera_color_optical_frame:
-                                {}
-                            camera_depth_frame:
-                              camera_depth_optical_frame:
-                                {}
-                            camera_left_ir_frame:
-                              camera_left_ir_optical_frame:
-                                {}
-                            camera_right_ir_frame:
-                              camera_right_ir_optical_frame:
-                                {}
-                          xarm_gripper_base_link:
-                            left_inner_knuckle:
-                              {}
-                            left_outer_knuckle:
-                              left_finger:
-                                {}
-                            link_tcp:
-                              {}
-                            right_inner_knuckle:
-                              {}
-                            right_outer_knuckle:
-                              right_finger:
-                                {}
+          odom:
+            base_footprint:
+              base_link:
+                Hokuyo mounting support for Robotino 3:
+                  Hokuyo URG-04LX-UG01:
+                    {}
+                accelerometer:
+                  {}
+                arm_table_link:
+                  xarm_mount_link:
+                    link_base:
+                      link1:
+                        link2:
+                          link3:
+                            link4:
+                              link5:
+                                link6:
+                                  UF_ROBOT/link6/cameradepth:
+                                    {}
+                                  link_eef:
+                                    camera_link:
+                                      camera_color_frame:
+                                        camera_color_optical_frame:
+                                          {}
+                                      camera_depth_frame:
+                                        camera_depth_optical_frame:
+                                          {}
+                                      camera_left_ir_frame:
+                                        camera_left_ir_optical_frame:
+                                          {}
+                                      camera_right_ir_frame:
+                                        camera_right_ir_optical_frame:
+                                          {}
+                                    xarm_gripper_base_link:
+                                      left_inner_knuckle:
+                                        {}
+                                      left_outer_knuckle:
+                                        left_finger:
+                                          {}
+                                      link_tcp:
+                                        {}
+                                      right_inner_knuckle:
+                                        {}
+                                      right_outer_knuckle:
+                                        right_finger:
+                                          {}
+                cap screw:
+                  {}
+                cap screw(1):
+                  {}
+                cap screw(2):
+                  {}
+                cap screw(3):
+                  {}
+                cap screw(4):
+                  {}
+                cap screw(5):
+                  {}
+                cap screw(6):
+                  {}
+                compass:
+                  {}
+                gyro:
+                  {}
+                inertial unit:
+                  {}
+                ir1:
+                  {}
+                ir2:
+                  {}
+                ir3:
+                  {}
+                ir4:
+                  {}
+                ir5:
+                  {}
+                ir6:
+                  {}
+                ir7:
+                  {}
+                ir8:
+                  {}
+                ir9:
+                  {}
+                robotec/base_link/rplidar:
+                  {}
+                touch sensor:
+                  {}
+                wheel0_link:
+                  {}
+                wheel1_link:
+                  {}
+                wheel2_link:
+                  {}
+          world:
+            {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -840,25 +849,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.5491385459899902
+      Distance: 3.5161473751068115
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: 0.5850844979286194
+        Y: -0.7411922216415405
+        Z: -0.0023797648027539253
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.26039794087409973
+      Pitch: 0.520397961139679
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.920398235321045
+      Yaw: 5.508582592010498
     Saved: ~
 Window Geometry:
   Displays:
@@ -880,5 +889,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1533
-  X: 2371
+  X: 2307
   Y: 224

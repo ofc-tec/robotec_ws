@@ -21,6 +21,8 @@ def generate_launch_description():
     image_topic = LaunchConfiguration('image_topic')
     depth_topic = LaunchConfiguration('depth_topic')
     depth_info_topic = LaunchConfiguration('depth_info_topic')
+    yolo_confidence_threshold = LaunchConfiguration('yolo_confidence_threshold')
+    yolo_input_color = LaunchConfiguration('yolo_input_color')
 
     declare_image_topic = DeclareLaunchArgument(
         'image_topic',
@@ -38,6 +40,18 @@ def generate_launch_description():
         'depth_info_topic',
         default_value='/kinect/depth/camera_info',
         description='Depth camera info topic for 3D vision nodes'
+    )
+
+    declare_yolo_confidence_threshold = DeclareLaunchArgument(
+        'yolo_confidence_threshold',
+        default_value='0.25',
+        description='YOLO confidence threshold for logging/debug detections'
+    )
+
+    declare_yolo_input_color = DeclareLaunchArgument(
+        'yolo_input_color',
+        default_value='bgr',
+        description='Color order sent into YOLO: bgr or rgb'
     )
 
     # --- Webots simulation + teleop ---
@@ -65,7 +79,10 @@ def generate_launch_description():
         parameters=[{
             'image_topic': image_topic,
             'depth_topic': depth_topic,
-            'depth_info_topic': depth_info_topic
+            'depth_info_topic': depth_info_topic,
+            'confidence_threshold': yolo_confidence_threshold,
+            'yolo_input_color': yolo_input_color,
+            'log_image_stats': True
         }]
     )
 
@@ -99,9 +116,11 @@ def generate_launch_description():
         declare_image_topic,
         declare_depth_topic,
         declare_depth_info_topic,
+        declare_yolo_confidence_threshold,
+        declare_yolo_input_color,
         sim_teleop,
         vision_node,
         yolo_server,
-        face_recog_server,
-        pose_service_node,
+        # face_recog_server,
+        # pose_service_node,
     ])
