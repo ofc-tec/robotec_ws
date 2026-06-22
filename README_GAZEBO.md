@@ -241,9 +241,3 @@ pkill -f "gz sim"
 - `src/vision/vision/vision_node.py`: interactive vision node and YOLO test trigger.
 - `src/robotino_bts/robotino_bts`: behavior tree package.
 
-## Golden Rules
-
-- Do not edit working external examples just to make this workspace pass.
-- Do not modify `/home/oscar/gz_models` while debugging launch or spawning issues.
-- Multiple publishers may be intentional in this workspace; verify before changing them.
-- Prefer commenting launch entries out for temporary tests instead of adding new conditional logic.
