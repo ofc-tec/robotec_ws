@@ -79,10 +79,14 @@ RUNNING RECEPTIONIST ROBOCUP
 1. Run simulation (webots no arm)
 
 2. Decide real kinect ( launch) or simulated kinect
+   
     $ ros2 run usb_cam usb_cam_node_exe
+
    Lets use usb cam first to debug face and pose recognition services.
-    $ ros2 launch robotino_webots robotino.launch.py   image_topic:=/image_raw   depth_topic:=/kinect_sim/depth/image_raw   depth_info_topic:=/kinect_sim/depth/camera_info
-3.  Run The Behavior Tree.
+
+   $ ros2 launch robotino_webots robotino.launch.py   image_topic:=/image_raw   depth_topic:=/kinect_sim/depth/image_raw   depth_info_topic:=/kinect_sim/depth/camera_info
+  
+5.   Run The Behavior Tree.
     $ ros2 launch robotino_bts bt_task.launch.py
 
     [https://www.youtube.com/watch?v=1_ZTDujCDog](url)
