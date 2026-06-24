@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 
 from sensor_msgs.msg import Image
+from std_msgs.msg import Empty
 from geometry_msgs.msg import TransformStamped
 from robotino_interfaces.srv import YoloDetect, FaceRecog, PoseDetect
 from tf2_ros import StaticTransformBroadcaster
@@ -17,11 +18,22 @@ class VisionNode(Node):
 
         # --- Parameter for main RGB image topic ---
         self.declare_parameter('image_topic', '/camera/image_raw')
+        self.declare_parameter('segment_trigger_topic', '/vision/segment_once')
+        self.declare_parameter('tabletop_service_name', 'tabletop_detect')
         image_topic = self.get_parameter('image_topic').get_parameter_value().string_value
+        segment_trigger_topic = self.get_parameter(
+            'segment_trigger_topic'
+        ).get_parameter_value().string_value
+        tabletop_service_name = self.get_parameter(
+            'tabletop_service_name'
+        ).get_parameter_value().string_value
         self.get_logger().info(f'[vision] Using image_topic: {image_topic}')
+        self.get_logger().info(f'[vision] Using segment_trigger_topic: {segment_trigger_topic}')
+        self.get_logger().info(f'[vision] Using tabletop_service_name: {tabletop_service_name}')
 
         self.bridge = CvBridge()
         self.yolo_tf_broadcaster = StaticTransformBroadcaster(self)
+        self.segment_trigger_pub = self.create_publisher(Empty, segment_trigger_topic, 10)
 
         # --- Subscribe to RGB camera ---
         self.subscription = self.create_subscription(
@@ -36,6 +48,14 @@ class VisionNode(Node):
             Image,
             '/vision/yolo_debug_image',
             self.yolo_debug_image_callback,
+            10
+        )
+
+        # --- Subscribe to tabletop segmentator debug image topic ---
+        self.tabletop_debug_sub = self.create_subscription(
+            Image,
+            '/vision/tabletop_debug_image',
+            self.tabletop_debug_image_callback,
             10
         )
 
@@ -65,23 +85,31 @@ class VisionNode(Node):
             self.get_logger().warn("[vision] Waiting for yolo_detect service...")
         self.yolo_call_in_flight = False
 
+        # --- Tabletop segmentator service client.
+        # It deliberately uses the same service type/response as YOLO, so the
+        # grasping code can consume object poses without caring who detected them.
+        self.tabletop_client = self.create_client(YoloDetect, tabletop_service_name)
+        #while not self.tabletop_client.wait_for_service(timeout_sec=1.0):
+        #    self.get_logger().warn(f"[vision] Waiting for {tabletop_service_name} service...")
+        #self.tabletop_call_in_flight = False
+
         # --- FACE Recog service client (on-demand) ---
-        # self.face_client = self.create_client(FaceRecog, 'face_recog')
-        # while not self.face_client.wait_for_service(timeout_sec=1.0):
-        #     self.get_logger().warn("[vision] Waiting for face_recog service...")
-        # self.face_call_in_flight = False
+        self.face_client = self.create_client(FaceRecog, 'face_recog')
+        while not self.face_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn("[vision] Waiting for face_recog service...")
+        self.face_call_in_flight = False
 
         # --- POSE Detect service client (on-demand) ---
-        # self.pose_client = self.create_client(PoseDetect, 'pose_detect')
-        # while not self.pose_client.wait_for_service(timeout_sec=1.0):
-        #     self.get_logger().warn("[vision] Waiting for pose_detect service...")
-        # self.pose_call_in_flight = False
+        self.pose_client = self.create_client(PoseDetect, 'pose_detect')
+        while not self.pose_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn("[vision] Waiting for pose_detect service...")
+        self.pose_call_in_flight = False
 
         # --- OpenCV windows ---
         cv2.namedWindow('vision', cv2.WINDOW_NORMAL)
         cv2.namedWindow('debug_image', cv2.WINDOW_NORMAL)
 
-        self.get_logger().info("[vision] Keys: q=quit, y=YOLO")
+        self.get_logger().info("[vision] Keys: q=quit, y=YOLO, s=segment point cloud")
 
     # ======================================
     # MAIN RGB CALLBACK
@@ -111,6 +139,14 @@ class VisionNode(Node):
             yolo_req = YoloDetect.Request()
             yolo_call = self.yolo_client.call_async(yolo_req)
             yolo_call.add_done_callback(self.handle_yolo_response)
+
+        if key == ord('s') and not self.tabletop_call_in_flight:
+            self.get_logger().info("[vision] Calling tabletop segmentator service...")
+            self.tabletop_call_in_flight = True
+
+            tabletop_req = YoloDetect.Request()
+            tabletop_call = self.tabletop_client.call_async(tabletop_req)
+            tabletop_call.add_done_callback(self.handle_tabletop_response)
 
         # Trigger FACE once when pressing 'f'
         # if key == ord('f') and not self.face_call_in_flight:
@@ -189,6 +225,22 @@ class VisionNode(Node):
         self.get_logger().info(f"[vision] YOLO returned {n} detections.{suffix}")
         self.publish_yolo_tfs(yolo_resp)
 
+    def handle_tabletop_response(self, tabletop_call):
+        self.tabletop_call_in_flight = False
+        try:
+            tabletop_resp = tabletop_call.result()
+        except Exception as e:
+            self.get_logger().error(f"[vision] Tabletop service call failed: {e}")
+            return
+
+        try:
+            n = len(tabletop_resp.detections.detections)
+        except Exception:
+            n = 0
+
+        self.get_logger().info(f"[vision] Tabletop segmentator returned {n} detections.")
+        self.publish_yolo_tfs(tabletop_resp)
+
     def publish_yolo_tfs(self, yolo_resp):
         classes = list(getattr(yolo_resp, "class_names", []) or [])
         poses = list(getattr(yolo_resp, "poses", []) or [])
@@ -211,16 +263,27 @@ class VisionNode(Node):
             child_frame = safe_class if seen_count == 0 else f"{safe_class}_{seen_count}"
 
             raw = pose.pose.position
+            parent_frame = pose.header.frame_id
 
-            # Same correction used by the xArm grasping tree SelectYoloTarget:
-            # raw optical camera coords x-right/y-down/z-forward -> x-forward/y-left/z-up.
             transform = TransformStamped()
             transform.header.stamp = self.get_clock().now().to_msg()
-            transform.header.frame_id = pose.header.frame_id
+            transform.header.frame_id = parent_frame
             transform.child_frame_id = child_frame
-            transform.transform.translation.x = raw.z
-            transform.transform.translation.y = -raw.x
-            transform.transform.translation.z = -raw.y
+
+            if self.pose_needs_optical_correction(parent_frame):
+                # Same correction used by the xArm grasping tree SelectYoloTarget:
+                # raw optical camera coords x-right/y-down/z-forward -> x-forward/y-left/z-up.
+                transform.transform.translation.x = raw.z
+                transform.transform.translation.y = -raw.x
+                transform.transform.translation.z = -raw.y
+                corrected_log = (raw.z, -raw.x, -raw.y)
+            else:
+                # Tabletop segmentation already returns corrected odom/map/world poses.
+                transform.transform.translation.x = raw.x
+                transform.transform.translation.y = raw.y
+                transform.transform.translation.z = raw.z
+                corrected_log = (raw.x, raw.y, raw.z)
+
             transform.transform.rotation.x = 0.0
             transform.transform.rotation.y = 0.0
             transform.transform.rotation.z = 0.0
@@ -228,13 +291,21 @@ class VisionNode(Node):
             transforms.append(transform)
 
             self.get_logger().info(
-                f"[vision] TF {pose.header.frame_id}->{child_frame}: "
+                f"[vision] TF {parent_frame}->{child_frame}: "
                 f"raw=({raw.x:.3f},{raw.y:.3f},{raw.z:.3f}) "
-                f"corrected=({raw.z:.3f},{-raw.x:.3f},{-raw.y:.3f})"
+                f"corrected=({corrected_log[0]:.3f},{corrected_log[1]:.3f},{corrected_log[2]:.3f})"
             )
 
         if transforms:
             self.yolo_tf_broadcaster.sendTransform(transforms)
+
+    def pose_needs_optical_correction(self, frame_id):
+        frame = str(frame_id).lower()
+        corrected_frames = ('odom', 'map', 'world', 'base_link', 'base_footprint')
+        if frame in corrected_frames:
+            return False
+        optical_markers = ('camera', 'kinect', 'depth', 'optical')
+        return any(marker in frame for marker in optical_markers)
 
     # ======================================
     # FACE SERVICE RESPONSE
@@ -279,6 +350,12 @@ class VisionNode(Node):
     # ======================================
     def yolo_debug_image_callback(self, msg: Image):
         self._show_debug(msg, "yolo")
+
+    # ======================================
+    # TABLETOP DEBUG IMAGE CALLBACK
+    # ======================================
+    def tabletop_debug_image_callback(self, msg: Image):
+        self._show_debug(msg, "tabletop")
 
     # ======================================
     # FACE DEBUG IMAGE CALLBACK

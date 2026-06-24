@@ -14,6 +14,7 @@ Key behavior:
 
 import rclpy
 from rclpy.node import Node
+from ament_index_python.packages import get_package_share_directory
 
 from sensor_msgs.msg import Image, CameraInfo
 from vision_msgs.msg import Detection2DArray, Detection2D, ObjectHypothesisWithPose, BoundingBox2D
@@ -26,7 +27,38 @@ import cv2
 import numpy as np
 import re
 import tf2_ros
+from pathlib import Path
 from geometry_msgs.msg import TransformStamped, PoseStamped
+
+
+def resolve_model_path(model_path):
+    path = Path(str(model_path)).expanduser()
+    if path.is_absolute():
+        return str(path)
+
+    candidates = [
+        Path.cwd() / path,
+        Path.home() / "robotino_ros2_ws" / path,
+        Path.home() / "robotino_ros2_ws" / "src" / path,
+    ]
+
+    try:
+        vision_share = Path(get_package_share_directory("vision"))
+        candidates.append(vision_share / path)
+    except Exception:
+        pass
+
+    source_root = Path(__file__).resolve().parents[1]
+    candidates.extend([
+        source_root / path,
+        source_root / "config" / path,
+    ])
+
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+
+    return str(path)
 
 
 class YoloServiceNode(Node):
@@ -47,7 +79,9 @@ class YoloServiceNode(Node):
         image_topic = self.get_parameter("image_topic").get_parameter_value().string_value
         depth_topic = self.get_parameter("depth_topic").get_parameter_value().string_value
         depth_info_topic = self.get_parameter("depth_info_topic").get_parameter_value().string_value
-        model_path = self.get_parameter("model_path").get_parameter_value().string_value
+        model_path = resolve_model_path(
+            self.get_parameter("model_path").get_parameter_value().string_value
+        )
         self.confidence_threshold = float(self.get_parameter("confidence_threshold").value)
         self.yolo_input_color = (
             self.get_parameter("yolo_input_color").get_parameter_value().string_value.lower()
@@ -83,8 +117,10 @@ class YoloServiceNode(Node):
         self.debug_pub = self.create_publisher(Image, "/vision/yolo_debug_image", 10)
 
         # --- YOLO seg model ---
+        self.get_logger().info("[YOLO_SERVICE] Loading YOLO model...")
         self.model = YOLO(model_path)
         self.class_names = self.model.names  # dict: id -> name
+        self.get_logger().info("[YOLO_SERVICE] YOLO model loaded.")
 
         # --- Service server ---
         self.srv = self.create_service(YoloDetect, "/yolo_detect", self.handle_yolo_detect)

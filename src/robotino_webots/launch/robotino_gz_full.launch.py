@@ -29,6 +29,10 @@ def generate_launch_description():
     image_topic = LaunchConfiguration("image_topic")
     depth_topic = LaunchConfiguration("depth_topic")
     depth_info_topic = LaunchConfiguration("depth_info_topic")
+    cloud_topic = LaunchConfiguration("cloud_topic")
+    plane_detector_target_frame = LaunchConfiguration("plane_detector_target_frame")
+    plane_detector_horizontal_only = LaunchConfiguration("plane_detector_horizontal_only")
+    segment_trigger_topic = LaunchConfiguration("segment_trigger_topic")
     yolo_confidence_threshold = LaunchConfiguration("yolo_confidence_threshold")
     yolo_input_color = LaunchConfiguration("yolo_input_color")
     robotino_spawn_x = LaunchConfiguration("robotino_spawn_x")
@@ -61,6 +65,7 @@ def generate_launch_description():
         output="screen",
         parameters=[{
             "image_topic": image_topic,
+            "segment_trigger_topic": segment_trigger_topic,
         }],
     )
 
@@ -76,6 +81,21 @@ def generate_launch_description():
             "confidence_threshold": yolo_confidence_threshold,
             "yolo_input_color": yolo_input_color,
             "log_image_stats": True,
+        }],
+    )
+
+    plane_detector = Node(
+        package="vision",
+        executable="plane_detector",
+        name="plane_detector",
+        output="screen",
+        parameters=[{
+            "cloud_topic": cloud_topic,
+            "target_frame": plane_detector_target_frame,
+            "trigger_topic": segment_trigger_topic,
+            "process_on_trigger": True,
+            "horizontal_only": plane_detector_horizontal_only,
+            "publish_object_candidates": True,
         }],
     )
 
@@ -171,6 +191,26 @@ def generate_launch_description():
             description="Depth camera info topic for 3D vision nodes",
         ),
         DeclareLaunchArgument(
+            "cloud_topic",
+            default_value="/kinect_sim/points",
+            description="PointCloud2 topic for plane segmentation",
+        ),
+        DeclareLaunchArgument(
+            "plane_detector_target_frame",
+            default_value="",
+            description="Optional TF target frame for plane segmentation. Empty keeps the sensor cloud frame.",
+        ),
+        DeclareLaunchArgument(
+            "plane_detector_horizontal_only",
+            default_value="false",
+            description="Require z-up horizontal planes. Keep false when target frame is the camera/sensor frame.",
+        ),
+        DeclareLaunchArgument(
+            "segment_trigger_topic",
+            default_value="/vision/segment_once",
+            description="Topic used by vision_node to trigger one point-cloud segmentation pass",
+        ),
+        DeclareLaunchArgument(
             "yolo_confidence_threshold",
             default_value="0.25",
             description="YOLO confidence threshold passed to the vision server",
@@ -187,6 +227,7 @@ def generate_launch_description():
         include_nav,
         vision_node,
         yolo_server,
+        plane_detector,
         # face_recog_server,
         # pose_service_node,
         kinect_depth_tf,

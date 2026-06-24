@@ -121,6 +121,6 @@ def generate_launch_description():
         sim_teleop,
         vision_node,
         yolo_server,
-        # face_recog_server,
-        # pose_service_node,
+        face_recog_server,
+        pose_service_node,
     ])

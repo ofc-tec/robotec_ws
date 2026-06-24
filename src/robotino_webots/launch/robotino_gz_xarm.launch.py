@@ -115,6 +115,10 @@ def launch_setup(context, *args, **kwargs):
     gz_world_name = LaunchConfiguration("gz_world_name")
     yolo_confidence_threshold = LaunchConfiguration("yolo_confidence_threshold")
     yolo_input_color = LaunchConfiguration("yolo_input_color")
+    cloud_topic = LaunchConfiguration("cloud_topic")
+    plane_detector_target_frame = LaunchConfiguration("plane_detector_target_frame")
+    plane_detector_horizontal_only = LaunchConfiguration("plane_detector_horizontal_only")
+    segment_trigger_topic = LaunchConfiguration("segment_trigger_topic")
     robotino_spawn_x = LaunchConfiguration("robotino_spawn_x")
     robotino_spawn_y = LaunchConfiguration("robotino_spawn_y")
     robotino_spawn_z = LaunchConfiguration("robotino_spawn_z")
@@ -282,6 +286,10 @@ def launch_setup(context, *args, **kwargs):
             "image_topic": "/camera/color/image_raw",
             "depth_topic": "/camera/depth/image",
             "depth_info_topic": "/camera/depth/camera_info",
+            "cloud_topic": cloud_topic,
+            "plane_detector_target_frame": plane_detector_target_frame,
+            "plane_detector_horizontal_only": plane_detector_horizontal_only,
+            "segment_trigger_topic": segment_trigger_topic,
             "yolo_confidence_threshold": yolo_confidence_threshold,
             "yolo_input_color": yolo_input_color,
             "robotino_spawn_x": robotino_spawn_x,
@@ -592,6 +600,26 @@ def generate_launch_description():
             "yolo_input_color",
             default_value="bgr",
             description="Color order passed to the YOLO server: bgr or rgb",
+        ),
+        DeclareLaunchArgument(
+            "cloud_topic",
+            default_value="/camera/depth/points",
+            description="PointCloud2 topic passed to plane segmentation in the full launch",
+        ),
+        DeclareLaunchArgument(
+            "plane_detector_target_frame",
+            default_value="",
+            description="Optional TF target frame for plane segmentation. Empty keeps the sensor cloud frame like YOLO.",
+        ),
+        DeclareLaunchArgument(
+            "plane_detector_horizontal_only",
+            default_value="false",
+            description="Require z-up horizontal planes. Keep false when target frame is the camera/sensor frame.",
+        ),
+        DeclareLaunchArgument(
+            "segment_trigger_topic",
+            default_value="/vision/segment_once",
+            description="Topic used by vision_node to trigger one point-cloud segmentation pass",
         ),
         DeclareLaunchArgument(
             "robotino_spawn_x",

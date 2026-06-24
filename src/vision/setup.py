@@ -26,6 +26,7 @@ setup(
             'vision_segment = vision.vision_segment:main',
             'yolo_server = vision.yolo_service_node:main',
             'kinect_pointcloud_node = vision.kinect_pointcloud_node:main',
+            'plane_detector = vision.plane_detector_node:main',
             "face_recog_service_node = vision.face_recog_service_node:main",
             "pose_service_node = vision.pose_service_node:main",
         ],

@@ -19,6 +19,35 @@ from facenet_pytorch import InceptionResnetV1
 from ament_index_python.packages import get_package_share_directory
 import os
 
+def resolve_model_path(model_path: str) -> str:
+    path = Path(str(model_path)).expanduser()
+    if path.is_absolute():
+        return str(path)
+
+    candidates = [
+        Path.cwd() / path,
+        Path.home() / "robotino_ros2_ws" / path,
+        Path.home() / "robotino_ros2_ws" / "src" / path,
+    ]
+
+    try:
+        vision_share = Path(get_package_share_directory("vision"))
+        candidates.append(vision_share / path)
+    except Exception:
+        pass
+
+    source_root = Path(__file__).resolve().parents[1]
+    candidates.extend([
+        source_root / path,
+        source_root / "config" / path,
+    ])
+
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+
+    return str(path)
+
 def bbox2d_from_xyxy(x1: int, y1: int, x2: int, y2: int) -> BoundingBox2D:
     bb = BoundingBox2D()
     bb.center.position.x = float((x1 + x2) / 2.0)
@@ -36,8 +65,7 @@ class FaceRecogServiceNode(Node):
         self.declare_parameter("debug_topic", "/vision/face_recog_debug_image")
         self.declare_parameter("db_dir", str(Path.home() / ".ros" / "face_db"))
         self.declare_parameter("distance_threshold", 0.95)
-        vision_share = get_package_share_directory("vision")
-        self.declare_parameter("model_path", "/home/oscar/robotino_ros2_ws/src/vision/config/yolov8n-face-lindevs.pt")
+        self.declare_parameter("model_path", "yolov8n-face-lindevs.pt")
         self.declare_parameter("min_confidence", 0.50)
 
         self.image_topic = self.get_parameter("image_topic").value
@@ -45,7 +73,7 @@ class FaceRecogServiceNode(Node):
         self.db_dir = Path(self.get_parameter("db_dir").value)
         self.distance_threshold = float(self.get_parameter("distance_threshold").value)
         self.min_confidence = float(self.get_parameter("min_confidence").value)
-        self.model_path = str(self.get_parameter("model_path").value)
+        self.model_path = resolve_model_path(str(self.get_parameter("model_path").value))
 
         self.get_logger().info(f"[FACE] image_topic: {self.image_topic}")
         self.get_logger().info(f"[FACE] debug_topic: {self.debug_topic}")
@@ -69,10 +97,14 @@ class FaceRecogServiceNode(Node):
         self._load_db()
 
         # --- Models ---
+        self.get_logger().info("[FACE] Loading YOLO face detector...")
         self.detector = YOLO(self.model_path)
+        self.get_logger().info("[FACE] YOLO face detector loaded.")
+        self.get_logger().info("[FACE] Loading FaceNet embedder...")
         self.embedder = InceptionResnetV1(pretrained="vggface2").eval()
         if self.device.startswith("cuda"):
             self.embedder = self.embedder.to(self.device)
+        self.get_logger().info("[FACE] FaceNet embedder loaded.")
 
         # --- ROS interfaces ---
         self.create_subscription(Image, self.image_topic, self._image_cb, 10)
@@ -221,11 +253,11 @@ class FaceRecogServiceNode(Node):
         bgr = self._get_latest_bgr()
         if bgr is None:
             return res
-        train_name = req.name_request[0].strip()
         # Use first entry in name_request as the name to train
         if not req.name_request:
             self.get_logger().warn("[FACE] /face_train called but name_request is empty")
             return res
+        train_name = req.name_request[0].strip()
 
         if not train_name:
             self.get_logger().warn("[FACE] /face_train called but name_request[0] is empty string")
